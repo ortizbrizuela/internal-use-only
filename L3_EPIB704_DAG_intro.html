@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Directed Acyclic Graphs (DAGs)</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mabel Carabali" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Directed Acyclic Graphs (DAGs)
+]
+.subtitle[
+## Gentle introduction
+]
+.author[
+### Mabel Carabali
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### 2023/08/30 (updated: 2024-09-04)
+]
+
+---
+
+
+
+
+
+
+
+
+class: middle
+##Objectives
+1. Operationalize Directed Acyclic Graphs (DAGs)     
+
+2. Appreciate the insights into confounding and selection bias provided by DAGs     
+
+3. Examples to appreciate the importance of DAGs (and their encoded substantive knowledge) on the road to causal inference
+
+
+**Felix, qui potuit rerum cognoscere causa - Vigil (29BC)**
+
+_“Fortunate is he, who is able to know the causes of things”_
+
+
+.purple[Included modified notes from Dr. Jay Brophy]
+
+---
+class: middle
+##Conventional statistics &amp; causal inference 
+- “The object of statistical methods is the reduction of data” (Fisher 1922)       
+
+- Provides a parsimonious mathematical description of the joint distribution of observed variables      
+
+- Good statistical processes can describe the data      
+
+- But say nothing about the data generating process and **can’t answer causal questions**    
+
+---
+class: middle
+##DAGs and causal inference
+- **DAGs (AKA causal diagrams)** characterize causal structures compatible with the observations &amp; assist in drawing logical conclusions about the statistical relations      
+&lt;br&gt;
+- Help understanding: confounding, selection bias, covariate selection, over adjustment, instrumental variable analyses  &amp; avoid making errors about the statistical relations (much of this associated with Judea Pearl's work)       
+
+- **Potential Outcome (counterfactual)** framework provides another approach to causal inference, building on the work on RCTs from the 1920s by Fisher and Neyman (much of this associated with Donals Rubin's work)       
+
+**.purple[These frameworks are largely complementary]**
+
+
+---
+class: middle
+##Current statistical approach
+- Vague research question with some available relevant data    
+- “Let the data speak” (If the data are speaking to you...)     
+- Add all the variables and let multiple regression sort it out     
+- Regression models alone insufficient no distinction between causes, confounders, mediators and colliders
+- Residual confounding, measurement error &amp; missing data are often ignored            
+- Often model selection chosen via Akaike Information Criterion (AIC = 2K -2ln(logLikelihood)) where K is the number of model parameters        
+- Provides the best predictive but not the causally correct model `\(\to\)` **doesn't provide causal statements**
+
+---
+class: middle
+### Canons of causal inference
+- Every causal inference task must rely on judgmental, extra-data assumptions (or experiments)      
+
+- Ways of encoding those assumptions mathematically and test their implications exist     
+
+- DAGs encode qualitatively _a priori_ subject matter knowledge    
+
+- Consideration of the causal model combined with data provides clarity in interpreting statistical coefficients and causal inferences      
+
+**.red[Assumption - free causal inference doesn’t exist]**
+
+---
+class: middle
+###DAGs - Help identifying causal effects
+
+.pull-left[
+&lt;img src="images/L3dag0.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+1. **Treatment/intervention/exposure (T)**: the main cause.
+2. **Outcome (O):** the main effect.
+3. **Mediator (M):** caused by the treatment which in turn
+causes the outcome.
+4. **Confounder (C):** common cause of the treatment and
+outcome.
+5. **Collider (E):** common effect of any two variables on a
+backdoor path.*
+6. **Instrument (I):** only causes the treatment (and not the
+outcome).
+
+.small[*Non-causal path from the treatment to the outcome.]
+]
+
+---
+class: middle
+###DAGs - Help identifying causal effects
+   
+&lt;img src="images/L3dag0.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+- **Variables** are depicted as **nodes** and connected by **arrows**       
+- Acyclic (the future can’t predict the past)      
+- &lt;span style="color:red"&gt;Missing lines strongest assumption, implies variable independence&lt;/span&gt;      
+- Include all common causes of any 2 variables &amp; all variables involved in data generation (observed or unobserved)   
+- Contain both causal and non-causal pathways     
+- **Help identify causal effects by deriving testable implications of a causal model**
+
+
+---
+class: middle
+##DAGs Between Two Variables
+
+&lt;img src="images/DAG_classic.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+**[Directed acyclic graphs: a tool for causal studies in paediatrics](https://www.nature.com/articles/s41390-018-0071-3)**
+&lt;img src="images/L3dagpeds.png" width="55%" style="display: block; margin: auto;" /&gt;
+
+--
+.small[
+- a.Screen time (the exposure) **causes** obesity (the outcome). 
+- b. Screen time acts on obesity through the **.purple[mediator]** of physical activity. 
+- c. Low parental education increases both screen time and obesity, and is therefore a **.red[confounder]**.
+- d. Self-harm is a **.brown[collider]** in the path from screen time to obesity.
+]
+
+
+---
+class: middle
+### More DAG terminology
+
+&lt;img src="images/DAG_std.jpg" width="50%" style="display: block; margin: auto;" /&gt;
+
+- &lt;span style="color:red"&gt;Path&lt;/span&gt;  is a sequence of non-intersecting adjacent edges **X-&gt;T-&gt;C** or **U2-&gt;Y&lt;-C&lt;-T**    
+- &lt;span style="color:red"&gt;Causal path&lt;/span&gt;  a path in which all arrows point away from T to outcome Y; **T-&gt;C-&gt;Y**      
+- &lt;span style="color:red"&gt;Total causal effect&lt;/span&gt;  of a treatment on an outcome consists of all causal paths connecting them     
+- &lt;span style="color:red"&gt;Non-causal path&lt;/span&gt; connecting T and Y with at least one arrow  against flow of time **T&lt;-X-&gt;Y**     
+- &lt;span style="color:red"&gt;Descendants&lt;/span&gt;  of a node: all nodes directly or indirectly caused by the node;  **desc(T) = {C,Y}**     
+- &lt;span style="color:red"&gt;Children&lt;/span&gt;   of a node: all nodes directly caused by the node; **child(T) = {C}**     
+- &lt;span style="color:red"&gt;Ancestors&lt;/span&gt;   of a node: all nodes directly or indirectly causing the node; **an(T) = {X, U1, U2}**    
+- &lt;span style="color:red"&gt;Collider&lt;/span&gt;  variable along a path with 2 arrows pointing in **U-&gt;X&lt;-U2**    
+
+---
+class: middle
+**More DAG terminology**
+&lt;img src="images/DAG_std.jpg" width="40%" style="display: block; margin: auto;" /&gt;
+- “Blocked” (&lt;span style="color:red"&gt;d-separated&lt;/span&gt;) paths don’t transmit associations         
+- “Unblocked” (&lt;span style="color:red"&gt;d-connected&lt;/span&gt;) paths may transmit association     
+&lt;span style="color:red"&gt;Three blocking criteria&lt;/span&gt;
+  - Conditioning on a non-collider blocks a path    
+  - Conditioning on a collider, or a descendent of a collider, unblocks a path    
+  - Not conditioning on a collider leaves a path “naturally” blocked     
+  
+--
+
+**Implication:**      
+- If X and Y are &lt;span style="color:red"&gt;d-separated&lt;/span&gt; by Z along all paths in a DAG, then X is &lt;span style="color:red"&gt;statistically independent&lt;/span&gt; of Y conditional on Z in every distribution compatible with the DAG     
+- If X and Y are not &lt;span style="color:red"&gt;d-separated&lt;/span&gt; by Z along all paths in the DAG, then X and Y are &lt;span style="color:red"&gt;dependent conditional&lt;/span&gt; on Z in at least one distribution compatible with the DAG
+
+---
+class: middle
+##Identification
+The causal effect of X on Y is said to be **“identified”** if it is possible, with ideal data (infinite sample size, perfect measurement), to purge all non-causal association from the observed association between X and Y such that only the causal association remains.
+
+One way to interpret this with DAGs, is to note that the total causal effect of `\(X\)` on `\(Y\)` is identifiable if one can condition on (“adjust for”) a set of variables {Z} that         
+1. Blocks all non-causal paths between X and Y,     
+2. Without blocking any causal paths between X and Y    
+
+---
+class: middle
+##Estimating causal effects
+
+.pull-left[
+**Backdoor criteria**
+&lt;img src="images/backdoor.png" width="40%" style="display: block; margin: auto;" /&gt;
+`\(Z\)` is a sufficient set     
+1. No variable in `\(Z\)` is a descendant of `\(X\)` and    
+2. Every path between `\(X\)` and `\(Y\)` that contains an arrow into `\(X\)` is blocked by `\(Z\)`
+]
+--
+.pull-right[
+**Frontdoor criteria**
+&lt;img src="images/frontdoor.png" width="40%" style="display: block; margin: auto;" /&gt;
+`\(Z\)` is a sufficient set     
+1. `\(Z\)` intercepts all directed paths from `\(X\)` to `\(Y\)`     
+2. No unblocked paths from `\(X\)` to `\(Z\)`    
+3. All backdoor paths from `\(Z\)` to `\(Y\)` are blocked by `\(X\)`   
+]
+
+---
+class: middle
+## Simple DAG
+What are the assumptions &amp; statistical implications of this model?
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-9-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+--
+**.red[Would you believe  at least 16 assumptions and statistical implications!]**
+
+---
+class: middle
+**Simple DAG ?** https://bookdown.org/jbrophy115/bookdown-clinepi/causal.html
+.pull-left[
+**.red[Causal implications]**
+1. X &amp; U are direct causes of Y
+2. Y is a direct cause of Z
+3. X is an indirect cause of Z via Y
+4. X is not a cause of U and U is not a cause of X
+5. U is an indirect cause of Z via Y
+6. No variable causes both X and Y OR U and Y
+
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-10-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+**.blue[Statistical implications]**
+1. X and Y are statistically dependent
+2. U and Y are statistically dependent
+3. Y and Z are statistically dependent
+4. X and Z are statistically dependent
+5. U and Z are statistically dependent
+6. X and U are statistically independent
+7. X and U are statistically dependent, conditional on Y
+8. X and U are statistically dependent, conditional on Z
+9. X and Z are statistically independent, conditional on Y
+10. U and Z are statistically independent, conditional on Y
+]
+
+---
+class: middle
+### What does automated statistical software do?
+- Let's consider the scenario where we assess systolic blood pressure (SBP) by _.brown[race]_.
+- Let's simulate data where SBP is a function of age but independent of racial group:
+
+
+```r
+library(tidyverse)
+n &lt;- 200; age &lt;- runif(n, 25, 65)
+#sbp is not a function of group
+*sbp &lt;- 99 + 0.1*age + exp(age/15) + rnorm(200, 0, sd = 5)
+dat &lt;- data.frame(age=age, sbp = sbp) %&gt;%
+  arrange(age) %&gt;%
+  mutate(group = case_when(
+    age &lt;40  ~ "0",
+    age &gt;= 40 ~ "1"))
+dat$group &lt;- as.factor(dat$group)
+head(dat, 3)
+```
+
+```
+##        age      sbp group
+## 1 25.37983 102.4869     0
+## 2 25.55000 106.1320     0
+## 3 25.58509 105.4003     0
+```
+--
+
+### .red[How would you analyze the data to assess this relationship?]
+ 
+---
+class: middle
+**Traditional (Standard) approach**, OLS adjusting for _.brown[group]_:
+
+```r
+summary(lm(sbp ~ age + group, data=dat))
+```
+
+```
+## 
+## Call:
+## lm(formula = sbp ~ age + group, data = dat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -14.904  -5.208  -1.228   4.457  23.823 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  42.07907    2.82467  14.897  &lt; 2e-16 ***
+## age           2.13630    0.08283  25.790  &lt; 2e-16 ***
+## group1      -12.34679    1.93724  -6.373 1.28e-09 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 7.18 on 197 degrees of freedom
+## Multiple R-squared:  0.8846,	Adjusted R-squared:  0.8835 
+## F-statistic: 755.3 on 2 and 197 DF,  p-value: &lt; 2.2e-16
+```
+--
+
+Spurious statistically difference in SBP by _.brown[group]_ is observed, yet .red[data was generated with no group exposure effect]. 
+
+---
+class: middle
+**Visualizations and DAGs can help**
+Plot the generated data
+
+```r
+myfun &lt;- function(age)  99 + 0.1*age + exp(age/15)
+g1 &lt;- ggplot(dat, aes(age, sbp)) + geom_point()  + stat_function(fun = myfun, color="red", size=1.8) +
+  theme_classic() 
+g2 &lt;- ggplot(dat, aes(age, sbp, color=group)) + geom_point()  + 
+  stat_function(fun = myfun, color="red", size= 1.8) +
+  theme_classic() 
+```
+
+.pull-left[
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-14-1.svg" width="120%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-15-1.svg" width="120%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+class: middle
+### Visualizations and DAGs can help
+.pull-left[
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-16-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-17-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+- While the DAG shows only one SBP causal pathway (Age `\(\to\)` SBP), 
+- The automatic software also includes the **.red[spurious non-causal pathway]:**
+
+**(Group `\(\leftarrow\)` Age `\(\to\)` SBP)**
+
+---
+class: middle
+**[DAG With Omitted Objects Displayed (DAGWOOD): a framework for revealing causal assumptions in DAGs](https://doi.org/10.1016/j.annepidem.2022.01.001)**
+
+&lt;img src="images/L3dagwood1.jpg" width="85%" style="display: block; margin: auto;" /&gt;
+
+.small[Haber NA, Wood ME, Wieten S, Breskin A. DAG With Omitted Objects Displayed (DAGWOOD): a framework for revealing causal assumptions in DAGs. Ann Epidemiol. 2022 Apr;68:64-71. https://doi.org/10.1016/j.annepidem.2022.01.001]
+
+---
+class: middle
+**[DAG With Omitted Objects Displayed (DAGWOOD): a framework for revealing causal assumptions in DAGs](https://doi.org/10.1016/j.annepidem.2022.01.001)**
+
+&lt;img src="images/L3dagwood2.jpeg" width="85%" style="display: block; margin: auto;" /&gt;
+
+.small[Haber NA, Wood ME, Wieten S, Breskin A. DAG With Omitted Objects Displayed (DAGWOOD): a framework for revealing causal assumptions in DAGs. Ann Epidemiol. 2022 Apr;68:64-71. https://doi.org/10.1016/j.annepidem.2022.01.001]
+
+---
+class: middle
+### Understanding Selection Bias
+**Let's simulate some data**
+
+```r
+set.seed(123); n = 5000
+income &lt;- rnorm(n)#simulate independent income and bp data
+bp &lt;- rnorm(n)
+gg &lt;- ggplot(data.frame(income,bp), aes(income, bp)) +
+  geom_point() + geom_smooth(method='lm', formula= y~x, color="darkmagenta", size=2) +
+  labs(title = "No association of bp and income in population", 
+       subtitle = "Blue line is linear regression line") + theme_bw()
+```
+
+--
+
+.pull-left[
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-21-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+**Plot the data**
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-22-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+class: middle
+### Understanding Selection Bias
+**.purple[What happens if "condition" on the common effect, i.e analyzing only visit=1]**
+
+Let's simulate some data
+
+```r
+library(tidyverse)
+logitVisit &lt;- -2 + 2*income + 2*bp # simulate visit = f(income, bp)
+pVisit &lt;- 1/(1+exp(-logitVisit)); visit &lt;- rbinom(n, 1, pVisit); 
+dPop &lt;- data.table::data.table(income, bp, visit)
+dSample &lt;- dPop[visit == 1] # sample of those with a visit
+```
+
+--
+
+.pull-left[
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-24-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-25-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+**.red[In this conditioned sample there is now an association between BP and income]**
+---
+class: middle
+**Understanding selection bias** .red[Standard (Naive) approach]
+
+```r
+summary (lm(bp~income, data=dSample))
+```
+
+```
+## 
+## Call:
+## lm(formula = bp ~ income, data = dSample)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.72029 -0.52177 -0.04242  0.52481  2.81769 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.01151    0.02748   36.80   &lt;2e-16 ***
+## income      -0.36229    0.02457  -14.74   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7842 on 1353 degrees of freedom
+## Multiple R-squared:  0.1384,	Adjusted R-squared:  0.1378 
+## F-statistic: 217.4 on 1 and 1353 DF,  p-value: &lt; 2.2e-16
+```
+.red[Remember p-values will not pick the causally correct model!]
+
+
+---
+class: middle
+**Selection bias in RCTs**
+1. Can occur on entry if no blinding      
+2. .red[Bigger issue is lost to follow-up]   
+Consider Rx (A) randomized but if (A=1); `\(\uparrow\)` dropouts due to adverse drug effects (ADE).    
+Alcohol abuse (C=1) also more likely to drop out of the study and more likely to experience acute liver failure (Y=1). 
+At baseline no association between A &amp; C due to randomization
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-27-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+
+--
+
+- However, conditioning on those who do not drop out **creates a spurious backdoor negative correlation between A and C**      
+- Will make patients (A=1) to be protective against acute liver failure when no causal association exists. 
+
+---
+class: middle
+**Selection bias in RCTs**
+&lt;img src="images/L3dagrct.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+**[Directed acyclic graphs: a tool for causal studies in paediatrics](https://www.nature.com/articles/s41390-018-0071-3)**
+
+---
+class: middle
+##Summary collider vs. confounder
+
+|                 |   **Confounder**   |     **Collider**  |
+|:---------------:|:-------------------|:-----------------:|
+|Main attribute   | Common cause       | Common Effect     |
+|Association | Contributes to the association between its effects| Does not contribute to the association od its effects|
+|Type of path| Open path | Blocked path|
+|Effect of conditioning | Blocks the path | Opens the path|
+|Bias before conditioning? | Yes, confounding | No|
+|Bias after conditioning? | No | Yes, Collider stratification Bias|
+
+---
+class: middle
+##Ever wonder about risk factor paradoxes? 
+
+&lt;img src="images/rheum_card.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+Well established risk factors in general population &lt;span style="color:red"&gt;reverse&lt;/span&gt; their impact in these selected .red[index] populations???
+
+---
+class: middle
+### What's going on?
+Editors like the word “paradox” and its mention increases likelihood of publication - novel, controversial findings, easy to invent hypothetical explanations     
+- But is this a causal or non-biological explanation? 
+--
+&lt;img src="images/rheum_bell.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+&lt;span style="color:red"&gt;Remember stratifying on a collider&lt;/span&gt; `\(\to\)` spurious negative association among those risk factors in indexed (stratified) populations as the most likely explanation with an index event 
+
+--
+
+**.red[ When you see the word paradox, think first about Index event (collider stratification) bias]**
+
+---
+**An egregious example (with a dose response!)**
+
+The following was published in [JAMA](https://jamanetwork.com/journals/jama/fullarticle/1104631)
+&lt;img src="images/jama_bad.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+--
+
+Should we encourage post MI patients to increase their smoking, weight, cholesterol, BP and diabetes?     - - And ideally do all of the above simultaneously .Large[.red[REALLY!?]]
+
+---
+class: middle
+###DAGs with R
+
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-32-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+###DAGs with R
+
+```r
+library(ggdag) # help(package="ggdag)
+l3dag1&lt;- dagify(S ~ A + C, Y ~ C) %&gt;% #dagify() creates dagitty DAGs using a R-like syntax.
+  tidy_dagitty() %&gt;% 
+  node_dconnected("A", "C", controlling_for = "S") %&gt;%
+  ggplot(aes(
+    x = x, 
+    y = y, 
+    xend = xend, 
+    yend = yend, 
+    shape = adjusted, 
+    col = d_relationship )) +
+  geom_dag_edges(aes(end_cap = ggraph::circle(10, "mm"))) +
+  geom_dag_collider_edges() +
+  geom_dag_point() +
+  geom_dag_text(col = "white") +
+  theme_dag() + 
+  scale_adjusted() +
+  expand_plot(expand_y = expansion(c(0.2, 0.2))) +
+  scale_color_viridis_d(
+    name = "d-relationship", 
+    na.value = "grey85", 
+    begin = .35 ) +
+  labs(caption = "A = Rx, C = alcohol abuse, Y = acute liver failure, 
+       S = patients remaining in study")
+l3dag1
+```
+
+---
+### DAGs with R
+Key functions are `dagify()` in `ggdag` package          
+Consider the model: `smoking` causes `cancer` and `addictive` behaviour cases both `coffee` drinking and `smoking` but `coffee` does not cause `cancer`        
+.pull-left[
+**Create the dagitty object with `dagify`**
+
+```r
+coffee_cancer_dag &lt;- ggdag::dagify(
+  cancer ~ smoking,
+  smoking ~ addictive,
+  coffee ~ addictive,
+  exposure = "coffee",
+  outcome = "cancer",
+  labels = c("coffee" = "Coffee", 
+             "cancer" = "Lung cancer", 
+    "smoking" = "Smoking", 
+    "addictive" = "Addictive Behavior"
+  )) 
+class(coffee_cancer_dag )
+```
+
+```
+## [1] "dagitty"
+```
+]
+.pull-right[
+
+```r
+coffee_cancer_dag 
+```
+
+```
+## dag {
+## addictive
+## cancer [outcome]
+## coffee [exposure]
+## smoking
+## addictive -&gt; coffee
+## addictive -&gt; smoking
+## smoking -&gt; cancer
+## }
+```
+]
+
+---
+Class: middle
+### Plot the daggity object
+Use  `ggdag()` in `ggdag` package 
+
+```r
+ggdag(coffee_cancer_dag) +
+  #geom_dag_edges(aes(end_cap = ggraph::circle(14, "mm"))) +
+  ggdag::geom_dag_node(color="grey60", size = 20) +
+  geom_dag_point(color="grey60") +
+  geom_dag_text(col = "darkred") +
+  theme_dag() 
+```
+
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-36-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+### Open pathways
+Can be determined automatically with `ggdag_paths()`
+
+
+```r
+coffee_cancer_dag %&gt;% 
+  ggdag_paths() +
+  #ggdag::geom_dag_node(color="grey60", size = 20) +
+  #geom_dag_text(col = "darkred") +
+  theme_dag() 
+```
+
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-37-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+##Closing backdoor paths
+- Randomization, regression, stratification, weighting, matching     
+- Identifying variable for adjusting with `R`
+
+
+```r
+ggdag_adjustment_set(coffee_cancer_dag, use_labels = "label", text = FALSE)+ theme_dag() 
+```
+
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-38-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+### A more complicated DAG
+
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-39-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+**How to determine the causal effect of X on Y1?**
+
+---
+class: middle
+### A more complicated DAG
+
+```r
+dag &lt;- ggdag::dagify(Y1 ~ X + Z1 + Z0 + U + P,
+              Y0 ~ Z0 + U,
+              X ~ Y0 + Z1 + Z0 + P,
+              Z1 ~ Z0,
+              P ~ Y0 + Z1 + Z0,
+              exposure = "X",
+              outcome = "Y1")
+dag_plot &lt;- dag %&gt;% 
+  ggdag::tidy_dagitty(layout = "auto", seed = 12345) %&gt;%
+  arrange(name) %&gt;% 
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_point() +
+  geom_dag_edges() +
+  geom_dag_text(parse = TRUE, label = c("P", "U", "X", expression(Y[0]), expression(Y[1]), expression(Z[0]), expression(Z[1]))) +
+  theme_dag() +
+  geom_dag_node(color="darkmagenta") + geom_dag_text(color="white") 
+
+dag_plot
+```
+
+**How to determine the causal effect of X on Y1?**
+
+---
+class: middle
+
+##R can help 
+.pull-left[
+Questions arising from this DAG.     
+1. How many paths are there from X to Y1?    
+2. How many of those paths are spurious (backdoor) paths?     
+3. How many of those backdoor paths are open?     
+4. What is the minimal set of variables to block these spurious pathways?    
+]
+.pull-right[
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-41-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+**Questions theoretically answerable by careful attention to DAG but easier with `dagitty` built-in functions**
+
+---
+class: middle
+##R can help ... 
+
+
+```r
+g &lt;- dagitty::paths(dag, "X", "Y1")
+a &lt;- paste0("There are ", length(g$paths), 
+            " pathways from X to Y1 and all are backdoor except for 1")  
+b &lt;- paste0("Of these backdoor pathways ", 
+            sum(g$open=="TRUE"), " are open")  
+c &lt;- paste0("The minimum adjustment sets are ", 
+            adjustmentSets(dag, "X", "Y1", type = "minimal"))
+
+print(c(a,b,c))
+```
+
+```
+## [1] "There are 43 pathways from X to Y1 and all are backdoor except for 1"
+## [2] "Of these backdoor pathways 25 are open"                              
+## [3] "The minimum adjustment sets are c(\"P\", \"U\", \"Z0\", \"Z1\")"     
+## [4] "The minimum adjustment sets are c(\"P\", \"Y0\", \"Z0\", \"Z1\")"
+```
+
+---
+class: middle
+
+### "Incomplete" Adjustment
+
+```r
+ggdag_adjust(dag, var = c("Z1", "P"))+ theme_dag() 
+```
+
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-43-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+### "Complete" Adjustment
+
+```r
+ggdag_adjust(dag, var = c("Z1", "Z0", "P", "Y0"))+ theme_dag() 
+```
+
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-44-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+###Conclusion
+&lt;span style="color:red"&gt;DAGs can be super useful on the road to causal inference&lt;/span&gt; 
+
+**References**
+- Williams, T.C., Bach, C.C., Matthiesen, N.B. et al. Directed acyclic graphs: a tool for causal studies in paediatrics. Pediatr Res 84, 487–493 (2018). https://doi.org/10.1038/s41390-018-0071-3
+- Haber NA, Wood ME, Wieten S, Breskin A. DAG With Omitted Objects Displayed (DAGWOOD): a framework for revealing causal assumptions in DAGs. Ann Epidemiol. 2022 Apr;68:64-71. https://doi.org/10.1016/j.annepidem.2022.01.001 
+- Piccininni, M., Konigorski, S., Rohmann, J.L. et al. Directed acyclic graphs and causal thinking in clinical risk prediction modeling. BMC Med Res Methodol 20, 179 (2020). https://doi.org/10.1186/s12874-020-01058-z
+- Pearl J. An introduction to causal inference. Int J Biostat. 2010 Feb 26;6(2):Article 7. doi: 10.2202/1557-4679.1203. PMID: 20305706; PMCID: PMC2836213.
+- Causal Inference with R (https://www.r-causal.org/chapters/05-dags)
+- Causal Diagrams website: https://causaldiagrams.org/
+
+
+---
+class: middle
+
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "3:2",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
