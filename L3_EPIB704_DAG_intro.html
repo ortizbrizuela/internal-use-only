@@ -25,7 +25,7 @@ class: left, middle, inverse, title-slide
 ### EBOH, McGill University
 ]
 .date[
-### 2023/08/30 (updated: 2024-09-04)
+### 2023/08/30 (updated: 2024-09-10)
 ]
 
 ---
@@ -205,7 +205,7 @@ class: middle
 .pull-left[
 **Backdoor criteria**
 &lt;img src="images/backdoor.png" width="40%" style="display: block; margin: auto;" /&gt;
-`\(Z\)` is a sufficient set     
+`\(Z\)` is a sufficient set if:     
 1. No variable in `\(Z\)` is a descendant of `\(X\)` and    
 2. Every path between `\(X\)` and `\(Y\)` that contains an arrow into `\(X\)` is blocked by `\(Z\)`
 ]
@@ -213,11 +213,13 @@ class: middle
 .pull-right[
 **Frontdoor criteria**
 &lt;img src="images/frontdoor.png" width="40%" style="display: block; margin: auto;" /&gt;
-`\(Z\)` is a sufficient set     
+`\(Z\)` is a sufficient set if:    
 1. `\(Z\)` intercepts all directed paths from `\(X\)` to `\(Y\)`     
 2. No unblocked paths from `\(X\)` to `\(Z\)`    
 3. All backdoor paths from `\(Z\)` to `\(Y\)` are blocked by `\(X\)`   
 ]
+
+.small[Pearl, Judea. Causal Inference in Statistics : A Primer, John Wiley &amp; Sons, Incorporated, 2016. ProQuest Ebook Central, https://ebookcentral.proquest.com/lib/mcgill/detail.action?docID=7104473.]
 
 ---
 class: middle
@@ -419,7 +421,8 @@ library(tidyverse)
 logitVisit &lt;- -2 + 2*income + 2*bp # simulate visit = f(income, bp)
 pVisit &lt;- 1/(1+exp(-logitVisit)); visit &lt;- rbinom(n, 1, pVisit); 
 dPop &lt;- data.table::data.table(income, bp, visit)
-dSample &lt;- dPop[visit == 1] # sample of those with a visit
+# sample of those with a visit
+*dSample &lt;- dPop[visit == 1]
 ```
 
 --
@@ -435,10 +438,13 @@ dSample &lt;- dPop[visit == 1] # sample of those with a visit
 **.red[In this conditioned sample there is now an association between BP and income]**
 ---
 class: middle
-**Understanding selection bias** .red[Standard (Naive) approach]
+**Understanding selection bias** 
+
+.red[Standard (Naive) approach]
 
 ```r
-summary (lm(bp~income, data=dSample))
+summary (lm(bp~income, 
+*           data=dSample))
 ```
 
 ```
@@ -463,18 +469,57 @@ summary (lm(bp~income, data=dSample))
 ```
 .red[Remember p-values will not pick the causally correct model!]
 
+---
+class: middle
+**Understanding selection bias** 
+
+.purple[Model using all the data, which is not always available!]
+
+```r
+summary (lm(bp~income, 
+*           data=dPop))
+```
+
+```
+## 
+## Call:
+## lm(formula = bp ~ income, data = dPop)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.8533 -0.6793 -0.0089  0.6924  3.8474 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -0.004177   0.014183  -0.295    0.768
+## income      -0.006029   0.014261  -0.423    0.672
+## 
+## Residual standard error: 1.003 on 4998 degrees of freedom
+## Multiple R-squared:  3.576e-05,	Adjusted R-squared:  -0.0001643 
+## F-statistic: 0.1787 on 1 and 4998 DF,  p-value: 0.6725
+```
+.red[Remember p-values will not pick the causally correct model!]
+
+
+---
+class: middle
+# .red[Star DAGs]
+
+&lt;img src="images/L3dagstars.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+[medium.com](https://medium.com/causality-in-data-science/what-are-causal-graphs-abdb50354c8a)
 
 ---
 class: middle
 **Selection bias in RCTs**
 1. Can occur on entry if no blinding      
 2. .red[Bigger issue is lost to follow-up]   
-Consider Rx (A) randomized but if (A=1); `\(\uparrow\)` dropouts due to adverse drug effects (ADE).    
-Alcohol abuse (C=1) also more likely to drop out of the study and more likely to experience acute liver failure (Y=1). 
-At baseline no association between A &amp; C due to randomization
-&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-27-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+- Consider Rx (A) randomized but if (A=1); `\(\uparrow\)` dropouts due to adverse drug effects (ADE). - Alcohol abuse (C=1) also more likely to drop out of the study and more likely to experience acute liver failure (Y=1). 
+- At baseline no association between A &amp; C due to randomization
 
 --
+
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-29-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
 
 - However, conditioning on those who do not drop out **creates a spurious backdoor negative correlation between A and C**      
 - Will make patients (A=1) to be protective against acute liver failure when no causal association exists. 
@@ -529,13 +574,13 @@ The following was published in [JAMA](https://jamanetwork.com/journals/jama/full
 
 --
 
-Should we encourage post MI patients to increase their smoking, weight, cholesterol, BP and diabetes?     - - And ideally do all of the above simultaneously .Large[.red[REALLY!?]]
+Should we encourage post MI patients to increase their smoking, weight, cholesterol, BP and diabetes?... And ideally do all of the above simultaneously **.Large[.red[REALLY!?]]**
 
 ---
 class: middle
 ###DAGs with R
 
-&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-32-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-34-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 class: middle
@@ -628,7 +673,7 @@ ggdag(coffee_cancer_dag) +
   theme_dag() 
 ```
 
-&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-36-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-38-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 ### Open pathways
@@ -643,7 +688,7 @@ coffee_cancer_dag %&gt;%
   theme_dag() 
 ```
 
-&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-37-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-39-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 ##Closing backdoor paths
@@ -655,13 +700,13 @@ coffee_cancer_dag %&gt;%
 ggdag_adjustment_set(coffee_cancer_dag, use_labels = "label", text = FALSE)+ theme_dag() 
 ```
 
-&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-38-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-40-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
 
 ---
 class: middle
 ### A more complicated DAG
 
-&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-39-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-41-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
 
 **How to determine the causal effect of X on Y1?**
 
@@ -704,7 +749,7 @@ Questions arising from this DAG.
 4. What is the minimal set of variables to block these spurious pathways?    
 ]
 .pull-right[
-&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-41-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-43-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 ]
 
 **Questions theoretically answerable by careful attention to DAG but easier with `dagitty` built-in functions**
@@ -742,7 +787,7 @@ class: middle
 ggdag_adjust(dag, var = c("Z1", "P"))+ theme_dag() 
 ```
 
-&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-43-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-45-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
 
 ---
 class: middle
@@ -753,9 +798,83 @@ class: middle
 ggdag_adjust(dag, var = c("Z1", "Z0", "P", "Y0"))+ theme_dag() 
 ```
 
-&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-44-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-46-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
 
 ---
+class: middle
+### "Complete" Adjustment
+
+```r
+ggdag_adjust(dag, var = c("Z1", "Z0", "P", "U"))+ theme_dag() 
+```
+
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-47-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+## Labelling the 'U' as latent
+.pull-left[
+
+```r
+dag0 &lt;- ggdag::dagify(Y1 ~ X + Z1 + Z0 + U + P,
+              Y0 ~ Z0 + U,
+              X ~ Y0 + Z1 + Z0 + P,
+              Z1 ~ Z0,
+              P ~ Y0 + Z1 + Z0,
+              exposure = "X",
+              outcome = "Y1",
+              latent = "U") # include the label for 'U'
+dag_plot0 &lt;- dag0 %&gt;% 
+  ggdag::tidy_dagitty(layout = "auto", 
+                      seed = 12345) %&gt;%
+  arrange(name) %&gt;% 
+  ggplot(aes(x = x, y = y, 
+             xend = xend, yend = yend)) +
+  geom_dag_point() +
+  geom_dag_edges() +
+  geom_dag_text(parse = TRUE, 
+                label = c("P", "U", "X",
+                expression(Y[0]), expression(Y[1]), expression(Z[0]), expression(Z[1]))) +
+  theme_dag() +
+  geom_dag_node(color="darkmagenta") + 
+  geom_dag_text(color="white") 
+```
+]
+
+.pull-right[
+**Does not change  the DAG**
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-49-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+---
+class: middle
+
+**But the revised DAG has a revised  "Complete" Adjustment set**
+.pull-left[
+
+```r
+ggdag_adjust(dag0, var = c("Z1", "Z0", "P", "U"))+ theme_dag() 
+```
+
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-50-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
+
+]
+.pull-right[
+
+```
+## { P, Y0, Z0, Z1 }
+```
+
+&lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-51-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+
+---
+
 class: middle
 ###Conclusion
 &lt;span style="color:red"&gt;DAGs can be super useful on the road to causal inference&lt;/span&gt; 
@@ -767,6 +886,15 @@ class: middle
 - Pearl J. An introduction to causal inference. Int J Biostat. 2010 Feb 26;6(2):Article 7. doi: 10.2202/1557-4679.1203. PMID: 20305706; PMCID: PMC2836213.
 - Causal Inference with R (https://www.r-causal.org/chapters/05-dags)
 - Causal Diagrams website: https://causaldiagrams.org/
+
+---
+
+##Extra Resources:
+- https://dagitty.net/
+- [dagshub.com](https://dagshub.com/blog/an-introduction-to-directed-acyclic-graphs-dags-for-data-scientists/)
+- [medium.com](https://medium.com/causality-in-data-science/what-are-causal-graphs-abdb50354c8a)
+- [Causal Inference Ch-5](https://www.r-causal.org/chapters/05-dags)
+- Pearl, Judea. Causal Inference in Statistics : A Primer, John Wiley &amp; Sons, Incorporated, 2016. ProQuest Ebook Central, https://ebookcentral.proquest.com/lib/mcgill/detail.action?docID=7104473.
 
 
 ---
