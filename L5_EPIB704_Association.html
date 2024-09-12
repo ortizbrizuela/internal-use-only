@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Measures of Association</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mabel Carabali" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Measures of Association
+]
+.author[
+### Mabel Carabali
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### 01-08-2023 Updated: ( 2024-09-10)
+]
+
+---
+
+
+
+
+
+
+
+
+class: middle
+
+&lt;img src="images/l4_opioid1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+[Opioid Toxicities and Access to Treatment among Adolescents and Young Adults in Ontario](https://odprn.ca/research/publications/opioids-among-adolescents-and-young-adults/) Ontario Drug Policy Research Network (2023)
+
+---
+class: middle
+### What's an Association?
+
+Our common objective of epidemiologic research:
+
+- The effect of exposure ** `\(X\)` ** on the occurrence of outcome ** `\(Y\)`** 
+   - But we can rarely observe or even estimate this effect directly.
+
+– It involves the same people at the same time in contrasting exposures, which is .red[impossible].
+
+– We **observe an association** between the _Exposure_ and _Outcome_ among study subjects, which estimates a population association.
+
+--
+
+  _**"The observed association will be a poor substitute for the desired effect, if it is a poor estimate of the population association, or if the population association is not itself close to the effect of interest."**_ ME4 (2020)
+
+---
+class: middle
+### What's an _Effect_ ?
+
+Effect here means the end point of a causal mechanism, i.e., identifying the type of outcome that a cause produces. 
+
+EXAMPLE: _"Liver cirrhosis is an **effect** of chronic excessive alcohol consumption"._ 
+
+- This use of the term effect **merely** identifies liver cirrhosis as **_one consequence of chronic excessive alcohol consumption_**. 
+ - **Compared** to something else (e.g., Abstinence or another level of consumption).
+ - Cirrhosis may **Not be the only** effect of of chronic excessive alcohol consumption. 
+ - May **change** across populations and or over time.
+
+
+.purple[ _"An effect of some factor is thus relative to the outcomes, to the population, and to the time frame."_ [ME4 (2020)]
+]
+
+---
+class: middle
+### Exposure vs Cause
+An exposure (usually denoted as `\(X\)`) is a _potential_ causal characteristic, _"a factor that produces an outcome_"
+- Could be the _sole_ or _compounded_ cause `\(^1\)` of an Outcome. Can be a behavior, a treatment/intervention, a social condition, a health condition, a genetic trait...
+
+&lt;img src="images/l4_opioid1a.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+.small[
+`\(^1\)` For more on [Sufficient Component Causal Framework and Bradford Hill criteria](https://ajph.aphapublications.org/doi/10.2105/AJPH.2004.059204), in this course we focus on [potential outcomes and causal DAGs](https://academic.oup.com/ije/article/31/5/1030/745818?login=false) for approaches to causal inference.
+]
+
+.small[
+[Opioid Toxicities and Access to Treatment among Adolescents and Young Adults in Ontario](https://odprn.ca/research/publications/opioids-among-adolescents-and-young-adults/) Ontario Drug Policy Research Network (2023)
+]
+
+
+
+---
+class: middle
+## Exposures vs Causes
+.pull-left[
+&lt;img src="images/l4_opioid_etiology.png" width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="images/l4_opioid2.png" width="120%" style="display: block; margin: auto;" /&gt;
+]
+
+.small[
+[Opiod Overdose](https://www.ncbi.nlm.nih.gov/books/NBK470415/) Schiller EY, Goyal A, Mechanic OJ. Opioid Overdose. In: StatPearls. Treasure Island (FL): StatPearls Publishing; July 21, 2023.
+
+[Opioid Toxicities and Access to Treatment among Adolescents and Young Adults in Ontario](https://odprn.ca/research/publications/opioids-among-adolescents-and-young-adults/) Ontario Drug Policy Research Network (2023)
+]
+
+---
+
+class: middle
+#### Not every Association between Exposure an Outcome is _"Causal"_
+
+**.red[Recall:]**
+
+&lt;img src="images/bell.jpg" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
+
+At the population level, we assess the effects with measures of occurrence and we **estimate the associations by contrasting such measures of occurrence in the population.**
+
+---
+class: middle
+## Absolute vs. Relative measures
+- Absolute effect measures are **differences** in occurrence measures.
+- Relative effect measures are **ratios** of occurrence measures.
+
+&lt;img src="images/L5_exposed.png" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
+
+
+---
+
+class: middle
+### Null Value
+
+Absence of contrast on either the Absolute (Difference) and Relative (Ratio) Scales
+
+** `$$R_{exp} - R_{Non-exp} =  0$$`** 
+
+and
+
+** `$$\left(\frac{R_{exp}} {R_{Non-exp}}\right) = 1$$`**
+
+
+---
+
+class: middle
+## Absolute vs. Relative measures
+- Absolute effect measures are **differences** in occurrence measures.
+- Relative effect measures are **ratios** of occurrence measures.
+
+&lt;img src="images/L5_exposed.png" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
+
+
+|Sample      | Outcome +   |  Outcome -  | Risk Among Exposed | Risk Among Non- Exposed | Risk Difference | Risk Ratio    |
+|:-----------|:-----------:|:-----------:|:------------------:|:-----------------------:|:---------------:|:-------------:|
+| 63 | 9/36 | 6/27| 0.25 | 0.22 | 0.03 | 1.12|
+
+**Key elements:** Exposure, Outcome &amp; Measures of Occurrence !
+
+
+---
+class: middle
+### The 2x2 Table
+
+- A summary table of observations.
+
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Outcome&lt;/div&gt;&lt;/th&gt;
+&lt;th style="empty-cells: hide;" colspan="1"&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Outcome &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; No.Outcome &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Total &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Exposed &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; A &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; B &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; A+B &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; No Exposed &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; C &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; D &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; C+D &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Total &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; A+C &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; B+D &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; A+B+C+D &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;br&gt;
+
+---
+class: middle
+### The 2x2 Table
+
+From the previous example:
+
+.small[
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Outcome&lt;/div&gt;&lt;/th&gt;
+&lt;th style="empty-cells: hide;" colspan="1"&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Dead &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Alive &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Total &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Exposed &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 27 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 36 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; No Exposed &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 27 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Total &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 63 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+&lt;br&gt;
+--
+
+**The measures are:**
+
+|Sample      | Outcome +   |  Outcome -  | Risk Among Exposed | Risk Among Non- Exposed | Risk Difference | Risk Ratio    |
+|:-----------|:-----------:|:-----------:|:------------------:|:-----------------------:|:---------------:|:-------------:|
+| 63 | 9/36 | 6/27| 0.25 | 0.22 | 0.03 | 1.12|
+
+**Key elements:** Exposure, Outcome &amp; Measures of Occurrence !
+
+
+---
+class: middle
+## Absolute measures: Risk Differences
+
+The RD provides the absolute change in risk
+- Indicates how much of the effect is attributable to exposure
+- It does not provide information about the magnitude of the shift on the estimates  1 to 16% or 81 to 96%?
+- Clinical vs statistical importance
+- Public Health Relevance
+
+
+
+---
+class: middle
+## Relative Measures: Risk Ratios
+
+- Relative measures are popular  and practical
+- Easier to obtain
+ - Dichotomous outcomes!
+- Useful in both causal inference and prediction
+
+**Interpretability?**
+
+- RR’s magnitude change according to the coding scheme 
+
+.red[Example: (0 to 1)] `\(\neq\)` .red[(2 to 1)]
+
+
+---
+class: middle
+## Why not both?
+- It’s possible to see a reduction in absolute estimates, but an increase in relative measures (and vice versa)
+ 
+These are complimentary estimators! Both tell you something different about the data
+ - In fact, STROBE and CONSORT guidelines now advise researchers to publish both measures
+
+### &lt;span style="color:darkmagenta"&gt;115 deaths vs 169 = 47% increase vs 54 more deaths?&lt;/span&gt;
+
+In an epidemiological utopia, researchers would run the model of their choice, obtain relative and absolute estimates, and publish these along with the baseline/background risk
+
+**But we live in the real world, so we’re more likely to encounter…**
+
+---
+class: middle
+## ...Odds ratios
+
+ `\(Odds = \left(\frac{P}{1-P}\right)\)`
+ 
+ The Odds ratio is the relative contrasts of the Odds among Exposed and the Odds among Non-Exposed
+ 
+  `$$Odds Ratio = \left(\frac{\left(\frac{P_{exp}}{1-P_{exp}}\right)}  {\left(\frac{P_{No-exp}}{1-P_{No-exp}}\right)}\right)$$`
+&lt;br&gt;
+ 
+---
+class: middle
+## ...Odds ratios
+
+ We are already aware of some key problems with odds and therefore odds ratios
+
+- They overestimate risks 
+ - While probabilities are bounded [0, 1], **odds** can range from 0 to `\(\infty\)`
+- .red[They’re not intuitive (except as an approximation of the risk ratio] `\(^1\)`)
+- And most of the time we care about probabilities, not odds
+
+&lt;br&gt;
+`\(^1\)` .small[ **When probability is small (&lt;0.10) or given the study design (e.g., case-cohorts) with rare outcomes** ]
+ 
+---
+class: middle
+## Risk Differences and Risk Ratios
+
+|Sample      | Risk Among Exposed | Risk Among Non- Exposed | Risk Difference | Risk Ratio    | Odds Ratio    |
+|:-----------|:------------------:|:-----------------------:|:---------------:|:-------------:|:-------------:|
+| 63 |  0.25 | 0.22 | 0.03 | 1.12| 1.17|
+| 63 |  0.17 | 0.15 | 0.02 | 1.12| 1.15|
+| 630|  0.017 | 0.015 | 0.002 | 1.12| 1.15|
+| 630|  0.25 | 0.22 | 0.03 | 1.12| 1.17|
+
+
+
+---
+
+class: middle
+### Null Value
+
+Absence of contrast on either the Absolute (Difference) and Relative (Ratio) Scales
+
+`\(R_{exp} - R_{Non-exp} =\)` ** `\(0\)`** ; or `\(\left(\frac{R_{exp}} {R_{Non-exp}}\right) =\)` ** `\(1\)`**
+
+Example: 
+
+|Sample      | Outcome +   |  Outcome -  | Risk Exposed | Risk  Non- Exposed | Risk Difference | Risk Ratio  | Odds Ratio*   |
+|:-----------|:-----------:|:-----------:|:------------:|:------------------:|:---------------:|:-----------:|:-------------:|
+| 63 | 4/36 | 3/27| 0.11 | 0.11 | 0 | 1| 1 |
+
+- Null Value (Absolute) = (4/36) - (3/27) = 0
+- Null Value (Relative) = (4/36) / (3/27) = 1
+
+**Note**
+1. When the RR is above or below the null (&gt;1 or &lt;1) the ORs is FURTHER away form the Null.
+2. When the absolute risk in each exposure groups are high, the OR will considerable overestimate the RR.
+
+
+---
+class: middle
+### Some simulated Examples
+
+- Generating 10 data-sets with the _same_ structure.
+
+
+```r
+set.seed(704)
+z &lt;- rnorm(500)
+e &lt;- matrix(NA,nrow=500,ncol=10) # create an empty matrix to put stuff in
+for (i in 1:10) {             # loop 10 times
+    e[,i] &lt;- ifelse((rnorm(500))&gt;0.8,1,0) # create a new vector from a binomial
+}
+e &lt;- as.data.frame(e) # change it into a data frame
+names(e) &lt;- c("A","B","C","D","E","F","G","H","I","J") # change the column names
+
+# create a Y matrix with the specification from the questions
+y &lt;- ifelse(e==1,rbinom(5000,1,0.65),rbinom(5000,1,0.2))
+y &lt;- as.data.frame(y) # change the matrix to a dataframe
+# change the names, paste0 says paste these two things together without a space between them
+names(y) &lt;- paste0("Y",letters[1:10])
+```
+&lt;br&gt;
+
+---
+
+### Some simulated Examples
+
+Verification of "mean" values across datasets.
+
+
+```
+##        A               B               C               D        
+##  Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :0.000  
+##  1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000  
+##  Median :0.000   Median :0.000   Median :0.000   Median :0.000  
+##  Mean   :0.234   Mean   :0.218   Mean   :0.198   Mean   :0.226  
+##  3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:0.000  
+##  Max.   :1.000   Max.   :1.000   Max.   :1.000   Max.   :1.000  
+##        E               F               G               H               I       
+##  Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :0.00  
+##  1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.000   1st Qu.:0.00  
+##  Median :0.000   Median :0.000   Median :0.000   Median :0.000   Median :0.00  
+##  Mean   :0.182   Mean   :0.222   Mean   :0.214   Mean   :0.212   Mean   :0.22  
+##  3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:0.000   3rd Qu.:0.00  
+##  Max.   :1.000   Max.   :1.000   Max.   :1.000   Max.   :1.000   Max.   :1.00  
+##        J        
+##  Min.   :0.000  
+##  1st Qu.:0.000  
+##  Median :0.000  
+##  Mean   :0.192  
+##  3rd Qu.:0.000  
+##  Max.   :1.000
+```
+
+---
+
+### Some simulated Examples
+
+**Using "hand calculations" formulas.**
+
+
+```r
+# Using lapply
+tabs &lt;- lapply(1:10,FUN=function(x) table(e[,x],y[,x]))
+# With a loop create an empty data frame with the right dimensions
+ests &lt;- as.data.frame(matrix(NA,nrow=10,ncol=3))
+# Name columns
+names(ests) &lt;- c("RD","RR","OR")
+
+# Loop it up
+for (i in 1:10) {
+x &lt;- tabs[[i]]
+ests[i,1] &lt;- x[2,2]/sum(x[2,])- x[1,2]/sum(x[1,]) #RD
+ests[i,2] &lt;- (x[2,2]/sum(x[2,]))/ (x[1,2]/sum(x[1,])) #RR
+ests[i,3] &lt;- (x[2,2]/sum(x[2,1]))/ (x[1,2]/sum(x[1,1])) #OR
+}
+```
+
+
+
+---
+class: middle
+### Some simulated Examples
+.pull-left[
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; RD &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; RR &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; OR &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.38 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.92 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.50 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.49 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.14 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.43 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.14 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.72 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.49 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.56 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9.05 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.35 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.63 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.79 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.42 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.21 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.40 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.87 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.47 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.36 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.02 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.41 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.72 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.85 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+.pull-right[
+&lt;img src="L5_EPIB704_Association_files/figure-html/unnamed-chunk-14-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+&lt;br&gt;
+
+
+---
+
+### Some simulated Examples
+
+**Using regressions `\(^1\)` to obtain the estimates**
+.small[
+
+```r
+set.seed(704)
+yea.dat &lt;- function(n) {
+  		E &lt;- rbinom(n,1,0.55) #parameters for E
+		  Y &lt;- rbinom(n,1,0.12) #parameters for Y
+
+	return(data.frame(E=E,Y=Y)) #ask to return a data set with those parameters
+}
+sim100 &lt;- lapply(1:100,FUN=function(x) yea.dat(400))
+summary((sim100[[13]]))  #; summary((sim100[[93]]))
+```
+
+```
+##        E              Y      
+##  Min.   :0.00   Min.   :0.0  
+##  1st Qu.:0.00   1st Qu.:0.0  
+##  Median :1.00   Median :0.0  
+##  Mean   :0.56   Mean   :0.1  
+##  3rd Qu.:1.00   3rd Qu.:0.0  
+##  Max.   :1.00   Max.   :1.0
+```
+]
+
+`\(^1\)` .small[ _Some of you may have advanced knowledge on regression analysis but since we have not explained it during the course this resource is only for illustration purposes._]
+
+---
+class: middle
+### Some simulated Examples
+
+
+```r
+RRs &lt;- sapply(sim100,FUN=function(x) {
+   results &lt;- logbin(Y ~ E , data=x)$coef
+   return(round(exp(results[names(results)=="E"]),2)) 
+ })
+
+ORs &lt;- sapply(sim100,FUN=function(x) {
+   results &lt;- glm(Y ~ E , family="binomial", data=x)$coef
+   return(round(exp(results[names(results)=="E"]),2)) 
+ })
+
+sim_RRs&lt;-round(quantile(RRs,probs = c(0.05,0.5,0.95)),2)
+sim_ORs&lt;-round(quantile(ORs,probs = c(0.05,0.5,0.95)),2)
+```
+
+
+---
+class: middle
+### Some simulated Examples
+
+
+```
+##           5%  50%  95%
+## sim_RRs 0.57 1.00 1.37
+## sim_ORs 0.52 1.04 1.45
+```
+
+&lt;img src="L5_EPIB704_Association_files/figure-html/unnamed-chunk-17-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: middle
+## Associations Vs Causes
+
+Pearl (2000) uses ** `\(Pr(Y=y|SET[X=x])\)`** to define the probability of an event if the condition `\(X=x\)` were **enforced uniformly** over a population.
+ 
+– The key to this definition: **it involves intervention, not observation.**
+
+– Measures of effect can be built based on **SET** notation by creating contrasts of probabilities (or risks) across different `\(X\)` values.
+
+– The [What If? Book](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/), express the same notion with `\(Y^{X=x}\)`.
+
+
+---
+
+## Associations Vs Causes
+
+**Recall:**
+
+&lt;img src="images/bell.jpg" width="50%" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
+
+**Be aware of the difference!**
+
+---
+class: middle
+### Measures of causal effect
+
+Measures of **causal effect** require a contrast of two **counterfactual** quantities:
+
+  - ** `\(Pr(Y_i = y_i | SET[X_i = 1]) - Pr(Y_i = y_i | SET[X_i=0])\)`** 
+&lt;br&gt;
+
+--
+
+&lt;br&gt;
+
+Measures of **association** involve a contrast of two **observed** quantities:
+
+  - ** `\(Pr(Y_i = y_i | X_i = 1) -  Pr(Y_i = y_i | X_i = 0)\)`**
+  
+
+---
+
+## Who are we interested in?
+
+**Target Population:** The group of people about which the scientific or public health question is asked, in the **relevant etiologic time period.**
+
+&lt;br&gt;
+
+**“Target Population” in Encyclopedia of Biostatistics, 2005 [Sander Greenland]**
+
+&gt; _"The concept of a target population is an informal one, sometimes defined as “the population about which information is wanted” [1] or the “totality of elements which are under discussion and about which information is desired” [4] ...The word “target” emphasizes, however, that this population is not necessarily the same as the one that we end up sampling. The latter population is sometimes called the sampled population [1, 4] or (in epidemiology) the source population [6]"_.
+&gt; _[1] Cochran, W.G. (1977). Sampling Techniques, 3rd Ed. Wiley, New York._
+&gt; _[4] Mood, A.M., et al. (1974). Introduction to the Theory of Statistics. McGraw-Hill,       New York._
+&gt; _[6] Rothman, K.J. &amp; Greenland, S. (1997). Modern Epidemiology, 2nd Ed. Lippincott, Philadelphia._
+
+&lt;br&gt;   
+    
+---
+class: middle
+## Potential Outcomes Framework
+
+We are interested in the effect of exposure ** `\((A=1)\)`** on the occurrence of disease ** `\((Y=1)\)`**
+
+- Suppose everyone in the **target population** of inference is unexposed ** `\((A=0)\)`** and we can observe the distribution of ** `\(Y\)`** in the population.
+  
+- We would like to also observe the distribution of ** `\(Y\)`** had these same people been all exposed ** `\((A=1)\)`**
+
+ - This is “counter-to-fact”, and we call this condition the counterfactual
+ - Each individual has their own **counterfactual** exposure 
+   - (what would have happened to me if ...)
+
+---
+## Potential Outcomes Framework
+
+- We can never observe both conditions in the same population (or individual). 
+  - That is, we cannot observe the distribution of disease under ** `\(A=1\)`** and ** `\(A=0\)`** within the same time period in the same cohort. 
+  - Thus we need to make an estimate under the condition we do not observe.
+
+- To do so, we use a **substitute population.** 
+- Our goal is to choose a substitute population that will best mimic **what would have happened to the target population had they experienced the other exposure condition.**
+
+---
+###  Estimating Causal Effects `\(^1\)`
+
+&lt;img src="images/L5_MG1.jpeg" width="30%" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
+- If `\(B\)` = people at risk at the _beginning of the period_ `\(^2\)` = **incidence proportion, average risk**.
+- If `\(B\)` = person-time at risk during the period, `\(R\)` = **person-time incidence rate**. 
+- If `\(B\)` = people who do _NOT_ get disease by the end of the period, `\(R\)` = **incidence odds.**
+
+&lt;br&gt;
+`\(^1\)` _International Journal of Epidemiology, Volume 31, Issue 2, April 2002, Pages 422–429, https://doi.org/10.1093/intjepid/31.2.422_
+
+`\(^2\)` _And all individuals are followed throughout the etiologic time period._
+
+
+---
+
+##Define the causal effect
+
+Define the counter-to-fact condition and outcome in the target:
+
+&lt;img src="images/L5_MG2.jpeg" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
+
+  **Only possible to, at best, observe one of these conditions.**
+
+---
+
+##Define the causal effect
+
+Let `\(R_1 = A_1 / B_1\)` and `\(R_0 = A_0 / B_0\)` 
+
+- `\(R_1 - R_0\)` is the causal **difference measure** and 
+
+- `\(R_1 / R_0\)` is the **causal ratio measure**
+
+- Both of these are causal contrasts (measures of effect).
+
+- Here, the only possible reason for a difference between `\(R_1\)` and `\(R_0\)` is due to **exposure** because we are contrasting the **exact same people over the exact same time period**.
+
+- But, we **cannot observe the causal contrast** because we cannot observe both conditions.
+
+  
+**We require a substitute with observable information!**
+
+
+---
+
+##Can’t observe the counterfactual
+
+.pull-left[
+&lt;img src="images/L5_MG3.jpeg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="images/L5_MG4.jpeg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+##Can’t observe the counterfactual
+
+.pull-left[
+&lt;img src="images/L5_MG3.jpeg" width="70%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="images/L5_MG4.jpeg" width="70%" style="display: block; margin: auto;" /&gt;
+]
+&lt;img src="images/L5_MG5.jpeg" width="45%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+##Can’t observe the counterfactual
+
+&lt;img src="images/L5_MG5.jpeg" width="60%" style="display: block; margin: auto;" /&gt;
+
+&gt; "_Both `\(R_1\)` and `\(R_0\)` are counterfactual disease frequencies,both are hypothetical alternatives to the actual disease frequency that occurs under the actual exposure distribution (which is neither exposure distribution 1 nor 0), and therefore neither R1 nor R0 can occur and be observed._" 
+[Maldonado &amp; Greenland 2002](https://doi.org/10.1093/intjepid/31.2.422)
+
+---
+
+##Can’t observe the counterfactual
+
+.pull-left-narrow[
+&lt;img src="images/L5_MG3.jpeg" width="30%" style="display: block; margin: auto;" /&gt;
+]
+
+The impossibility of observing both halves of the causal contrast leads to the idea of substitute populations. 
+
+These are often:
++ Different people observed during the same etiologic time period.
++ The same people observed over two different time periods (case-crossover design).
+
+[Maldonado &amp; Greenland 2002](https://doi.org/10.1093/intjepid/31.2.422)
+---
+
+##Defining the substitute population
+
+In a substitute population under **exposure distribution** ** `\(1\)`**, let
+
+- `\(C_1\)` be the name for the numerator of the disease-frequency measure, 
+- `\(D_1\)` be the denominator (number of people or amount of person-time at risk). 
+
+In a substitute under **exposure distribution** ** `\(0\)`**, let
+
+- `\(E_0\)` be the numerator, 
+- `\(F_0\)` be the denominator.
+
+**Exposure = 1**, `\(C_1 /D_1\)`
+
+**Exposure = 0**, `\(E_0 / F_0\)`
+
+
+---
+
+##Defining the substitute population
+
+Target experiences **exposure distribution 1**
+
+&lt;img src="images/L5_MG7.jpeg" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
+--
+
+&lt;img src="images/L5MGeq1.jpeg" width="60%" style="display: block; margin: auto;" /&gt;
+
+[Maldonado &amp; Greenland 2002](https://doi.org/10.1093/intjepid/31.2.422)
+---
+
+##Defining the substitute population 
+Target experiences **exposure distribution 0**
+
+&lt;img src="images/L5_MG8.jpeg" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
+--
+
+&lt;img src="images/L5MGeq2.jpeg" width="60%" style="display: block; margin: auto;" /&gt;
+
+[Maldonado &amp; Greenland 2002](https://doi.org/10.1093/intjepid/31.2.422)
+---
+##Defining the substitute population
+Target experiences neither **exposure distribution 1 or 0**
+
+&lt;img src="images/L5_MG9.jpeg" width="60%" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
+--
+
+&lt;img src="images/L5MGeq3.jpeg" width="60%" style="display: block; margin: auto;" /&gt;
+
+[Maldonado &amp; Greenland 2002](https://doi.org/10.1093/intjepid/31.2.422)
+---
+
+## Other Notation Used
+
+- Greenland employs a probabilistic model of disease such that each individual `\(i\)` has a risk `\(r_{1_i}\)` of disease when `\(E=1\)` and a risk of `\(r_{0_i}\)` when `\(E=0\)`.
+
+- Survival probabilities: `\(S_{1_i} = 1 - r_{1_i}\)` and `\(S_{0_i} = 1 - r_{0_i}\)`
+
+- Odds: `\(w_{1_i}=r{1_i}/s_{1_i}\)` and `\(w_{0_i} = r_{0_i} / s_{0_i}\)`. 
+  - Only defined when survival probabilities are not equal to zero.
+
+---
+
+##Notation Used
+
+- The effect of exposure on the risk of an individual can be measured in terms of the risk difference `\(r_{1_i} - r_{0_i}\)`, risk ratio `\(r_{1_i} / r_{0_i}\)`, or the risk-odds ratio `\(w_{1_i} / w_{0_i}\)`
+
+- The ratios will be undefined if the risk in the exposed group is 0 and
+- The risk-odds ratio will be undefined if either survival probability is 0
+
+---
+
+## Other Notation Used 
+In a cohort with `\(N_1\)` `\(E+\)` individuals and `\(N_0\)` `\(E-\)` individuals:
+
+
+|          |     E+     |      E-     |
+|:--------:|:----------:|:-----------:|
+|**D+** | `\(A={Σ_1}r_{1i}\)`  | `\(B={Σ_0}r_{0i}\)` |
+|**D-** | `\(C={Σ_1}s_{1i}\)` | `\(D={Σ_0}s_{0i}\)` | 
+|Total  | `\(N_1\)`  | `\(N_0\)`|
+
+- Incidence proportions: `\(A/{N_1}\)` and `\(B/N_0\)`, interpretable as average risks in their respected groups
+- Incidence odds: `\(A/C\)` and `\(B/D\)`, interpretable as ratios of the average risk to the average survival probabilities.
+
+
+---
+
+##Defining the counterfactual
+
+- Assuming **no confounding** ** `\(^1\)`**
+
+- Had the **exposure** been absent from the `\(E+\)` group, 
+
+- The average risk would have been **the same** among the sub-cohorts that were in fact exposed and unexposed. 
+
+`\(\left(\frac{\sum_{1}r_{0i}}{N_1}\right) = \left(\frac{\sum_{0}r_{0i}}{N_0}\right)\)`
+
+
+&lt;br&gt;
+`\(^1\)` More on confounding next lecture.
+
+---
+
+class: middle
+### Risk Difference
+
+Thus: The risk difference is interpretable as both:
+
+
+1) the **absolute change in the average risk** of the exposed sub-cohort produced by exposure,
+
+`\(\left(\frac{\sum_{1}r_{1i}}{N_1}\right) - \left(\frac{\sum_{1}r_{0i}}{N_1}\right)\)`
+
+&lt;br&gt;
+
+2) the **average absolute change in risk** produced by exposure among exposure individuals
+
+`\(\left(\frac{\sum_{1}(r_{1i} - r_{0i})}{N_1}\right)\)`
+
+
+---
+class: middle
+### Risk Ratio
+The incidence proportion ratio is given by
+
+`\(\left(\frac{A}{N_1}\right) / \left(\frac{B}{N_0}\right)\)`
+
+The risk ratio is interpretable as :
+
+1) the **proportionate change in the average risk** of the exposed subcohort produced by exposure, 
+
+`\(\left(\frac{\sum_{1}r_{1i}}{N_1}\right) / \left(\frac{\sum_{0}r_{0i}}{N_0}\right)\)` `\(=\left(\frac{\sum_{1}r_{1i}}{N_1}\right) / \left(\frac{\sum_{1}r_{0i}}{N_0}\right)\)`
+
+It **is not interpretable** as the average proportionate change in risk produced by exposure among exposed individuals:
+
+`\(\left(\frac{\sum_{1}(r_{1i}/ r_{0i})}{N_1}\right)\)`
+
+
+---
+class: middle
+## Incidence Proportion Ratio
+
+&lt;img src="images/bulb.png" width="20%" style="display: block; margin: auto;" /&gt;
+
+However, **if the individual risk ratios are all equal** then the ratio of the average risks across exposure will be equal to the average of the individual risk ratios
+
+---
+class: middle
+### A note on Risk Ratios
+
+Risk Differences have a symmetric range [-1, 1]
+
+**But** the risk Ratios have an **_asymmetric_** range:
+- From 0 to 1, below the null
+- From 1 to infinity above the null
+
+This presents a challenge in the interpretation...
+ 
+** .red[What's more "impressive" `\(RR = 2\)` or  `\(RR= 0.2\)` ?]**
+...
+
+---
+
+class: middle
+### .red[What's more "impressive" a `\(RR = 2\)` or a `\(RR= 0.2\)` ?]
+
+Two ways to find out: 
+
+**Simple:** the reciprocal of the value below the null = 1/0.2 = 5, since 5 &gt; 2, then 
+ - a RR of 0.2 is of larger magnitude (further away form the null) than a RR = 2
+
+--
+
+**Elaborated:** Take the absolute values of the natural logarithm (log or ln) of each value:
+ - log(3) = 0.693
+ - log(0.3) = -1.609
+ 
+In absolute terms, |log(0.2)| **&gt;** |log(2)| = **|-1.609| &gt; |0.693|**
+
+ - Regression models for ratio measures generally operate on the log-scale (that's why we exponentiate to provide estimates and graph on the log scale).
+ - Note: Recall that on the log10 or ln scale, the null for a ratio measure is 0, not 1 – because log(1) = ln(1) = 0.
+ - Try it with 3 and 0.3, and with 5 and 0.5 and see what happens! :)
+
+---
+
+### Incidence Odds Ratio
+
+The incidence odds ratio is given by:
+
+`\(\left(\frac{A}{C}\right) / \left(\frac{B}{D}\right)\)`
+
+Thus, the odds ratio is interpretable as :
+
+1) the proportionate change in the incidence odds in the exposed subcohort produced by exposure,
+
+`\(\left(\frac{\sum_{1}r_{1i}}{\sum_{1}s_{1i}}\right) / \left(\frac{\sum_{0}r_{0i}}{\sum_{0}s_{0i}}\right)\)`
+
+`\(\left(\frac{\sum_{1}r_{1i}}{\sum_{1}s_{1i}}\right) / \left(\frac{\sum_{1}r_{0i}}{\sum_{1}s_{0i}}\right)\)`
+
+&lt;br&gt;
+It **is not interpretable** as the proportionate change in the average odds in the exposed produced by exposure:
+
+
+---
+class: middle
+##Incidence Odds Ratio
+
+- Furthermore,neither of the last two expressions is equivalent to the average of the individual odds ratios among the exposed
+
+`$$\left(\frac{\sum_1(w_{1_i} / w_{0_i})}{N_1}\right)$$`
+
+- The incidence odds ratio **(that we calculate)** lacks any simple interpretation in terms of exposure effect on the average risk or odds, or average exposure effect on individual risk or odds.
+ 
+---
+class: middle
+
+### Incidence Odds Ratio
+
+The incidence odds do not equal the simple averages of the risk odds:
+
+This severely handicaps the interpretability of measures based on the incidence odds.
+ 
+- It is not a measure of average causal effect (the RR and RD are) (Greenland 1987)
+
+- Cannot be relied upon to reveal confounding (Greenland et al., 1999)
+
+---
+class: middle
+##Incidence Odds Ratio
+
+- If the individual ORs are all equal (which is the assumption made by a logistic model), then the ratio of the average odds will equal the average of the individual odds ratios. 
+
+**But, the incidence odds ratio will need not equal that value!**
+
+---
+class: middle
+##Incidence Odds Ratio
+
+- For example: Define a population where 10% of people have `\(r_{1i}=\)` 0.60 and 
+
+- `\(r_{0i}=\)` 0.20 and 90% of the people have `\(r_{1i}=\)` 0.035 and `\(r_{0i}=\)` 0.006
+
+- Here, the individual ORs = 6.0 for every individual 
+ - the average of the individual ORs = 6.0
+
+- Also, the ratio of the average odds equals 6.0 as well
+
+But, the incidence odds ratio is equal to 3.9
+
+ **&lt;span style="color:magenta"&gt; Want to give it a try and calculate it? &lt;/span&gt;**
+
+---
+class: middle
+##Incidence Odds Ratio
+
+* Because of this fact, the crude odds ratio can be smaller than any of the stratum-specific odds ratios, even if confounding is entirely absent
+
+* This paradoxical behaviour will not occur with the risk difference or the risk ratio
+--
+
+* Unless, equal to the null (when OR = RR = 1) the OR will _**almost always**_ be further away from the null than RRs.
+  - 2nd exception is when **OR = RR = 0**, as would occur when risk in the exposed is 0 (zero), and risk in the unexposed is for example 0.6. In this case, the risk ratio is 0 and the OR is odds(0)/odds(0.6), which is also 0.
+
+
+More on [Epidemiology by design by Daniel Westreich](https://academic.oup.com/book/32358)
+
+---
+class: middle
+
+## .red[Odds difference?]
+
+&lt;br&gt;
+--
+
+&lt;br&gt;
+  ⚠️  ‼️ ** .red[Nope, nope, nope!!!!!!!]** ⚠️ ‼️
+
+&lt;br&gt;
+
+ ❌ ‼️ ** .red[We never do this.]** ‼️ ❌
+
+&lt;br&gt;
+
+
+
+
+---
+class: middle
+### Some simulated Examples - Common Outcome
+
+.small[
+
+```r
+set.seed(704)
+yea.dat1 &lt;- function(n) {
+  		E &lt;- rbinom(n,1,0.55) #parameters for E
+		  Y &lt;- ifelse(E==1, rbinom(n,1,0.85), rbinom(n, 1, 0.45)) #parameters for Y
+
+	return(data.frame(E=E,Y=Y)) #ask to return a data set with those parameters
+}
+sim100 &lt;- lapply(1:100,FUN=function(x) yea.dat1(400))
+RRs &lt;- sapply(sim100,FUN=function(x) {
+   results &lt;- logbin(Y ~ E , data=x)$coef
+   return(round(exp(results[names(results)=="E"]),2)) 
+ })
+
+ORs &lt;- sapply(sim100,FUN=function(x) {
+   results &lt;- glm(Y ~ E , family="binomial", data=x)$coef
+   return(round(exp(results[names(results)=="E"]),2)) 
+ })
+
+sim_RRs1&lt;-round(quantile(RRs,probs = c(0.05,0.5,0.95)),2)
+sim_ORs1&lt;-round(quantile(ORs,probs = c(0.05,0.5,0.95)),2)
+```
+]
+
+---
+class: middle
+### Some simulated Examples - Common Outcome
+
+
+```
+##            5% 50%   95%
+## sim_RRs1 1.67 1.9  2.19
+## sim_ORs1 4.64 7.0 10.40
+```
+
+&lt;img src="L5_EPIB704_Association_files/figure-html/unnamed-chunk-36-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: middle
+# Key Takeaways
+
+#### Only incidence difference and incidence ratios possess direct interpretations as measures of impact on average risk/hazard
+
+&lt;br&gt;
+
+#### Consequently, odds ratios are useful only when they serve as incidence ratio estimates
+
+
+---
+
+class: middle
+### Incidence Rate Differences and Ratio 
+.pull-left[
+**From everyone's time...**
+&lt;img src="L5_EPIB704_Association_files/figure-html/unnamed-chunk-37-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+**... To contrast outcomes and time**
+&lt;img src="L5_EPIB704_Association_files/figure-html/unnamed-chunk-38-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+class: middle
+### Incidence Rate Differences and Ratio 
+- Incidence rate of outcome Y when X=1 is `\(IR(Y=1|X=1) = IR(Y|X=1)\)`
+
+- Incidence rate of outcome Y when X=0 is `\(IR(Y=1|X=0) = IR(Y|X=0)\)`
+
+.pull-left[
+- **Incidence rate difference:** 
+ - Range: -∞ to ∞
+ - Null value: 0]
+
+.pull-right[
+- **Incidence rate ratio**: 
+  - Range: 0 to ∞
+  - Null value: 1]
+
+
+---
+
+class: middle
+### Relationship among Risk, Odds, and Incidence Rates
+
+Question: If we calculated the risk ratio, odds ratio and rate ratio, which will be closest to the null? Furthest from the null?
+
+Notation:
+- `\(R\)` = Incidence Proportion(“Risk”), 
+- `\(S = 1-R\)` (“Survival Proportion”),
+- `\(I\)` = Incidence Rate
+- `\(T\)` = interval length
+- `\(i\)` = 1 if exposed; i= 0 if unexposed
+
+
+---
+class: middle
+### Relationship among Risk, Odds, and Incidence Rates
+
+Relations among relative risks
+* In a closed population where the population at risk declines only slightly over the interval 
+(implying that `\(R\)` must be small and `\(S\)` is close to 1): `\(R \cong I\Delta T \cong R/S\)`
+
+This implies:
+
+`$$\left(\frac{R_1}{R_0}\right) \cong \left(\frac{I_1\Delta T_1}{I_0\Delta T_0}\right) \cong \left(\frac{I_1}{I_0}\right) \cong \left(\frac{R_/S_1}{R_0/S_0}\right)$$`
+
+
+ &lt;span style="color:darkred"&gt;[Numerators]&lt;/span&gt; Holds if `\(R_1\)` and `\(R_0\)` are small enough so that `\(S_1\)` and `\(S_0\)` are close to 1
+ 
+ &lt;span style="color:darkred"&gt;[Two Denominators on the right]&lt;/span&gt; Holds if exposure only has negligible effects on the person-time at risk 
+ 
+---
+class: middle
+## Relationship among relative risks
+
+- If exposure causes the outcome, then R1&gt;R0 and S1&lt;S0. 
+
+`\(1 &lt; \left(\frac{R_1}{R_0}\right) &lt; (\left(\frac{R_1}{R_0}\right) \times \left(\frac{S_0}{S_1}\right)) = \left(\frac{R_1/S_1}{R_0/S_0}\right)\)`
+
+- If exposure prevents the outcome, R1&lt;R0 and S1&gt;S0, such that:
+`\(1 &gt; \left(\frac{R_1}{R_0}\right) &gt; (\left(\frac{R_1}{R_0}\right) \times \left(\frac{S_0}{S_1}\right)) = \left(\frac{R_1/S_1}{R_0/S_0}\right)\)`
+
+
+In words: **The odds ratio is further from the null than the risk ratio**
+
+
+---
+class: middle
+## Relationship among relative risks
+
+- Now, if exposure is harmful `\((R1&gt;R0)\)` then we would ordinarily expect exposure to reduce the person-time at risk `\((T1&lt;T0)\)`, 
+- and if exposure is preventive `\((R1&lt;R0)\)` then we expect exposure to increase the person-time at risk `\((T1&gt;T0)\)`.
+- Thus, when exposure is .red[harmful]:
+
+`$$1 &lt; \left(\frac{R_1}{R_0}\right) \cong \left(\frac{I_1\Delta T_1}{I_0\Delta T_0}\right) &lt; \left(\frac{I_1}{I_0}\right)$$`
+
+---
+
+class: middle
+## Relationship among relative risks
+And when exposure is .blue[preventive]:
+
+`$$1 &gt; \left(\frac{R_1}{R_0}\right) \cong \left(\frac{I_1\Delta T_1}{I_0\Delta T_0}\right) &gt; \left(\frac{I_1}{I_0}\right)$$`
+- In words: We would **ordinarily** expect the risk ratio to be closer to the null than the rate ratio. Under further conditions, the rate ratio will be closer to the null than the odds ratio (Greenland and Thomas, 1982)
+
+
+---
+class: middle
+##Relationship among relative risks
+
+Thus, we usually expect:
+- .blue[Risk ratio nearest to the null]
+ - _implicitly_ suggesting all events occur at the end of follow up
+- .red[Odds ratio furthest from the null]
+ - _implicitly_  suggesting all events occur at the beginning of follow up
+- .purple[Rate ratio somewhere in between]
+ - allows event to occur at any point in time 
+
+  **1 &lt; Risk Ratio &lt; Rate Ratio &lt; Odds Ratio**
+
+`\(^1\)` More on [Epidemiology by design by Daniel Westreich](https://academic.oup.com/book/32358)
+
+---
+class: middle
+### Prevalence Ratios
+Recall that the prevalence odds is equal to the incidence rate multiplied by the average duration in a stationary, closed population. 
+This implies: 
+
+`$$POR = \left(\frac{PO_1}{PO_0}\right) = \left(\frac{I_1 \overline{D_1}}{I_0 \overline{D_0}}\right) = \left(\frac{I_1}{I_0}\right)$$`
+
+if the average duration of disease is unaffected by exposure.
+
+---
+
+class: middle
+##Prevalence Ratios
+- If prevalence is low, then the prevalence ratio is approximately equal to the incidence rate multiplied by average duration. This implies:
+
+`$$PR = \left(\frac{P_1}{P_0}\right) \cong \left(\frac{I_1 \overline{D_1}}{I_0 \overline{D_0}}\right) = \left(\frac{I_1}{I_0}\right)$$`
+
+if the average duration of disease is unaffected by exposure
+
+
+---
+class: middle
+
+&lt;img src="images/l4_netflix.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: middle
+**Oxycodone-Related Deaths: The Significance of Pharmacokinetic and Pharmacodynamic Drug Interactions** `\(^1\)`
+
+.pull-left[
+ **Key Points**
+- _In oxycodone-related deaths, **41% did not have a prescription for oxycodone**, suggesting misuse as a risk factor._
+- _Drugs impairing the metabolism of oxycodone were very rarely prescribed._
+- _Compared to other deaths, persons dying from oxycodone intoxication were **5.6 times** more likely to have other CNS depressant drugs on board and **1.7 times** more likely to have them prescribed._
+]
+
+.pull-right[
+&lt;img src="images/L4_oxycodone1.png" width="80%" style="display: block; margin: auto;" /&gt;
+ .small[ _Trends (2012–2018) in the No. postmortem cases positive for oxycodone in femoral blood, and No. patients per 1000 inhabitants prescribed oxycodone, by (INTOX) or (NONINTOX)_]
+]
+
+`\(^1\)` Jakobsson, G., et al.[Oxycodone-Related Deaths: The Significance of Pharmacokinetic and Pharmacodynamic Drug Interactions](https://doi.org/10.1007/s13318-021-00750-9) Eur J Drug Metab Pharmacokinet 47, 259–270 (2022)
+
+---
+Class: middle
+**Illustrated Example**
+
+**Table 2**. Number of oxycodone prescriptions within 1 year before death.
+&lt;img src="images/l4_oxycodone_tab2.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+_"The INTOX group was less likely to have oxycodone prescribed within 1 year before death **(41% vs. 30%, OR 0.62, CI 0.48–0.80)**"_
+
+`\(^1\)` Jakobsson, G., et al. [Oxycodone-Related Deaths: The Significance of Pharmacokinetic and Pharmacodynamic Drug Interactions](https://doi.org/10.1007/s13318-021-00750-9) Eur J Drug Metab Pharmacokinet 47, 259–270 (2022)
+
+---
+class: middle
+**Illustrated Example... Let's reproduce the analysis**
+
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Outcome&lt;/div&gt;&lt;/th&gt;
+&lt;th style="empty-cells: hide;" colspan="1"&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; INTOX &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; NONINTOX &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; TOTAL &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Oxycodone Prescribed &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 268 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 443 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 711 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Oxycodone Non-Prescribed &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 183 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 187 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 370 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Total &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 451 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 630 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1081 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+class: middle
+**Illustrated Example... Let's reproduce the analysis**
+
+
+```r
+oxydat1&lt;-c(268, 443, 183, 187)
+
+oxyOR1&lt;- epi.2by2(oxydat1, method = "cross.sectional")
+oxyOR1$tab
+```
+
+```
+##              Outcome +    Outcome -      Total               Prev risk *
+## Exposed +          268          443        711    37.69 (34.12 to 41.37)
+## Exposed -          183          187        370    49.46 (44.25 to 54.68)
+## Total              451          630       1081    41.72 (38.76 to 44.73)
+```
+
+```r
+round(oxyOR1$massoc.detail$OR.strata.wald, 2)
+```
+
+```
+##    est lower upper
+## 1 0.62  0.48   0.8
+```
+
+_"The INTOX group was less likely to have oxycodone prescribed within 1 year before death (**41% vs. 30%**, OR 0.62, CI 0.48–0.80)"_
+
+---
+
+class: middle
+**Illustrated Example**
+
+_"The INTOX group was more likely to have a PDI drug dispensed than the NONINTOX group (84% vs. 76%, OR 1.7, CI 1.2–2.3) (see Table 2; Fig. 2)."_
+
+
+```r
+oxydat3&lt;-c( 379, 476, 72, 154)
+
+oxyOR3&lt;- epi.2by2(oxydat3, method = "cross.sectional")
+kbl(oxyOR3$massoc.summary[1:2,])
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; var &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; est &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; lower &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; upper &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Prev risk ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.391390 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.133565 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.707858 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Prev odds ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.703023 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.248264 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.323457 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+class: middle
+**&lt;span style="color:darkred"&gt;What's clear and what's not here?&lt;/span&gt;**
+
+_"The INTOX group was less likely to have oxycodone prescribed within 1 year before death (**41% vs. 30%**, OR= 0.62, CI 0.48–0.80)"_
+
+.red[What's the reference group?] Does the % make sense _vis a vis_ the OR?
+- Prescribed &amp; INTOX = 268/451 = 0.59 ; Prescribed &amp; NONINTOX = 443/630 = 0.7
+- Non-Prescribed &amp; INTOX = 183/451 = 0.41 ; Non-Prescribed &amp; NONINTOX = 187/630 = 0.3
+
+--
+
+**If "absence of prescription" was the exposure**, then:
+
+```r
+oxydat2&lt;-c(  183, 187, 268, 443); oxyOR2&lt;- epi.2by2(oxydat2, method = "cross.sectional")
+oxyOR2$tab
+```
+
+```
+##              Outcome +    Outcome -      Total               Prev risk *
+## Exposed +          183          187        370    49.46 (44.25 to 54.68)
+## Exposed -          268          443        711    37.69 (34.12 to 41.37)
+## Total              451          630       1081    41.72 (38.76 to 44.73)
+```
+
+```r
+round(oxyOR2$massoc.detail$OR.strata.wald, 2)
+```
+
+```
+##    est lower upper
+## 1 1.62  1.25  2.09
+```
+
+
+---
+class: middle
+**&lt;span style="color:darkred"&gt;What's clear and what's not here?&lt;/span&gt;**
+
+```r
+oxydat2&lt;-c( 268, 443, 183, 187 ); oxyOR2&lt;- epi.2by2(oxydat2, method = "cross.sectional")
+oxyOR2$tab
+```
+
+```
+##              Outcome +    Outcome -      Total               Prev risk *
+## Exposed +          268          443        711    37.69 (34.12 to 41.37)
+## Exposed -          183          187        370    49.46 (44.25 to 54.68)
+## Total              451          630       1081    41.72 (38.76 to 44.73)
+```
+
+```r
+round(oxyOR2$massoc.detail$OR.strata.wald, 2)
+```
+
+```
+##    est lower upper
+## 1 0.62  0.48   0.8
+```
+
+### .red[ What would be the actual interpretation of this OR? ]
+
+--
+
+More likely that: _"Prescription of oxycodone prescribed within 1 year before decreased the odds of dying from intoxication OR= 0.62, CI 0.48–0.80"_ ** .red[ What do you think?]**
+
+---
+class: middle
+**Illustrated Example**
+
+_"Subjects in the INTOX group were more likely to have a PDI drug in their system (OR 5.6, CI 3.7–8.5)."_
+
+**Table 3.** Co-findings of pharmacodynamically (PDI) interacting substances
+&lt;img src="images/l4_oxycodone_tab3.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+--
+
+
+```r
+oxydat4&lt;-c(422, 455, 29, 175)
+
+oxyOR4&lt;- epi.2by2(oxydat4, method = "cross.sectional")
+kbl(oxyOR4$massoc.summary[1:2,], digits = 2)%&gt;%kable_paper()
+```
+
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; var &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; est &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; lower &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; upper &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Prev risk ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.38 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.77 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Prev odds ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.60 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.47 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+---
+class: middle
+**Illustrated Example**
+
+_"INTOX group were more likely to have a previous substance use diagnosis **(29% vs. 14%, OR 2.6, CI 1.9–3.5)**.... We found no significant difference with 14% of the suicides and 10% of the accidents presenting a mood affective diagnosis"_
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; var &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; est &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; lower &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; upper &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Prev risk ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.39 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.13 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.71 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Prev odds ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.70 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.25 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.32 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+class: middle
+### What did the authors do with the covariates?
+
+.pull-left[
+&lt;img src="images/l4_oxycodone_tab1.png" width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull.right[
+**All CRUDE ORs?? No "adjusting"?** `\(^1\)`
+&lt;img src="images/l4_conclusion.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+`\(^1\)` More on confounding [here](https://www.annualreviews.org/doi/abs/10.1146/annurev.publhealth.22.1.189) and adjustment next lectures!
+
+---
+class: middle
+### When to use which measure of Association
+
+- Research Question
+- Public Health Relevance
+- Intervention (Design of/ Intervenable exposure?)
+- Study design
+
+- Contrasts requires assignment to group, which requires measurement of group membership
+  For example, measurement of exposure
+  - What will happen if the exposure is measured poorly?
+- Since risks are only well-defined within a specific time-period, state that time-period.
+
+
+---
+
+class: middle
+### Things to consider when measuring associations
+- Be aware that in real life, we encounter:
+
+ - Random Error
+ - Systematic error
+  - Competing Risks, Confounding, Selection Bias, Measurement Error
+ - Methods related limitations
+ - Clinical vs Statistical hurdles
+
+---
+class: middle
+
+### Contrast (Association vs Impact)
+Most contrasts can be used to assess either:
+
+- Association (which is agnostic on the question of causality)
+
+- Impact (which is causal). The risk difference, for example.
+
+
+Certain measures, however, are implicitly causal and (probably) shouldn’t be used to merely describe an association.
+
+ - Among these latter measures are **number needed to treat, and attributable contrasts**.
+
+
+---
+
+###  Population Attributable Fraction (PAF)
+
+A population attributable fraction (PAF) can be thought of as
+- "_The proportion of disease burden among the total population which is caused by the exposure"_.
+- That definition is explicitly causal. 
+- PAF is implicitly causal. 
+- “Attribution” implies cause, though we can argue over usage.
+ 
+Calculated as `\((P(Y) - P(Y^{x=0}))/ P(Y)\)` where,
+
+- `\(P(Y)\)` is the risk of the outcome in the whole population, 
+
+- `\(P(Y|X=0)\)` is the risk of the outcome in the unexposed.
+
+Note that because most outcomes are caused by more than one thing, the sum of PAFs can be (and often are) greater than 100%. .small[[Epidemiology by design by Daniel Westreich](https://academic.oup.com/book/32358)]
+
+---
+
+class: middle
+**Example:**
+- Exposure to TB is a necessary cause of active TB: by definition.
+  - So from the above, `\(P(Y_{TB} exposure=0) = 0%\)`, and so PAF = 100%.
+- But not everyone exposed to TB develops active TB. There are other causes. E.g., being immunocompromised. 
+  - RD for immunocompromised status &gt; 0; PAF&gt;0.
+  
+- `\(PAF_{TB-exposure} + PAF_{immunocompromised} &gt; 100%\)`
+
+This concept can be tied to Rothman’s causal pies model of causality .small[[Epidemiology by design by Daniel Westreich](https://academic.oup.com/book/32358)]
+
+---
+class: middle
+### A measure related to PAFs
+
+The **population attributable risk difference** is the difference between the risk of the outcome in the observed population and the risk of the outcome **if all exposure were removed**, that is:
+
+
+`$$P(Y) - P(Y^{x=0})$$`
+
+
+-The potential outcomes notation is _deliberate_ here.
+
+[Epidemiology by design by Daniel Westreich](https://academic.oup.com/book/32358)
+
+
+---
+class: middle
+### Remeber our opioid example?
+
+**Assuming a cohort design:**
+
+
+```r
+oxydat4&lt;-c(  422, 455, 29, 175)
+
+oxyOR4&lt;- epi.2by2(oxydat4, method = "cohort.count")
+kbl(oxyOR4$massoc.summary, digits = 2)
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; var &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; est &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; lower &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; upper &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.38 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.40 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.77 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.60 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.70 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.47 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 33.90 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 28.08 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 39.73 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib fraction in exposed (%) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 70.46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 58.33 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 79.06 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk in population * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 27.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21.88 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 33.13 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib fraction in population (%) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 65.93 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 52.96 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 75.32 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+.small[
+**Attributable Risk `\(\cong\)` Risk Difference**
+]
+
+---
+class: middle
+### Number Needed to Treat
+
+The number needed to treat (NNT) is the number of individuals who we would need to treat in order to **prevent** one bad outcome.
+
+The NNT is calculated as `\(|RD|^{-1}\)`
+ - The inverse of the absolute value of the risk difference.
+- For a harmful exposure, we **keep the absolute value**, but describe the measure as a _**number needed to harm**_.
+
+[Epidemiology by design by Daniel Westreich](https://academic.oup.com/book/32358)
+
+---
+
+### NNT
+
+If the 5-year risk of death among treated is 10%, and among untreated is 20%, 
+
+ - then how many people do you need to treat to prevent one death over five years?
+ - `\(|10{\%} - 20{\%}|^{-1}\)` = `\(|-10{\%}|^{-1} = 0.10^{-1} = 10\)`.
+- We must treat 10 people to prevent one death over five years.
+
+Notation:		`\(NNT = 1/|(P(Y|X=1) - P(Y|X=0))|\)`
+
+What’s the null value?
+
+[Epidemiology by design by Daniel Westreich](https://academic.oup.com/book/32358)
+
+---
+### NNT 
+
+Often by convention, round NNT up to nearest integer - Can’t treat half a person
+ - Conservative approach; doesn’t always make sense.
+
+- NNT implies causality more strongly than risk difference.
+- Risk differences can be viewed as descriptive (although you should be specific and cautious about that)
+- Just the difference in observed risks between two groups: not necessarily due to group identification.
+- In contrast, NNTs explicitly discuss a treatment having a result: thus are expressing a causal effect.
+- Explaining an NNT can become tricky outside of a trial setting because exposure (smoking) isn’t always the same as treatment (cognitive behavioral therapy for smoking cessation).
+
+[Epidemiology by design by Daniel Westreich](https://academic.oup.com/book/32358)
+
+---
+class: middle
+
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+
+---
+
+class: middle
+&lt;img src="images/l4_help_overdose.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+The &lt;span style="color:royalblue"&gt; _Good Samaritan Drug Overdose Act_ &lt;/span&gt; protects people from: Simple drug possession charges and Violation of conditions regarding simple possession. 
+- This law applies to the person who has overdosed, the person who seeks help and anyone at the scene when help arrives.
+
+---
+
+class: middle
+##Incidence Odds Ratio
+
+- For example: Define a population where 10% of people have `\(r_{1i}=\)` 0.60 and 
+
+- `\(r_{0i}=\)` 0.20 and 90% of the people have `\(r_{1i}=\)` 0.035 and `\(r_{0i}=\)` 0.006
+
+- Here, the individual ORs = 6.0 for every individual 
+- the average of the individual ORs = 6.0
+
+- Also, the ratio of the average odds equals 6.0 as well
+
+But, the incidence odds ratio is equal to 3.9
+
+---
+
+##Incidence Odds Ratio - Calculations
+**Rudimentary calculations**
+.pull-left[
+
+
+```r
+#10% pop
+ 0.6/(1-.6) #= 1.5 #r1
+ 0.2/(1-.2) #= 0.25 #r0
+ 
+#OR in 10%
+1.5/0.25 #= 6
+ 
+#OR 90%
+ 0.035 / (1-0.035) # = 0.03626943 #r1
+ 0.006/(1- 0.006) # = 0.006036217 #r0
+
+#OR in 90%
+ 0.03626943/0.006036217 #= 6.008636
+ 
+# OR average 
+ 1.5+0.03626943 #= 1.536269 
+ 1.536269/2 #=   0.7681345
+ 0.25+0.006036217 #= 0.2560362
+ 0.2560362/2 #= 0.1280181
+ 
+ 0.7681345/0.1280181 #= 6.000202
+```
+]
+
+.pull-right[
+
+```r
+## IOR
+(0.6*0.1) + (0.035 *0.9) #= 0.0915
+(0.2*0.1) + (0.006*0.9) #= 0.0254
+#OR1
+0.0915/(1- 0.0915) #=0.1007155
+#OR0
+0.0254/(1-0.0254) #=0.02606197
+#IOR
+0.1007155/0.02606197 #3.864462
+```
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "3:2",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
