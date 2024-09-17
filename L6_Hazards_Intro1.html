@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introduction to Time-to-Event</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Risk &amp; Hazards" />
+    <script src="libs/header-attrs-2.25/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Introduction to Time-to-Event
+]
+.subtitle[
+## Mabel Carabali
+]
+.author[
+### Risk &amp; Hazards
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### 01-08-2023 Updated: ( 2024-09-16)
+]
+
+---
+
+
+
+
+
+
+
+
+class: middle
+
+&lt;img src="images/L6survival_meme.jpg" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+### What to do, if you want to:
+- Estimate median survival times, plot survival over time after treatment, or estimate the probability of surviving beyond a prespecified time interval (eg, 5-year survival rate)?
+- Assess whether survival times are related to covariates and/or adjust for potential confounders.
+- Account for censoring and avoid .red[lead time bias]
+
+--
+# Objectives
+1. Review the concept of time-to-event a.k.a. "survival" analysis
+2. Provide an introduction to epidemiological and statistical methods for the appropriate analysis of time-to-event data
+
+.pull-right[.red[More about this on 705]]
+
+---
+class: middle
+
+### RECALL
+&lt;img src="images/fig2_2.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+.small[(Szklo M, Nieto FJ. Epidemiology : Beyond the Basics. Fourth ed.)]
+
+
+---
+class: middle
+
+### Relationship between Incidence Rate and Incidence Proportion
+
+- The method of calculating **risks over a time period with changing incidence rates** is known as **.red[survival analysis.]**
+
+- "_The cumulative probability of the event during a given interval lasting `\(m\)` units of time and beginning at time `\(x\)`, is the proportion of new events during that period of time in which the denominator is the initial population corrected for losses_". 
+
+.footnote[(Szklo M, Nieto FJ. Epidemiology : Beyond the Basics. Fourth ed.)]
+
+---
+
+class: middle
+### .red[Assumptions] in the Estimation of Cumulative Incidence Based on Survival Analysis
+- **Uniformity of Events and Losses** Within Each Interval (Classic Life Table). 
+- Events and losses are approximately uniform during each defined interval. 
+- If risk changes rapidly within a given interval, then calculating a cumulative risk over the interval is not very informative. 
+- The rationale underlying the method to correct for losses—that is, subtracting one-half of the losses from the denominator also depends on the assumption that losses occur uniformly.
+- **Independence  of censoring AND Survival**
+- **No secular trends!**
+
+
+---
+class:middle
+### Incidence Proportion &amp; Survival Proportion 
+
+Survival proportion: complementary to Incidence Proportion
+- "Proportion of a closed population at risk that does not become diseased within a given period of time." 
+
+- `\(S = 1 − R\)`, 
+
+where `\(R\)` = incidence proportion; `\(S\)` = survival proportion
+
+- Equivalently, the proportion of remaining disease free alive individuals by the end of the follow-up period.
+
+.small[Lash, T, et al. Modern Epidemiology 4th, Wolters Kluwer Health, 2021]
+
+
+---
+class:middle
+### Survival probability
+
+- **Survival probability** at a certain time, `\(S(t)\)`, is a conditional probability of surviving beyond that time, given that an individual has survived just prior to that time.
+- Can be estimated as the number of individuals who are alive without loss to follow-up at that time, divided by the number of individuals who were alive just prior to that time.  
+
+--
+
+- The **Kaplan-Meier** estimate of survival probability is the product of these conditional probabilities up until that time.    
+
+- At time 0, the survival probability is 1, i.e. `\(S(t_0) = 1\)`
+
+---
+
+class:middle
+## Product Limit Formula
+
+**Kaplan-Meier Formula**
+- The product limit formula shows us how to calculate the **survival proportion** (and thereby the incidence proportion) over a period of time when the risk changes. 
+
+- It shows that we need to multiply the survival proportions over all the intervals to calculate the overall survival proportion.
+
+&lt;img src="images/Rothman-ch004-image005.jpeg" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+### Product Limit Formula
+
+Example:
+
+|       |Start (0) |   2|      4|  8 |  14  |19 (End)|
+|-------|----------|----|-------|----|------|--------|
+|Index ( _k_) | |1 |2 |3 |4 |5|
+|Nb Outcomes ( `\({A_k}\)` )| 0 |1| 2|1|1|0|
+|Nb at Risk ( `\({N_k}\)` )| | | | | | |
+|% Surviving ( `\({S_k}\)` ) | | | | | | | |
+
+
+.footnote[Nine people over 20 years]
+
+
+---
+class: middle
+
+### Product Limit Formula (Kaplan-Meier Formula)
+
+
+$$ Incidence\ Proportion = 1-S$$
+
+$$S =\prod_{k = 1}^{v} (\frac{N_k - A_k} {N_k}) $$
+
+where _v_ are sub-intervals
+
+PLF = We need to multiply the survival proportions over all the intervals to calculate the overall survival proportion.
+
+---
+class: middle
+
+### Product Limit Formula (Kaplan-Meier Formula)
+
+|       |Start (0) |   2|      4|  8 |  14  |19 (End)|
+|-------|----------|----|-------|----|------|--------|
+|Index ( _k_) | |1 |2 |3 |4 |5|
+|Nb Outcomes ( `\({A_k}\)` )| 0 |1| 2|1|1|0|
+|Nb at Risk ( `\({N_k}\)` )| 9|9 |8 | 6| 5|4|
+|% Surviving ( `\({S_k}\)` )| | 8/9| 6/8 | 5/6 |4/5 | 4/4
+|Interval length ( `\({N_k}\Delta{A_k}\)` )| | | | | | |
+|Person-time ( `\(\Delta{A_k}\)`) | | | | | | |
+|Incidence Rate ( `\({IR_k}\)` )| | | | | | |
+
+---
+class: middle
+
+### Product Limit Formula (Kaplan-Meier Formula)
+
+Hand calculations for 9 people followed for 19 months.        
+
+|       |Start (0) |   2|      4|  8 |  14  |19 (End)|
+|-------|----------|----|-------|----|------|--------|
+|Index ( _k_) | |1 |2 |3 |4 |5|
+|Nb Outcomes ( `\({A_k}\)` )| 0 |1| 2|1|1|0|
+|Nb at Risk ( `\({N_k}\)` )| 9|9 |8 | 6| 5|4|
+|**% Surviving ( `\({S_k}\)` )**| | 8/9| 6/8 | 5/6 |4/5 | 4/4|
+|Interval length ( `\({N_k}\Delta{A_k}\)` )| | 2| 2| 4|6 |5 |
+|Person-time ( `\(\Delta{A_k}\)`) | | 18|16 |24 |30 |20 |
+|Incidence Rate ( `\({IR_k}\)` )| | 1/18| 2/16| 1/24 | 1/30| 0/20 |
+
+ `\(S = (8/9) {\times}(6/8){\times} (5/6){\times} (4/5) {\times} (4/4)\)`
+ 
+ `\(S =\)` 0.444
+ 
+ ** `\(Incidence\ Proportion = 1 - S\)`** = 0.556
+ 
+
+
+---
+class: middle
+
+### Kaplan-Meier Formula
+
+- The Kaplan–Meier approach involves the calculation of the probability of each event at the time it occurs. 
+- The denominator for this calculation is the population at risk at the time of each event’s occurrence
+ - The probability of each event is a “conditional probability” `\(\to\)` conditioned on being at risk (alive and not censored) at the event time.
+
+- The advantage of the Kaplan-Meier Product-Limit method over the life table method is that the resulting estimates do not depend on the grouping of the data (into a certain number of time intervals). 
+  - However, the Product-Limit method and the life table method are identical if the intervals of the life table contain at most one observation.
+
+- Regardless of the method used in the calculation (actuarial or Kaplan–Meier), the cumulative incidence is a proportion,  unitless, and its value range from 0 to 1 (or 100%)
+ 
+---
+class: middle
+### Kaplan-Meier Formula
+`\(Survival = {S_i}\)` ,  Cumulative probability of the event `\((1 – {S_i})\)` `\(\to\)` `\(1–{S_{24}} = 1 – 0.18 = 0.82\)`
+&lt;img src="images/table2_3.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+.small[ _*Obtained by multiplying the conditional probabilities in column (5)—see text. † Examples of how to determine how many individuals were at risk at three of the event times (1, 3, and 17 months) are shown with vertical arrows in Figure 2-3_ (Szklo M, Nieto FJ. Epidemiology : Beyond the Basics. Fourth ed.)]
+
+
+---
+class: middle
+### Simulated Examples
+
+.pull-left[
+**Recall from the previous scenarios**
+&lt;img src="L6_Hazards_Intro1_files/figure-html/unnamed-chunk-5-1.svg" width="130%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+**Some coding**
+
+```r
+surv_object&lt;-Surv(time = dat$t, 
+                  event = dat$O2)
+
+eventKM&lt;- survfit(surv_object ~ 1, 
+                  data = dat, 
+                  type="kaplan-meier") 
+```
+]
+
+--
+
+**Output**
+
+```
+## Call: survfit(formula = surv_object ~ 1, data = dat, type = "kaplan-meier")
+## 
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##     1     20       1    0.950  0.0487        0.859        1.000
+##     7     18       2    0.844  0.0826        0.697        1.000
+##     8     16       1    0.792  0.0928        0.629        0.996
+##    10     14       2    0.679  0.1087        0.496        0.929
+##    17      6       1    0.565  0.1373        0.351        0.910
+```
+
+---
+class: middle
+**.red[Other Example]**
+.pull-left[
+&lt;img src="L6_Hazards_Intro1_files/figure-html/unnamed-chunk-8-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+**Kaplan-Meier Curve - Outcome X**
+
+&lt;img src="images/L6_km_outcomex.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+class: middle
+### .red[Assumptions] in the Estimation of Cumulative Incidence Based on Survival Analysis
+
+- Uniformity of Events and Losses Within Each Interval (Classic Life Table). 
+- Events and losses are approximately uniform during each defined interval. 
+
+- .red[If risk changes rapidly within a given interval, then calculating a cumulative risk over the interval is not very informative.] 
+
+- .red[The rationale underlying the method to correct for losses—that is, subtracting one-half of the losses from the denominator also depends on the assumption that losses occur uniformly.]
+
+- Independence  of censoring AND Survival
+- No secular trends!
+
+---
+class: middle
+### Exponential Formula
+The exponential formula relates the incidence rate to the incidence proportion.
+
+**Simplified:**
+$$ Risk = 1 - e^{-Incidence rate \times\ Time}$$
+
+**.purple[Elaborated:]** Deriving the survival proportion as a function of the incidence rates for each interval:
+
+- Total person-time at risk in the interval is `\(N_k \Delta_{tk}\)`
+- Number of Outcomes at time `\(t_k\)` is `\(A_k\)`
+- Number of people at Risk (alive by the end of follow-up) `\(N_k\)`
+
+--
+- Incidence Rate in the time following = `\(IR = \left(\frac{A_k}{N_k\Delta_{tk}}\right)\)`
+- Incidence Proportion over same sub interval = `\(IP_k = {IR_k\Delta_{tk}}\)`
+- Survival Proportion for the sub interval = `\(S_k = 1 - {IR_k\Delta_{tk}}\)`
+
+.small[Lash, Timothy, L. et al. Modern Epidemiology. (4th Edition). 2020]
+
+---
+class: middle
+### Exponential Formula
+
+|       |0     |   2|      4|  8 |  14  |  19   |
+|-------|------|----|-------|----|------|-------|
+|Index ( _k_) | |1 |2 |3 |4 |5|
+|Nb Outcomes ( `\({A_k}\)` )| 0 |1| 2|1|1|0|
+|Nb at Risk ( `\({N_k}\)` )| 9|9 |8 | 6| 5|4|
+|% Surviving ( `\({S_k}\)` )| | 8/9| 6/8 | 5/6 |4/5 | 4/4|
+|**Interval length ( `\({N_k}\Delta{A_k}\)` )**| | 2| 2| 4|6 |5|
+|Person-time ( `\((\Delta{A_k}\)` )| | 18|16 |24 |30 |20 |
+|**Incidence Rate ( `\({IR_k}\)` )**| | 1/18| 2/16| 1/24 | 1/30| 0/20|
+
+--
+Survival Proportion for the sub interval = 
+`\(S_k = 1 - IR_k\Delta_{tk} {\cong}\ exp(-IR_k\Delta_{tk})\)`
+
+`\(exp(-0(5)-(\frac{1}{30})(6)-(\frac{1}{24})(4)-(\frac{2}{16})(2)-(\frac{1}{18})(2))\)`
+
+`\(S_k\)` = 0.483
+
+
+---
+
+class: middle
+
+### Exponential Formula
+
+**Recall:** `\(S = (8/9) {\times}(6/8){\times} (5/6){\times} (4/5) {\times} (4/4)\)`
+
+`\(S =\)` 0.444
+
+`\(S_k\)` = 0.483
+
+
+`\(Risk = 1 - e^{-Incidence\ rate{\times}\ Time}\)`
+
+`\(Risk = 1 - e^{-IR_k\Delta_{tk}}\)`
+
+** `\({Risk_{ExpForm}}\)` ** = `\(1-S_k\)` = 0.517 
+
+`\({Risk_{c}} = 5/9\)` = 0.556 = `\(1- S\)` = **1 - 0.444**
+
+
+`$$R = 1 - S {\cong} 1 - e^{-\sum_{k=1}^{v}{IR_k\Delta_{tk}}}$$`
+
+`\(Risk_c =\)` **0.556 ** `\({\cong}\ Risk_{ExpForm}\)` = **0.517**
+
+
+---
+class: middle
+
+## Exponential Formula
+
+**Assumptions**
+1. Closed population
+2. Event under study is inevitable (no competing risk)
+3. Number of events at each event time is a small proportion of the number at risk at that time (can be forced with fine measurement of time)
+
+Assumptions 1 and 2 are also assumed for the product limit formula.
+
+--
+
+**Product-limit and exponential formulas:** 
+Translate incidence-rate estimates from open populations into incidence-proportion estimates for a closed population of interest !
+
+.small[Lash, Timothy, L. et al. Modern Epidemiology. (4th Edition). 2020. (pg. 68]
+
+---
+
+class:middle
+### .red[Recall] Survival probability
+
+- **Survival probability** at a certain time, `\(S(t)\)`, is a conditional probability of surviving beyond that time, given that an individual has survived just prior to that time.
+
+- Can be estimated as the number of patients who are alive without loss to follow-up at that time, divided by the number of patients who were alive just prior to that time.  
+
+- The **Kaplan-Meier** estimate of survival probability is the product of these conditional probabilities up until that time.    
+- At time 0, the survival probability is 1, i.e. `\(S(t_0) = 1\)`
+
+---
+class:middle
+## Worked example
+
+- The `survfit` function creates survival curves based on a formula.  
+
+- Let's generate the overall survival curve for the entire `lung` cohort from the [`survival` package](https://github.com/therneau/survival).   
+
+- Create `survfit` object and assign it to `f1`, (details about `f1` available via `names` or `str`).   
+- Often want to know probability of surviving a specific time (e.g. 1 year)use `summary()`.  
+
+- Produce survival curve including this information
+
+---
+
+class:middle
+**Worked example**
+
+
+```r
+f1 &lt;- survfit(Surv(time, status) ~ 1,  data = lung)
+```
+
+&lt;img src="L6_Hazards_Intro1_files/figure-html/unnamed-chunk-10-1.svg" width="55%" style="display: block; margin: auto;" /&gt;
+
+--
+**Summary Results**
+
+```r
+summary(survfit(Surv(time, status) ~ 1,  data = lung), times = 365.25)
+```
+
+```
+## Call: survfit(formula = Surv(time, status) ~ 1, data = lung)
+## 
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##   365     65     121    0.409  0.0358        0.345        0.486
+```
+
+
+---
+class:middle
+### What happens if you use a naive estimate ?
+
+121 of the 228 patients died by `\(1\)` year so:
+
+`$$\Big(1 - \frac{121}{228}\Big) \times 100 = 47\%$$`
+- You get an **incorrect** estimate of the `\(1\)`-year probability of survival when you ignore the fact that 42 patients were censored before `\(1\)` year.     
+
+- Recall the **correct** estimate of the `\(1\)`-year probability of survival was 41%.       
+
+- Ignoring censoring leads to an **overestimate** of the overall survival probability, because the censored subjects only contribute information for part of the follow-up time, and then fall out of the risk set, thus pulling down the cumulative probability of survival
+
+
+---
+class:middle
+## Comparing survival times between groups
+
+- We can conduct between-group significance tests using a log-rank test.    
+- The log-rank test equally weights observations over the entire follow-up time and is the most common way to compare survival times between groups.    
+- Other methods weight according to early or late follow-ups (see `?survdiff` for different test options).  
+
+--
+The `survdiff` function provides the log-rank p-value. For example, we can test whether there was a difference in survival time according to sex (SAB) in the `lung` data
+
+
+```r
+survdiff(Surv(time, status) ~ sex, data = lung)
+```
+
+```
+## Call:
+## survdiff(formula = Surv(time, status) ~ sex, data = lung)
+## 
+##         N Observed Expected (O-E)^2/E (O-E)^2/V
+## sex=1 138      112     91.6      4.55      10.3
+## sex=2  90       53     73.4      5.68      10.3
+## 
+##  Chisq= 10.3  on 1 degrees of freedom, p= 0.001
+```
+
+---
+class:middle
+## The Cox regression model
+
+We may want to quantify an effect size for a single variable, or include more than one variable into a regression model to account for the effects of multiple variables.
+
+The Cox regression model is a semi-parametric model that can be used to fit univariable and multivariable regression models that have survival outcomes.
+
+`$$h(t|X_i) = h_0(t) \exp(\beta_1 X_{i1} + \cdots + \beta_p X_{ip})$$`
+
+`\(h(t)\)`:  hazard, or the instantaneous rate at which events occur
+`\(h_0(t)\)`: underlying baseline hazard
+
+--
+Some key assumptions of the model:
+
+- Pon-informative censoring
+- Proportional hazards     
+- Semi-parametric
+
+---
+class:middle
+## The Cox regression model
+
+We can fit regression models for survival data using the `coxph` function, which takes a `Surv` object on the left hand side and has standard syntax for regression formulas in `R` on the right hand side.
+
+
+```r
+coxph(Surv(time, status) ~ sex, data = lung)
+```
+
+```
+## Call:
+## coxph(formula = Surv(time, status) ~ sex, data = lung)
+## 
+##        coef exp(coef) se(coef)      z       p
+## sex -0.5310    0.5880   0.1672 -3.176 0.00149
+## 
+## Likelihood ratio test=10.63  on 1 df, p=0.001111
+## n= 228, number of events= 165
+```
+
+---
+class:middle
+## Formatting Cox regression results
+
+We can see a tidy version of the output using the `tidy` function from the `broom` package:
+
+
+```r
+broom::tidy(coxph(Surv(time, status) ~ sex, data = lung), exp = TRUE) %&gt;% 
+  kable()
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; std.error &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; statistic &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p.value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; sex &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5880028 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1671786 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3.176385 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0014912 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Or use `tbl_regression` from the `gtsummary` package
+
+
+```r
+coxph(Surv(time, status) ~ sex, data = lung) %&gt;% 
+  gtsummary::tbl_regression(exp = TRUE) 
+```
+
+<div id="yhzqhjovci" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yhzqhjovci table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#yhzqhjovci thead, #yhzqhjovci tbody, #yhzqhjovci tfoot, #yhzqhjovci tr, #yhzqhjovci td, #yhzqhjovci th {
+  border-style: none;
+}
+
+#yhzqhjovci p {
+  margin: 0;
+  padding: 0;
+}
+
+#yhzqhjovci .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#yhzqhjovci .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#yhzqhjovci .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#yhzqhjovci .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#yhzqhjovci .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#yhzqhjovci .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yhzqhjovci .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#yhzqhjovci .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#yhzqhjovci .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#yhzqhjovci .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#yhzqhjovci .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#yhzqhjovci .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#yhzqhjovci .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#yhzqhjovci .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#yhzqhjovci .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#yhzqhjovci .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#yhzqhjovci .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#yhzqhjovci .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#yhzqhjovci .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yhzqhjovci .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#yhzqhjovci .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#yhzqhjovci .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#yhzqhjovci .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yhzqhjovci .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#yhzqhjovci .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#yhzqhjovci .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yhzqhjovci .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yhzqhjovci .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#yhzqhjovci .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yhzqhjovci .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#yhzqhjovci .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#yhzqhjovci .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#yhzqhjovci .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yhzqhjovci .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#yhzqhjovci .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#yhzqhjovci .gt_left {
+  text-align: left;
+}
+
+#yhzqhjovci .gt_center {
+  text-align: center;
+}
+
+#yhzqhjovci .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#yhzqhjovci .gt_font_normal {
+  font-weight: normal;
+}
+
+#yhzqhjovci .gt_font_bold {
+  font-weight: bold;
+}
+
+#yhzqhjovci .gt_font_italic {
+  font-style: italic;
+}
+
+#yhzqhjovci .gt_super {
+  font-size: 65%;
+}
+
+#yhzqhjovci .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#yhzqhjovci .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#yhzqhjovci .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#yhzqhjovci .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#yhzqhjovci .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#yhzqhjovci .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#yhzqhjovci .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;Characteristic&lt;/strong&gt;"><strong>Characteristic</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;HR&lt;/strong&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;"><strong>HR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;95% CI&lt;/strong&gt;&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="&lt;strong&gt;p-value&lt;/strong&gt;"><strong>p-value</strong></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left">sex</td>
+<td headers="estimate" class="gt_row gt_center">0.59</td>
+<td headers="conf.low" class="gt_row gt_center">0.42, 0.82</td>
+<td headers="p.value" class="gt_row gt_center">0.001</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> HR = Hazard Ratio, CI = Confidence Interval</td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+
+---
+class:middle
+## Hazard ratios
+
+- The quantity of interest from a Cox regression model is a **hazard ratio (HR)**. The HR represents the ratio of hazards between two groups at any particular point in time.
+- The HR is interpreted as the instantaneous rate of occurrence of the event of interest in those who are still at risk for the event. It is **not** a risk, though it is commonly interpreted as such.
+- If you have a regression parameter `\(\beta\)` (from column `estimate` in our `coxph`) then HR = `\(\exp(\beta)\)`.
+
+- A HR &lt; 1 indicates reduced hazard of death whereas a HR &gt; 1 indicates an increased hazard of death. 
+
+---
+class:middle
+### Hazard ratios
+So our HR = 0.59 implies that around 0.6 times as many females are dying as males, at any given time.
+
+
+```r
+fit4 &lt;- survfit(Surv(time, status) ~ sex, data = lung)
+
+ggsurvplot(data = lung, fit = fit4, xlab = "Months", xscale = 30.4,
+           break.x.by = 182.4, fun = "cumhaz", legend.title = "",  
+           legend.labs = c("Male", "Female"),
+           risk.table = TRUE, risk.table.y.text = FALSE)
+```
+
+&lt;img src="L6_Hazards_Intro1_files/figure-html/unnamed-chunk-16-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+### Hazard ratios
+&lt;br&gt;
+.red[Are there potential issues with the hazard ratio?]     
+--
+&lt;br&gt;
+&lt;br&gt;
+Yes, the average HR ignores the distribution of events during the follow-up.    
+&lt;br&gt;
+&lt;br&gt;
+But a possible solutions of time specific HRs poses another problem 
+ - selection bias due to depletion of susceptibles.       
+&lt;br&gt;
+&lt;br&gt;
+Possible solutions     
+i) report survival curves       
+ii) accelerated survival models.          
+&lt;br&gt;
+
+.small[[Hernán,The Hazards of Hazard Ratios](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3653612/)]
+
+---
+class:middle
+### What are competing risks?
+When subjects have multiple possible events in a time-to-event setting (e.g recurrence, death from disease, death from other causes).     
+
+So what’s the problem? Why not just use KM approach and treat competing events as censored events?        
+.purple[Remember basic KM assumption - censored patients have same risk as those remaining under observation].       
+
+.red[Unobserved dependence among event times is the fundamental problem that leads to the need for special consideration.]      
+
+
+Two approaches to analysis in the presence of competing risks.       
+
+1. **Cause-specific hazards** instantaneous rate of occurrence of the given type of event in subjects who are currently event‐free estimated using Cox regression (coxph function)
+2. **Subdistribution hazards** instantaneous rate of occurrence of the given type of event in subjects who have not yet experienced an event of that type estimated using Fine-Gray regression (`crr()` in `cmprsk` package)
+
+
+---
+class:middle
+### Hazard of the Hazards
+
+---
+
+class: middle
+
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "3:2",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
