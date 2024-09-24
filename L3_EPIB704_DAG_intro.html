@@ -25,7 +25,7 @@ class: left, middle, inverse, title-slide
 ### EBOH, McGill University
 ]
 .date[
-### 2023/08/30 (updated: 2024-09-10)
+### 2023/08/30 (updated: 2024-09-11)
 ]
 
 ---
@@ -728,7 +728,8 @@ dag_plot &lt;- dag %&gt;%
   ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
   geom_dag_point() +
   geom_dag_edges() +
-  geom_dag_text(parse = TRUE, label = c("P", "U", "X", expression(Y[0]), expression(Y[1]), expression(Z[0]), expression(Z[1]))) +
+  geom_dag_text(parse = TRUE, label = c("P", "U", "X",
+                      expression(Y[0]), expression(Y[1]), expression(Z[0]), expression(Z[1]))) +
   theme_dag() +
   geom_dag_node(color="darkmagenta") + geom_dag_text(color="white") 
 
@@ -802,7 +803,7 @@ ggdag_adjust(dag, var = c("Z1", "Z0", "P", "Y0"))+ theme_dag()
 
 ---
 class: middle
-### "Complete" Adjustment
+### "Complete" Adjustment (but 'U' was not labeled as 'latent')
 
 ```r
 ggdag_adjust(dag, var = c("Z1", "Z0", "P", "U"))+ theme_dag() 
@@ -812,7 +813,7 @@ ggdag_adjust(dag, var = c("Z1", "Z0", "P", "U"))+ theme_dag()
 
 ---
 class: middle
-## Labelling the 'U' as latent
+### Labelling the 'U' as latent
 .pull-left[
 
 ```r
@@ -823,7 +824,7 @@ dag0 &lt;- ggdag::dagify(Y1 ~ X + Z1 + Z0 + U + P,
               P ~ Y0 + Z1 + Z0,
               exposure = "X",
               outcome = "Y1",
-              latent = "U") # include the label for 'U'
+*             latent = "U")
 dag_plot0 &lt;- dag0 %&gt;% 
   ggdag::tidy_dagitty(layout = "auto", 
                       seed = 12345) %&gt;%
@@ -842,7 +843,7 @@ dag_plot0 &lt;- dag0 %&gt;%
 ]
 
 .pull-right[
-**Does not change  the DAG**
+**Does not change the DAG**
 &lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-49-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
 
 ]
@@ -855,7 +856,9 @@ class: middle
 .pull-left[
 
 ```r
-ggdag_adjust(dag0, var = c("Z1", "Z0", "P", "U"))+ theme_dag() 
+ggdag_adjust(dag0, 
+             var = c("Z1", "Z0", "P", "U"))+ 
+  theme_dag() 
 ```
 
 &lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-50-1.svg" width="75%" style="display: block; margin: auto;" /&gt;
@@ -863,8 +866,18 @@ ggdag_adjust(dag0, var = c("Z1", "Z0", "P", "U"))+ theme_dag()
 ]
 .pull-right[
 
+```r
+adjustmentSets(dag0, "X", "Y1", type = "minimal")
+```
+
 ```
 ## { P, Y0, Z0, Z1 }
+```
+
+```r
+ggdag_adjust(dag0, 
+             var = c("Z1", "Z0", "P", "Y0"))+ 
+  theme_dag() 
 ```
 
 &lt;img src="L3_EPIB704_DAG_intro_files/figure-html/unnamed-chunk-51-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
