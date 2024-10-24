@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Interaction and Effect Measure Modification</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mabel Carabali" />
+    <script src="libs/header-attrs-2.28/header-attrs.js"></script>
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Interaction and Effect Measure Modification
+]
+.author[
+### Mabel Carabali
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### Updated: 2024-10-23
+]
+
+---
+
+
+
+
+
+
+
+
+
+class: middle
+
+**Association between teacher distress and internalizing symptoms by elementary (n=14,665) and secondary students (n=8,903)**
+&lt;img src="images/L14teachers1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+Modified from: [The association between teacher distress and student mental health outcomes: a cross-sectional study using data from the school mental health survey](https://bmcpsychology.biomedcentral.com/articles/10.1186/s40359-024-02071-3#Tab2). BMC Psychol 12, 583 (2024).
+
+
+---
+class:middle
+
+### Expected competencies
+- Basic knowledge about statistical interaction and Effect Measure Modification (EMM)
+- Knows when to inclide an interaction (product) term 
+- Knows how to interpret an interaction term
+--
+
+## Objectives
+- Revise the concepts of EMM and Interaction.
+- Revise the effect of interaction according to additive &amp; multiplicative scales.
+- Revise the main strategies for assessing and detecting EMM and interaction.
+
+---
+class:middle
+###Effect Measure Modification (EMM) and Interaction
+
+Most researchers seem to prefer a regression based approach to testing for _interaction_ using the so called "interaction term" e.g. `(X*M)` 
+
+- Yet assessing interaction is more than a product term in a regression model:
+- There is statistical interaction (literally the result of the statistical test for the interaction term) and
+- Causal interaction (whether intervening on the variables `X` and/or `M` will have a causal effect on outcome `Y`). 
+
+Often the terms interaction and effect modification are used interchangeably. 
+
+---
+class:middle
+###Biologic interaction. 
+In epidemiological discussions, sufficient-cause interaction is commonly referred to as biologic interaction (Rothman et al, 1980). 
+- Implying that, in biomedical applications, biological mechanisms could bring two exposures/treatments to act on each other to "cause" or produce and outcome. 
+
+  - Biological synergism is denoted when the two factors/exposures/treatments are the sufficient component cause of the outcome. 
+  
+  - Both factors work together to produce the outcome. But it could be possible that this factors do not physically act on each other and thus that they do not interact in any biological sense.
+  
+####&lt;span style="color:blue"&gt;For the rest of the lecture we will discuss EMM, Statistical and Causal Interaction &lt;/span&gt; 
+
+---
+class:middle
+###Effect Measure Modification (EMM) and Interaction
+
+When we fit regression models with product terms, we have few possible interpretations: 
+
+- The coefficient for the product term could be interpreted as **&lt;span style="color:darkmagenta"&gt;EMM &lt;/span&gt;**.
+
+- The coefficient for the product term could be interpreted as a measure of **&lt;span style="color:blue"&gt;interaction &lt;/span&gt;**. 
+
+- The coefficient for the product term could be interpreted as both **&lt;span style="color:darkmagenta"&gt;EMM&lt;/span&gt;** and  **&lt;span style="color:blue"&gt; interaction &lt;/span&gt;**.
+
+- The coefficient for the product term cannot be interpreted as **&lt;span style="color:darkred"&gt;neither!&lt;/span&gt;**
+
+[On the Distinction Between Interaction and Effect Modification. VanderWeele, Tyler J. (2009)](https://journals.lww.com/epidem/Fulltext/2009/11000/On_the_Distinction_Between_Interaction_and_Effect.16.aspx#A2-16)
+
+
+---
+
+class:middle
+## Interaction and EMM
+- **Interaction** refers to a situation whereby the effects of a exposure (covariate) of interest (on the outcome) and that of a third factor strengthen (synergism) or weaken each other (antagonism).
+
+- **Effect modification** refers to the situation where the effect of a exposure (covariate) of interest differs depending on the presence or absence of a third factor (effect modifier). The third variable modifies the effect of the risk factor.
+  - Synonyms: (Effect) heterogeneity `\(^1\)`
+  
+Both can be positive or negative; qualitative or quantitative.  
+
+`\(^1\)` Side note on heterogeneity [Which of These Things Is Not Like the Others?](https://acsjournals.onlinelibrary.wiley.com/doi/10.1002/cncr.28359)
+
+---
+class:middle
+## Interaction and EMM
+- **Effect _measure_ modification**: examination of whether the effect of the risk factor is homogeneous or heterogeneous when stratified according to the suspected effect modifier. 
+  - &lt;span style="color:darkmagenta"&gt;Only interventions on the exposure variable of interest are considered&lt;/span&gt;
+  
+- **Interaction**: examination of whether the observed joint effect of the two variables of interest (exposure and third covariate) is the same or different than the expected from their independent effects. 
+  - &lt;span style="color:darkmagenta"&gt;Interventions on both, the exposure and third variable of interest are considered&lt;/span&gt;. 
+
+[On the Distinction Between Interaction and Effect Modification. VanderWeele, Tyler J. (2009)](https://journals.lww.com/epidem/Fulltext/2009/11000/On_the_Distinction_Between_Interaction_and_Effect.16.aspx#A2-16)
+
+---
+
+class:middle
+##Forms of statistical interaction
+According to the regression, the statistical interaction may be additive, multiplicative, or both. 
+- &lt;span style="color:blue"&gt;Additive interaction&lt;/span&gt; stipulates the summed effect of `X` and `M` will be greater than their individual effects, 
+- In linear regression model, which is on the linear scale, the interaction term represents additive interaction. 
+  - The additive scale is a comparison of difference measures of association across strata (e.g., attributable risk/risk difference). 
+  
+- &lt;span style="color:blue"&gt;Multiplicative interaction&lt;/span&gt; stipulates that the product of X and M will be greater than their individual effects.   
+- In a GLM model (e.g., logistic or Poisson regression), which is on the log scale, the interaction term represents multiplicative interaction. 
+  - The multiplicative scale is a comparison of relative measures of association across strata (relative risk/odds ratio).
+
+---
+class:middle
+###Additive or Multiplicative Interactions
+As absolute measures are more frequently used in in public health practice to demonstrate how interventions affect an outcome, it may be preferable to report additive interactions. 
+
+- But, the `X*M` term in linear regressions only indicate multiplicative interaction. 
+
+  - So, the additive component must be calculated separately, and depends in part on the parameterization of `X` and `M`
+
+---
+class: middle
+
+&lt;img src="images/L13smokingrace.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+.pull-left[
+&lt;img src="images/L13abstract.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="images/L13stats.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+From: [Fetal Sex and Race Modify the Predictors of Fetal Growth](https://link.springer.com/article/10.1007/s10995-014-1571-3#Tab4) by Reynolds et al. 2024.
+
+---
+
+### [Fetal Sex and Race Modify the Predictors of Fetal Growth](https://link.springer.com/article/10.1007/s10995-014-1571-3#Tab4) 
+
+&lt;img src="images/L13smokingrace1.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+---
+
+### [Fetal Sex and Race Modify the Predictors of Fetal Growth](https://link.springer.com/article/10.1007/s10995-014-1571-3#Tab4) 
+
+&lt;img src="images/L13smokingrace2.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+.pull-left[**What is that SI (synergy index)?**]
+
+
+
+---
+class:middle
+### Interaction terms : Example
+
+
+``` r
+library(MASS); 
+data(birthwt)
+birthwt$smoke &lt;- factor(birthwt$smoke, 0:1, c("non-smoker", "smoker"))
+birthwt$race &lt;- factor(birthwt$race, 1:3, c("white", "black", "other"))
+birthwt$nonwhite &lt;- birthwt$race != "white"
+birthwt$nonwhite &lt;- factor(as.numeric(birthwt$nonwhite), 0:1, c("white", "nonwhite"))
+#head(birthwt[, c("bwt", "low", "smoke", "nonwhite", "age", "lwt")])
+summary(birthwt[, c("bwt", "low", "smoke", "nonwhite", "age", "lwt")])
+```
+
+```
+##       bwt            low                smoke         nonwhite       age       
+##  Min.   : 709   Min.   :0.0000   non-smoker:115   white   :96   Min.   :14.00  
+##  1st Qu.:2414   1st Qu.:0.0000   smoker    : 74   nonwhite:93   1st Qu.:19.00  
+##  Median :2977   Median :0.0000                                  Median :23.00  
+##  Mean   :2945   Mean   :0.3122                                  Mean   :23.24  
+##  3rd Qu.:3487   3rd Qu.:1.0000                                  3rd Qu.:26.00  
+##  Max.   :4990   Max.   :1.0000                                  Max.   :45.00  
+##       lwt       
+##  Min.   : 80.0  
+##  1st Qu.:110.0  
+##  Median :121.0  
+##  Mean   :129.8  
+##  3rd Qu.:140.0  
+##  Max.   :250.0
+```
+
+
+---
+class:middle
+### How do we interpret this regression output?
+
+``` r
+l13.mod1 &lt;- lm(bwt ~ smoke * nonwhite, data = birthwt)
+round(cbind(Beta =coef(l13.mod1), confint(l13.mod1)), 2)
+```
+
+```
+##                                 Beta   2.5 %  97.5 %
+## (Intercept)                  3428.75 3226.09 3631.41
+## smokesmoker                  -601.90 -877.27 -326.54
+## nonwhitenonwhite             -604.24 -862.17 -346.32
+## smokesmoker:nonwhitenonwhite  419.49   -8.79  847.77
+```
+
+--
+**Which one  is correct?**
+- On average a child born to white non-smoker parent weights 3428.75gs.
+- On average a child born to non-white non-smoker parent weights -604.24g lower than from white parents who do not smoke.
+- Non-white parents who do smoke have children with on average −786.65g lower birthweights than white parents who do not smoke.
+
+---
+class:middle
+### Interpretation of the "interaction term" 
+####(OLS: binary + binary covariates)
+- **Non-smoking, white parents** Intercept, reference group, with an average birthweight given by the intercept: 3428.7g.
+- **Smoking, white parent:** White parent who smoke have babies with on average -601.90g lower birthweights
+than white parent who do not smoke.
+- **Non-smoking, non-white parent:** Non-white parent who do not smoke have babies with on average -604.2g lower birthweights than white parents who do not smoke.
+- **Smoking, non-white parents:** Non-white parents who do smoke have babies with on average (−601.90) + (−604.24) + 419.49 = −786.65g lower birthweights than white parents who do not smoke.
+
+**Interpretation of Interaction Coefficient:** additional difference in means for non-reference levels of the two categorical variables.
+
+---
+class:middle
+### How do we interpret this regression output?
+
+
+``` r
+l13.mod2 &lt;- lm(bwt ~ smoke * age, data = birthwt)
+round(cbind(Beta =coef(l13.mod2), confint(l13.mod2)), 2)
+```
+
+```
+##                    Beta   2.5 %  97.5 %
+## (Intercept)     2406.06 1829.61 2982.51
+## smokesmoker      798.17 -157.37 1753.72
+## age               27.73    3.76   51.70
+## smokesmoker:age  -46.57  -86.91   -6.23
+```
+
+**Which one  is correct?**
+- On average a child born to a non-smoker parent weights 2406.06gs.
+- The average birthweight decreases by 27.7grs per year of age of the parent.
+- On average birthweight decreases 46.57 grs when the parent is a smoker.
+
+---
+class:middle
+### Interpretation of the "interaction term" 
+####(OLS: binary + continuous variable)
+
+Without interaction: we assume that the slope of `y` over the continuous variable, `x` is the same regardless of the category of the variable, `m = 0` or `m = 1`. 
+- Assume parallel regression lines for each group in `m`.
+
+--
+
+**&lt;span style="color:blue"&gt; With an interaction term &lt;/span&gt;**, we assume that the slope of `y` over `x` differs according to `m = 0` or `m = 1`. Non parallel trend assumption.
+- The **interaction coefficient** gives additional change in slope of `y` over `x` for the non-reference level of the nominal variable, `m = 1`. 
+
+The slopes are given by: `\(m = 0: \beta_x\)`; `\(m = 1: \beta_x + \beta_{x:m}\)`
+
+---
+class:middle
+### Interpretation of the "interaction term" 
+####(OLS: binary + continuous variable)
+
+```
+##                    Beta   2.5 %  97.5 %
+## (Intercept)     2406.06 1829.61 2982.51
+## smokesmoker      798.17 -157.37 1753.72
+## age               27.73    3.76   51.70
+## smokesmoker:age  -46.57  -86.91   -6.23
+```
+
+- For non-smokers, average birthweight increases by 27.73g per year of age of the parent. 
+- For smokers, the average birthweight actually decreases by -18.84g (27.73 + (-46.57)) per one year increase in age of the parent.
+- The mean difference between smokers and non-smokers _`for age = 0`_  is 798.17grs **????**
+
+
+-- 
+
+
+``` r
+birthwt$agec &lt;- birthwt$age - median(birthwt$age) #To center variable age, since age 0 does not exist in this data
+l13.mod2c &lt;- lm(bwt ~ smoke * agec, data = birthwt); #round(cbind(Beta =coef(l13.mod2c), confint(l13.mod2c)), 2)
+```
+
+
+---
+class:middle
+### How do we interpret this regression output?
+
+``` r
+birthwt$lwtc &lt;- birthwt$lwt - median(birthwt$lwt)#To center variable lwc, weight in pounds for the parent
+l13.mod3 &lt;- lm(bwt ~ agec * lwtc, data = birthwt)
+round(cbind(Beta =coef(l13.mod3), confint(l13.mod3)), 2)
+```
+
+```
+##                Beta   2.5 %  97.5 %
+## (Intercept) 2912.11 2803.82 3020.40
+## agec          11.74   -9.59   33.06
+## lwtc           4.42    0.94    7.90
+## agec:lwtc     -0.30   -0.94    0.34
+```
+
+**Which one  is correct?**
+- Average birthweight increases by on average 11.74g for every year of the parent’s age. 
+- Average birthweight increases by on average 4.42g for each pound of the parent’s weight. 
+- Increasing age and weight of the parent make these associations slight less pronounced (-0.3g per year of age and pound).
+
+--
+- We expect `agec` + `lwtc` = 16.16
+- We get `agec` + `lwtc` + `agec:lwtc` = 15.86
+
+---
+class:middle
+### Interpretation of the "interaction term" 
+####(OLS: continuous + continuous variable)
+Including an &lt;span style="color:blue"&gt;interaction term &lt;/span&gt;, we assume that the slope of `y` over the continuous variable `\(x_1\)` differs with respect to `\(x_2\)`, and vice versa.
+- Interpretation: the interaction term gives the change in slope of `y` over `\(x_1\)` for each unit of `\(x_2\)`, and the change in slope of `y` over  `\(x_2\)` for each unit of `\(x_1\)`. 
+
+--
+The actual slopes are given by:
+- Slope over `\(x_1: \beta_{x_1} + x_2 β_{x_1:x_2}\)`; 
+- Slope over `\(x_2: \beta_{x_2} + x_1 β_{x_1:x_2}\)`
+
+_Increasing age and weight of the parent make these associations slight less pronounced (-0.3g per year of age and pound)._
+
+---
+class:middle
+#### &lt;span style="color:darkcyan"&gt;Interpretation of the "interaction term" &lt;/span&gt;
+(OLS: continuous + continuous variable). Not always intuitive and this will change the calculation of the predicted values:
+
+`\(y = \beta_0 + \beta_1agec_{(age − 23)} + \beta_2lwtc_{(lwt − 121)} + \beta_3agec*lwtc_{(age − 23)(lwt − 121)}\)`
+
+``` r
+nd &lt;- expand.grid(agec = seq(15, 35, 5) - 23, lwtc = seq(75, 200, 25) - 121)
+nd$pred &lt;- predict(l13.mod3, newdata = nd); 
+nd$age &lt;- nd$agec + 23; nd$lwt &lt;- nd$lwtc + 121
+```
+
+--
+.pull-left[
+
+``` r
+plot1&lt;- qplot(age, pred, data = nd, 
+color = factor(lwt), geom = "line") + 
+ylim(2000, 4000)
+plot1
+```
+
+&lt;img src="L14_EPIB704_Interaction_Part1_files/figure-html/unnamed-chunk-14-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+.pull.right[
+
+``` r
+plot2&lt;- qplot(lwt, pred, data = nd, 
+color = factor(age), geom = "line") + 
+  ylim(2000, 4000)
+plot2
+```
+
+&lt;img src="L14_EPIB704_Interaction_Part1_files/figure-html/unnamed-chunk-15-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+class:middle
+### How do we interpret this regression output?
+####Logistic regression Outcome is lowbirtweight `low`, where yes=1 and no=0
+
+
+``` r
+l13.mod4 &lt;- glm(low ~ smoke * nonwhite, data = birthwt, family = binomial)
+```
+
+.pull-left[
+
+```
+##                              Beta 2.5 % 97.5 %
+## (Intercept)                  -2.3  -3.5   -1.4
+## smokesmoker                   1.8   0.7    3.1
+## nonwhitenonwhite              1.7   0.6    3.0
+## smokesmoker:nonwhitenonwhite -1.1  -2.7    0.3
+```
+]
+.pull-right[
+
+```
+##                               OR 2.5 % 97.5 %
+## (Intercept)                  0.1   0.0    0.2
+## smokesmoker                  5.8   1.9   21.4
+## nonwhitenonwhite             5.4   1.9   19.6
+## smokesmoker:nonwhitenonwhite 0.3   0.1    1.4
+```
+]
+
+--
+
+- Smokers have 5.8 higher odds of having a low birthweight child compared to non-smokers. 
+- Non-white parents have a 5.4 higher odds of having low birthweight child compared to white parents. 
+- Non-white parents who smoke however have a 10 times higher odds of having a child with low birthweight than white parents who do not smoke.
+
+
+---
+class:middle
+### Interpretation of the "interaction term" 
+####(Logistic: binary + binary variable)
+Including an interaction term, we assume that the OR comparing categories of `x` **differs** according to `m`, and viceversa. 
+ - OR &lt; 1 for the interaction indicates a less strong association than expected when considering them individually.
+ - OR &gt; 1,  association stronger than expected when considering them individually.
+ 
+**Interpretation:** The interaction term gives multiplicative effect of non-reference levels of the two categorical variables. Examined by multiplying the odds ratios. 
+
+---
+class:middle
+### Interpretation of the "interaction term" 
+####(Logistic: binary + binary variable)
+
+To see the interaction effect of covariates `\(x_1\)` and `\(x_2\)`: `\(OR_{x_1, x_2} = exp(\beta_{x_1}) *exp(\beta_{x_2})*exp(\beta_{x_1, x_2})\)`, equivalently, adding the coefficients and exponentiate them:
+
+--
+
+``` r
+round(exp(coef(l13.mod4)["smokesmoker"]) * exp(coef(l13.mod4)["nonwhitenonwhite"]) *exp(coef(l13.mod4)["smokesmoker:nonwhitenonwhite"]),2)
+```
+
+```
+## smokesmoker 
+##          10
+```
+
+``` r
+round(exp(coef(l13.mod4)["smokesmoker"] + coef(l13.mod4)["nonwhitenonwhite"] + coef(l13.mod4)["smokesmoker:nonwhitenonwhite"]), 2)
+```
+
+```
+## smokesmoker 
+##          10
+```
+
+``` r
+5.76*5.43*0.32
+```
+
+```
+## [1] 10.00858
+```
+
+---
+class:middle
+### How do we interpret this regression output?
+
+
+--
+
+.pull-left[
+
+```
+##                    OR 2.5 % 97.5 %
+## (Intercept)      0.33  0.21   0.50
+## smokesmoker      2.05  1.09   3.89
+## agec             0.92  0.84   1.00
+## smokesmoker:agec 1.08  0.95   1.23
+```
+]
+.pull-right[
+- The odds of low birth weight child decreases by a factor of **0.92 per every year of the parent’s among non-smokers**
+]
+
+- The odds of low birthweight child **decreases by a factor of 0.99 per every year of the parent’s if they does smoke** (i.g., the additional change in odds of LBW for smokers) is **0.99**
+- The odds of women who smoke AND increase a year of age **compared to non-smokers with average age is 2.03**
+- The OR of low birthweight for **women who smoke, among women who increased one year is 2.2**
+
+
+---
+class:middle
+### Interpretation of the "interaction term" 
+####(Logistic: binary + continuous variable)
+The interaction term gives additional change in odds for the non-reference level of the nominal variable, `m = 1`. 
+- The ORs are given by: `m = 0:` `\(e^{\beta_x}\)` `m = 1:` `\(e^{\beta_x}e^{\beta_{x*m}}\)`
+- The **additional** change `\(e^{\beta_x}e^{\beta_{x*m}}\)` in odds (for one year increase) of low birthweight for smokers is 0.99
+
+``` r
+exp((-0.08288)+0.07308); #0.92*1.08 # this using the OR
+```
+
+```
+## [1] 0.9902479
+```
+
+---
+class:middle
+### Interpretation of the "interaction term" 
+####(Logistic: binary + continuous variable)
+
+- The odds ratio for women who smoke **AND** increase a year of age `\(e^{\beta_x}e^{\beta_m}e^{\beta_{x*m}}\)` compared to the non smokers and average age is 2.03
+
+
+``` r
+exp(0.71749+ (-0.08288)+0.07308); #alternatively using the ORs= 2.049*0.9204*1.075
+```
+
+```
+## [1] 2.029298
+```
+
+&lt;span style="color:blue"&gt;Note: At least one exposure is &lt;1.! &lt;/span&gt;
+
+---
+class:middle
+**(Logistic: binary + continuous variable)**   
+.pull-left[
+
+```
+##                    OR 2.5 % 97.5 %
+## (Intercept)      0.33  0.21   0.50
+## smokesmoker      2.05  1.09   3.89
+## agec             0.92  0.84   1.00
+## smokesmoker:agec 1.08  0.95   1.23
+```
+- The OR for women who smoke AND increase a year of age (**jointly exposed**) `\(e^{\beta_x}e^{\beta_m}e^{\beta_{x*m}}\)` compared to the non smokers and average age is 2.03 `\((2.05*0.92*1.08)\)` 
+- The OR on low birthweight for women who smoke, among women who increased one year `\(e^{\beta_x}e^{\beta_{x*m}}\)` is 2.2 = `\((2.05*1.08)\)`
+- The **additional** change `\(e^{\beta_x}e^{\beta_{x*m}}\)` in odds (for one year increase) of low birthweight for (among) smokers is 0.99 `\((0.92*1.08)\)`
+]
+
+--
+
+.pull-right[
+
+`\(logit(Y)= \beta_0 + \beta_1X + \beta_2M + \beta_3XM\)`
+
+|**ln(odds)** |M=0      | M=1         |
+|:------------|:--------|:------------|
+|X=0 | `\(\beta_0\)` | `\(\beta_0 + \beta_2\)` |
+|X=1 | `\(\beta_0 + \beta_1\)` | `\(\beta_0 + \beta_1 + \beta_2 + \beta_3\)` |
+|**ln(OR)** | M=0| M=1|
+|X=0 | | |
+|X=1 | `\((\beta_0 + \beta_1 )\)` - `\(\beta_0\)` = `\(\beta_1\)`  | `\((\beta_0 + \beta_1 + \beta_2 + \beta_3)\)` - `\((\beta_0 + \beta_2)\)` = `\((\beta_1 + \beta_3 )\)`  |
+|**OR** |  M=0| M=1|
+|X=0 | | |
+|X=1 | `\(e^{\beta_1}\)` | `\(e^{(\beta_1 + \beta_3 )}\)` | 
+
+* .small[ `\(\beta_1\)` will be either `smoking` or `"whithe vs non-white"` according to model specification.]
+]
+
+
+---
+class:middle
+**(Logistic: binary + continuous variable)**  `\(logit(Y)= \beta_0 + \beta_1X + \beta_2M+ \beta_3XM\)`
+
+Here the `\(OR_{00}\)` is the reference, derived from the intercept (interpreted as the average log(odds) or odds ) We can obtain a table with all combinations using the `interactionR` Package
+
+
+``` r
+table_objectlbw = interactionR(l13.mod5, exposure_names = c("smokesmoker", "agec"), 
+          ci.type = "mover", ci.level = 0.95, em = F, recode = F)
+kable(table_objectlbw$dframe[1:9,], digits = 2) 
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measures &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Estimates &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ll &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ul &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.92 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.84 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.07 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.09 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.87 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.03 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.03 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.07 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.86 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.03 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR(agec on outcome [smokesmoker==0] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.92 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.84 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.07 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR(agec on outcome [smokesmoker==1] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.99 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.90 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.09 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.85 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR(smokesmoker on outcome [agec==0] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.09 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.87 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.03 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR(smokesmoker on outcome [agec==1] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.14 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.25 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.02 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Multiplicative scale &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.08 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.95 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.22 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.26 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+class:middle
+
+###Interaction &amp; EMM in observational settings
+Let's think about a randomized experiment
+
+In a randomized trial setting, “interaction” is a joint causal effect, which we obtain by factorial design. 
+	- We randomized **X** &amp; **M**, and look at their causal effects separately and together.
+
+In a randomized setting, “effect measure modification” is a subgroup analysis.
+	- We randomize **X**, and look at the effect of **X** where **M=1** and separately where **M=0**.
+
+[Epidemiology by design by Daniel Westreich](https://academic.oup.com/book/32358)
+
+---
+class:middle
+### Consider this DAG
+.pull-left[
+&lt;img src="L14_EPIB704_Interaction_Part1_files/figure-html/unnamed-chunk-26-1.svg" width="120%" style="display: block; margin: auto;" /&gt;
+]
+--
+
+.pull-right[
+What is the effect of Beta-blocker on `Y` (Heart attack)? 
+- Assume treatment variation irrelevance. 
+- Assume this DAG is correct (! Big assumption).
+Open backdoor paths are: 	`\(\beta-blocker \leftarrow Smoking \to Heart attack\)`
+
+]
+
+- We entirely ignore weight/genes/heart attack pathway right now – it’s not relevant to the beta-blocker-heart attack relationship. 
+- Controlling for smoking will block open backdoor path. 
+
+[Epidemiology by design by Daniel Westreich](https://academic.oup.com/book/32358)
+
+---
+
+class:middle
+## Interaction and EMM
+
+&lt;img src="L14_EPIB704_Interaction_Part1_files/figure-html/unnamed-chunk-27-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+**Controlling for smoking** will block open backdoor path. Assume that we can now assess a causal effect of Beta-blocker on Heart attack.
+ - Can we, from this DAG, obtain an **_unconfounded_** effect of weight on heart attack?
+
+
+---
+class:middle
+## Interaction and EMM
+.pull-left[
+&lt;img src="L14_EPIB704_Interaction_Part1_files/figure-html/unnamed-chunk-28-1.svg" width="120%" style="display: block; margin: auto;" /&gt;
+]
+
+From the present DAG, we can examine effect measure modification of Beta-blockers on heart attack by Weight. 
+- Remember, effect measure modification is asking about impact of Beta-blockers by **observed** weight. 
+
+If weight is high/low, could just ask: among those with high weight, what’s the causal effect of beta-blockers on heart attack. And, among those with low weight…
+
+Can we, from this DAG, obtain an _unconfounded_ effect of weight on heart attack?
+
+
+---
+class:middle
+Can we, from this DAG, obtain an unconfounded effect of weight on heart attack?
+
+.pull-left[
+&lt;img src="L14_EPIB704_Interaction_Part1_files/figure-html/unnamed-chunk-29-1.svg" width="120%" style="display: block; margin: auto;" /&gt;
+]
+--
+.pull-right[
+- &lt;span style="color:darkred"&gt; No: confounding by genes.&lt;/span&gt;
+
+If we wanted an **INTERACTION** of Beta-blockers and weight, then, we’d need to control for confounding of the weight-heart attack relationship by genes.  
+
+&lt;span style="color:darkred"&gt; _Different model._ &lt;/span&gt;
+]
+
+[VanderWeele T. On the distinction between Interaction and Effect Modification. Epidemiology 2009.](https://journals.lww.com/epidem/Fulltext/2009/11000/On_the_Distinction_Between_Interaction_and_Effect.16.aspx#A2-16)
+
+---
+class:middle
+###Interaction and EMM in cohorts
+Translating concepts from a trial... outcome **`Y`**.
+
+- Think of your main exposure **`X`** as the “randomized” exposure.
+  - You try to control for confounding to make it as close to “randomized” as you can.
+    _There are statistical subtleties here to worry about later (“collapsibility”)_
+
+--
+Then think of the second variable **`M`**: are you controlling for confounders of the `\(M \to Y\)` relationship?
+- **Yes:** then you’re estimating **interaction** (because now you’re trying to make the second variable as close as possible to “randomized” – as in a &lt;span style="color:darkmagenta"&gt; factorial design&lt;/span&gt; )
+- **No:** then you’re estimating &lt;span style="color:blue"&gt;**effect measure modification** (subgroup analysis)&lt;/span&gt;
+
+[Epidemiology by design by Daniel Westreich](https://academic.oup.com/book/32358)
+
+---
+class:middle
+##Interaction vs. effect measure modification
+
+Broadly, both can be assessed in observational settings.
+
+In the same way that interaction in a randomized trial is a factorial trial, 
+- Interaction in an observational study means estimating two causal effects, 
+  - and meeting causal identification conditions 	for **BOTH**.
+
+---
+class:middle
+##Interaction vs. EMM under conterfactuals
+- A variable M is a modifier of the effect of `X` on `Y` when the average causal effect of `X` on `Y` varies across levels of `M`. 
+  - The concept of EMM refers to the causal effect of `X`, **not to the causal effect of `M`** . 
+- When we say that `M` modifies the effect of `X` we are **not considering** `M` and `X` as variables of equal status, because **only `X` is considered** to be a variable on which we could hypothetically intervene. 
+
+- EMM involves the counterfactual outcomes `\(Y^a\)`, **not the counterfactual** outcomes `\(Y^{x,m}\)`. 
+- Interaction between `X` and `M` gives **equal status** to both treatments `X` and `M`.
+  - It refers to the joint causal effect of two treatments `X` and `M`, and thus involves the counterfactual outcomes `\(Y^{x, m}\)` under a joint intervention.
+
+---
+class:middle
+
+## Notes on Effect _Measure_ Modification
+
+####From: [Hernan &amp; Robins book, What if?](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/)
+
+  and some **worked** examples.
+
+---
+class: middle
+###H&amp;R What if? 4.2 Stratification to identify EMM
+&lt;span style="color:darkblue"&gt;To identify effect modification by **`M`** in an ideal experiment with unconditional randomization, one just needs to conduct a stratified analysis by computing the association measure in each level of **`M`**. (Average causal effects in subsets of the population)&lt;/span&gt;.
+
+Read the **[H&amp;R What if? Fine Point 4.1:](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/) Effect in the treated (X=1)**  for additional details on EMM estimation.
+
+
+---
+class:middle
+###H&amp;R What if? 4.3 Why care about EMM
+The extrapolation of causal effects computed in one population to a second population, i.e., transportability of causal inferences across populations.
+
+What factors affect generalizability? ([See Fine Point 4.2.](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/))
+- Evaluating the presence of EMM is helpful to identify the subgroups in the population that would benefit most from an intervention.
+- Additive, but not multiplicative, EMM is the appropriate scale to identify the groups that will benefit most from intervention.
+&lt;span style="color:darkred"&gt;Why do we report ratios?&lt;/span&gt;
+--
+
+[H&amp;R What If?](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/) propose: The identification of effect modification may help understand the biological, social, or other mechanisms leading to the outcome.
+ .small[[Koopman JS, Weed DL. Epigenesis theory: a mathematical model relating causal concepts of pathogenesis in individuals to disease patterns in populations. Am J Epidemiol. 1990](https://doi.org/10.1093/oxfordjournals.aje.a115666)]
+
+But also refuted, for example by: .small[[Thompson WD. Effect modification and the limits of biologic inference from epidemiologic data. Journal of Clinical Epidemiology 1991](https://www.jclinepi.com/article/0895-4356(91)90033-6/pdf)]
+
+---
+class:middle
+####H&amp;R What if? 
+**4.4 Stratification as a form of adjustment**
+- Adjustment for **`M`** is typically accomplished by stratifying estimation on categories of **`M`** (no confounding by `M` within categories). 
+- Standardization is different, because the categories are weighted, but there is no conditioning. 
+  - It is a control method that does not require homogeneity. 
+  - Conditional versus marginal estimates are different for non-collapsible measures (OR, IRR, HR, etc). `See Fine Point 4.3`.
+  
+
+---
+class:middle  
+### Qualitative vs. Quantitative EMM and Interaction
+
+- When the association between factor **`X`** and outcome **`Y`** exists and is of the same direction in each stratum formed by **`M`**, but the strength of the association varies across strata, we call this quantitative effect measure modification.
+  - &lt;span style="color:darkmagenta"&gt;Example: M==1 `\(\to\)` RR = 5.7, 95%CI(4.3, 7.4) &amp; M==0 `\(\to\)` RR = 1.8, 95%CI(1.1, 2.4)&lt;/span&gt;
+
+--
+
+- However, when the effects of **`X`** on **`Y`** changes in direction (crossover) within levels of third variable **`M`**, we call the qualitative effect measure modification.
+  - &lt;span style="color:darkmagenta"&gt;Example: M==1 `\(\to\)` RR = 5.7, 95%CI(4.3, 7.4) &amp; M==0 `\(\to\)` RR = 0.6, 95%CI(0.3, 0.8) &lt;/span&gt;
+- Qualitative EMM also may be said to occur when the association between **`X`** and **`Y`** disappears in some levels of **`M`**. It refers to a genuine change in interpretation of the exposure disease relationship over levels of **`M`**.
+
+
+---
+class:middle
+### Low birthweigh example 
+####`X` = Smoking (can intervene); `M` = white vs non-white (cannot/ _don't want_ to intervene).
+
+**Interaction term regression**
+
+```
+##                                OR 2.5 % 97.5 %
+## (Intercept)                  0.10  0.03   0.25
+## smokesmoker                  5.76  1.94  21.37
+## nonwhitenonwhite             5.43  1.91  19.63
+## smokesmoker:nonwhitenonwhite 0.32  0.06   1.39
+```
+
+--
+
+.pull-left[
+**White strata**
+
+``` r
+l13.lbwwhite&lt;- glm(low ~ smoke, family = binomial(link = "logit"), 
+                   data = subset(birthwt, nonwhite=="white"))
+round(cbind("OR" = exp(coef(l13.lbwwhite)), exp(confint(l13.lbwwhite))), 2)
+```
+
+```
+##               OR 2.5 % 97.5 %
+## (Intercept) 0.10  0.03   0.25
+## smokesmoker 5.76  1.94  21.37
+```
+]
+
+--
+
+.pull-right[
+**Non-white strata**
+
+``` r
+l13.lbwnonwhite&lt;- glm(low ~ smoke, family = binomial(link = "logit"), 
+                      data = subset(birthwt, nonwhite=="nonwhite"))
+round(cbind("OR" = exp(coef(l13.lbwnonwhite)), exp(confint(l13.lbwnonwhite))),2)
+```
+
+```
+##               OR 2.5 % 97.5 %
+## (Intercept) 0.54  0.33   0.88
+## smokesmoker 1.84  0.70   4.90
+```
+]
+
+
+---
+class:middle
+### Low birthweigh example
+
+.pull-left[
+**Coefficients from the regression**
+&lt;img src="L14_EPIB704_Interaction_Part1_files/figure-html/unnamed-chunk-33-1.svg" width="120%" style="display: block; margin: auto;" /&gt;
+]
+--
+.pull-right[
+**EMM Plot** - `M` is "White" vs "Non-white"
+&lt;img src="L14_EPIB704_Interaction_Part1_files/figure-html/unnamed-chunk-34-1.svg" width="110%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class:middle
+
+#### Low birthweigh example: `X` = white vs non-white; `M` = Smoking: &lt;span style="color:red"&gt; Illustation only &lt;/span&gt; or descriptive analysis -No causal interpretation!
+
+.pull-left[
+**Pooled, "adjusted" regression**
+
+``` r
+l13.lbwsmkpooled&lt;- glm(low ~ nonwhite+ smoke, family = binomial(link = "logit"), data = birthwt)
+round(cbind("OR" = exp(coef(l13.lbwsmkpooled)), exp(confint(l13.lbwsmkpooled))),2)
+```
+
+```
+##                    OR 2.5 % 97.5 %
+## (Intercept)      0.16  0.08   0.30
+## nonwhitenonwhite 3.01  1.50   6.30
+## smokesmoker      3.04  1.51   6.35
+```
+]
+.pull-right[
+**Interaction term**
+
+
+
+``` r
+l13.mod4 &lt;- glm(low ~ smoke * nonwhite, data = birthwt, family = binomial)
+round(cbind("OR" = exp(coef(l13.mod4)), exp(confint(l13.mod4))),2)
+```
+
+```
+##                                OR 2.5 % 97.5 %
+## (Intercept)                  0.10  0.03   0.25
+## smokesmoker                  5.76  1.94  21.37
+## nonwhitenonwhite             5.43  1.91  19.63
+## smokesmoker:nonwhitenonwhite 0.32  0.06   1.39
+```
+]
+--
+.pull-left[
+**White strata**
+
+``` r
+l13.lbwsmk0&lt;- glm(low ~ nonwhite, family = binomial(link = "logit"), data = subset(birthwt, smoke=="non-smoker"))
+round(cbind("OR" = exp(coef(l13.lbwsmk0)), exp(confint(l13.lbwsmk0))), 2)
+```
+
+```
+##                    OR 2.5 % 97.5 %
+## (Intercept)      0.10  0.03   0.25
+## nonwhitenonwhite 5.43  1.91  19.63
+```
+]
+
+.pull-right[
+**Non-white strata**
+
+``` r
+l13.lbwsmk1&lt;- glm(low ~ nonwhite, family = binomial(link = "logit"), data = subset(birthwt, smoke=="smoker"))
+round(cbind("OR" = exp(coef(l13.lbwsmk1)), exp(confint(l13.lbwsmk1))),2)
+```
+
+```
+##                    OR 2.5 % 97.5 %
+## (Intercept)      0.58  0.32   1.00
+## nonwhitenonwhite 1.74  0.63   4.82
+```
+]
+
+---
+class:middle
+#### Low birthweigh example; `X` = white vs non-white; `M` = Smoking
+.pull-left[
+**Coefficients from the regression**
+
+``` r
+plot_summs(l13.lbwsmkpooled, l13.lbwsmk0, l13.lbwsmk1, l13.mod4,
+           robust = list(FALSE,FALSE, FALSE,FALSE,FALSE), #robust SE, leaving this out FTM
+           model.names = c("Pooled","SMK=0", "SMK=1", "Interaction"))
+```
+
+&lt;img src="L14_EPIB704_Interaction_Part1_files/figure-html/unnamed-chunk-40-1.svg" width="110%" style="display: block; margin: auto;" /&gt;
+]
+--
+.pull-right[
+**EMM Plot** - `M` is Smoking 
+
+``` r
+interact_plot(l13.mod4a, pred = nonwhite1, 
+              modx = smoke1, 
+              interval  = TRUE, 
+              plot.points = TRUE)
+```
+
+&lt;img src="L14_EPIB704_Interaction_Part1_files/figure-html/unnamed-chunk-41-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+####How many people do we have here? 
+189, 15
+
+---
+class:middle
+#### Low birthweigh example; smoking &amp; white vs non-white comparisons
+Estimated ORs and contrasts.
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measures &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Estimates &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ll &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ul &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.43 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16.95 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.78 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18.60 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.66 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 37.60 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR(nonwhitenonwhite on outcome [smokesmoker==0] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.43 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16.95 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR(nonwhitenonwhite on outcome [smokesmoker==1] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.63 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.29 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR(smokesmoker on outcome [nonwhitenonwhite==0] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.78 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18.60 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR(smokesmoker on outcome [nonwhitenonwhite==1] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.84 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.70 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.84 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.22 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Multiplicative scale &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.32 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.07 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.14 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+---
+class:middle
+#### When an interaction term is `Statisitically significant`? 
+Interaction tests generally have about 25% of the power of main effects tests (Greenland 1983). 
+- Need **&lt;span style="color:red"&gt; 4 times the sample size&lt;/span&gt;** to estimate an interaction that is the same size as the main effect
+ - To be able to estimate the interaction to the same level of accuracy as the main effect, we would need four times the sample size.
+- **&lt;span style="color:red"&gt; Need 16 times&lt;/span&gt;** the sample size to estimate an **interaction that is half the size as the main effect**.
+
+Using a higher Type I error criterion, e.g., 0.15 or 0.2 makes it easier to detect real heterogeneity, but raises the % of times that heterogeneity will be declared erroneously due to Type I error.
+--
+
+&gt; _"...interactions can be important; we just need **to accept that in many settings we won’t be able to attain anything like near-certainty regarding the magnitude or even direction of particular interactions**. It is typically not appropriate to aim for “statistical significance” or 95% intervals that exclude zero, and it often will be appropriate to use prior information to get more stable and reasonable estimates, and to accept uncertainty, not acting as if interactions of interest are zero just because their estimate is not statistically significant"_. [ROS-Gelman, Hill &amp; Vehtari](https://users.aalto.fi/~ave/ROS.pdf)
+
+
+---
+class:middle
+### H&amp;R What if? 4.6 EMM and adjustment methods
+[H&amp;R, What if? Heart transplant example](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/) computed four causal risk ratios and obtained four different numbers: 0.8, 2.0, 0.5 and 1.0.
+- &lt;span style="color:blue"&gt;Standardization and IP weighting&lt;/span&gt; yield the average causal effect in the entire population = 0.8.
+- &lt;span style="color:blue"&gt;Stratification&lt;/span&gt; yields the conditional causal risk ratios 2.0 and 0.5.
+- &lt;span style="color:blue"&gt;Matching&lt;/span&gt;, using matched pairs described in the text gives 1.0.
+
+--
+
+&lt;span style="color:darkmagenta"&gt;All of these numbers are “correct”&lt;/span&gt;. 
+- This example highlights the primary importance of specifying the population, or the subset of a population, to which the effect measure corresponds.
+
++ [Technical Point 4.2:](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/) Conditional estimation assumes homogeneity across strata (e.g. regression models, Mantel-Haenszel estimator, etc).
+
+---
+class:middle
+### EMM - Analysis
+When dealing with stratum-specific effect measures, one commonly used strategy to reduce the variability of the estimates is to combine all stratum-specific effect measures into one pooled stratum-specific effect measure.
+ - If the effect measure is the same in all strata (no EMM), then the pooled effect measure will be a more precise estimate of the common effect measure.
+ 
+- Several methods (e.g., Mantel-Haenszel) yield a pooled estimate, sometimes by computing a weighted average of the stratum-specific effect measures with weights chosen to reduce the variability of the pooled estimate.
+
+- Pooled effect measures can also be computed using regression models that include `all possible product terms` between all covariates `M`, but no product terms between treatment `X` and covariates `M`, i.e., models “saturated” with respect to `M`.
+
+
+---
+class:middle
+###H&amp;R What if? EMM - Analytic considerations
+
+- The main goal of pooling is precision of the common stratum-specific effect measure, but the pooled effect measure is still a &lt;span style="color:blue"&gt;conditional effect measure.!&lt;/span&gt;
+
+[In Hernan’s heart transplant example](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/), the pooled stratum-specific RR by the Mantel- Haenszel method) was 0.88. 
+ - This result is only meaningful if the stratum-specific RR’s 2 and 0.5 are indeed estimates of the same stratum-specific causal effect.
+- Additive effect modification is the appropriate scale to identify the groups that will benefit most from intervention. 
+
+- &lt;span style="color:darkmagenta"&gt; In the absence of additive effect modification, learning that there is multiplicative effect modification may not be very helpful for decision making.&lt;/span&gt;
+
+---
+class:middle
+## Interaction and EMM
+- Interaction is defined in terms of the effects of **two (2) interventions** while EMM is defined in terms of the `effect of one intervention varying across strata of a second variable`. 
+
+- EMM can be present with no interaction; interaction can be present with no EMM. 
+
+- There are settings in which it is possible to assess effect modification but not interaction, or to assess interaction but not effect modification. 
+
+
+---
+class:middle
+###EFFECT MODIFICATION AND INTERACTION 
+
+&gt; "_In many settings, of course, interaction and effect modification will coincide. The question thus arises ` whether we can characterize settings in which interaction and effect modification do indeed coincide.` A characterization can be given in terms of causal DAGs. It follows from the rules of causal DAGs (see Rule 2 of Pearl's do-calculus `\(^8\)` ) that we will have that interaction and effect modification will coincide (because E[Deq] = E[De|Q = q]), whenever all paths between D and Q are blocked by E on a graph obtained by modifying the original graph to remove the arrows into E and the arrows emerging from Q._"
+
+[On the Distinction Between Interaction and Effect Modification. VanderWeele, Tyler J. (2009)](https://journals.lww.com/epidem/Fulltext/2009/11000/On_the_Distinction_Between_Interaction_and_Effect.16.aspx#A2-16)
+
+---
+class: middle
+**EMM or Interaction?**
+&lt;img src="images/l13dietcoke.jpeg" width="45%" style="display: block; margin: auto;" /&gt;
+
+[Virgin "Cuba-libre" - The Big Bang Theory](https://jimparsons1.wordpress.com/fun-stuff/fotos/sheldon-the-big-bang-theory-28473305-500-635/)
+
+---
+class: middle
+
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+
+---
+class:middle
+### EMM , Interactions and DAGs
+
+
+---
+class:middle
+###H&amp;R What if? 4.2 Stratification to identify EMM
+&lt;span style="color:darkblue"&gt;To identify effect modification by **`M`** in an ideal experiment with unconditional randomization, one just needs to conduct a stratified analysis by computing the association measure in each level of **`M`**. (Average causal effects in subsets of the population)&lt;/span&gt;.
+
+**[H&amp;R What if? Fine Point 4.1:](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/) Effect in the treated (X=1).**  
+
+1) The ATT is not null if `\(Pr[Y^{x=1} = 1|X = 1] \neq Pr[Y^{x=0} = 1|X = 1]\)` or, by consistency, 
+
+if `\(Pr[Y =1|X=1] \neq Pr[Y^{x=0} =1|X=1]\)`.
+
+2) There is a causal effect in the treated if the observed risk among the treated individuals does not equal the counterfactual risk had the treated individuals been untreated.
+
+3) **ATT** will differ from the average effect in the population if the distribution of individual causal effects varies between the treated and the untreated.
+
+4) Epidemiologists refer to the ATT ratio (causal risk ratio in the treated) as the “Standardized Mortality/Morbidity Ratio” (SMR): `\(Pr[Y = 1|X = 1] / Pr[Y^{x=0}= 1|X = 1]\)`.
+
+5) Hypothetically, there is an analogous causal effect in the untreated (ATU), but this is uncommon in both epidemiology and economics (although it is occasionally used in both fields).
+
+
+---
+class:middle
+####H&amp;R What if? 
+**4.4 Stratification as a form of adjustment**
+- Adjustment for **`M`** is typically accomplished by stratifying estimation on categories of **`M`** (no confounding by `M` within categories). 
+- Standardization is different, because the categories are weighted, but there is no conditioning. 
+  - It is a control method that does not require homogeneity. 
+  - Conditional versus marginal estimates are different for non-collapsible measures (OR, IRR, HR, etc). `See Fine Point 4.3`.
+  
+[4.5 Matching as another form of adjustment](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/)
+ - NB: Matching used for adjustment in cohort studies, but NOT in case-control studies. In case-control studies it is used to gain efficiency. Matching actually CAUSES confounding in case-control studies, and therefore, one must adjust for matching factors.
+- Matching ensures positivity in the matched population because strata with only treated, or untreated, individuals are excluded from the analysis. Any target population can be chosen.**ATT**
+
+---
+class: middle
+###EFFECT MODIFICATION WITH NO INTERACTION AND INTERACTION WITH NO EFFECT MODIFICATION
+
+.pull-left[
+&lt;img src="images/l13_tvwdistinctionfig1.jpg" width="60%" style="display: block; margin: auto;" /&gt;
+
+FIGURE 1.: Effect modification by Q of the effect of E on D without interaction between the effects of E and Q on D.
+]
+
+--
+.pull-right[
+&lt;img src="images/l13_tvwdistinctionfig2.jpg" width="60%" style="display: block; margin: auto;" /&gt;
+
+FIGURE 2.: Potential interaction between the effects of E and Q on D without effect modification by Q of the effect of E on D.
+]
+
+[On the Distinction Between Interaction and Effect Modification. VanderWeele, Tyler J. (2009)](https://journals.lww.com/epidem/Fulltext/2009/11000/On_the_Distinction_Between_Interaction_and_Effect.16.aspx#A2-16)
+
+---
+class:middle
+###EFFECT MODIFICATION WITH NO INTERACTION AND INTERACTION WITH NO EFFECT MODIFICATION
+
+.pull-left[
+&lt;img src="images/l13_tvwdistinctionfig3.jpg" width="60%" style="display: block; margin: auto;" /&gt;
+
+FIGURE 3.: Identification of effect modification of the effect of E on D by Q without identification of the joint effects of E and D.
+]
+
+--
+.pull-right[
+&lt;img src="images/l13_tvwdistinctionfig4.jpg" width="60%" style="display: block; margin: auto;" /&gt;
+
+FIGURE 4.: Identification of the joint effects of E and D without identification of effect modification of the effect of E on D by Q.
+]
+
+
+[On the Distinction Between Interaction and Effect Modification. VanderWeele, Tyler J. (2009)](https://journals.lww.com/epidem/Fulltext/2009/11000/On_the_Distinction_Between_Interaction_and_Effect.16.aspx#A2-16)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "3:2",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
