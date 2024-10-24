@@ -1,0 +1,3097 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Logistic vs Binomial regressions and other alternatives to model binary outcomes</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mabel Carabali" />
+    <script src="libs/header-attrs-2.28/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Logistic vs Binomial regressions and other alternatives to model binary outcomes
+]
+.author[
+### Mabel Carabali
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### Updated: 2024-10-09
+]
+
+---
+
+
+
+
+
+
+
+
+class: middle
+&lt;img src="images/codingscreen.jpg" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: middle
+**Objective:** To review core concepts of logistic regression and identify opportunities to estimate absolute and relative measures of association when the outcome is binary
+
+### Outline
+1) (mini) Review of concepts (Slides 4-17)
+  - Outcome’s distribution and study designs
+  - Regression adjustment (Why and When)
+  
+2) Alternatives to obtain absolute measures when the outcome is binary (Slides 18-85)
+  - Prediction (at the modes, means)
+  - Marginal standardization
+  - Log binomial regression
+
+**Extra slides:** For own review (86- 95)
+---
+
+## What do we know so far?
+
+&lt;img src="images/L11models.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+SZKLO, M.; NIETO, F. J.Epidemiology. Burlington, Massachusetts: Jones &amp; Bartlett Learning, 2019. V. Fourth edition.(Table 7-15)
+
+---
+class: middle
+### What do we know so far?
+
+| Method   | Characteristics  |  Outcome    | Measure  |
+|:---------|:----------------:|:------------|:--------:|
+|Standardization| Weight-based adjustment; Depends on the standard pop. selected; No homogeneity needed | Binary or categorical | SMR|
+|Mantel- Haenszel Adjustment| Requires homogeneity; Do not handle clusters | Binary or categorical |RD, RR, OR|
+|Regression Adjustment| Efficient, Useful for prediction, adjust for several covariates, *require assumptions* | Any type |RD, RR, OR; AME/ATE | 
+|IPTW  `\(^1\)` | Regression + Weights: 1/Pr(X=1, covars);  Ensure Exchangeability; Only for measured Confounders | Any type | **Causal** RD, RR, OR; AME/ATE |
+
+`\(^1\)` More on this later, hopefully with the help of this lecture
+
+.pull-right[**&lt;span style="color:blue"&gt; But wait… When and Why? &lt;/span&gt;**]
+
+
+---
+
+class: middle
+### Model &lt;span style="color:red"&gt; Assumptions &lt;/span&gt; and Considerations
+
+- What is the distribution of the data (for a fixed pattern of covariates)?
+
+- Are the model-specific assumptions met?
+
+- What function will be used to _link_ the mean of the data to the covariates?
+
+- Which covariates should be included in the model?
+
+---
+
+class: middle
+### Remember this table?
+
+|Sample      | Risk Among Exposed | Risk Among Non- Exposed | Risk Difference | Risk Ratio    | Odds Ratio    |
+|:-----------|:------------------:|:-----------------------:|:---------------:|:-------------:|:-------------:|
+| 63 |  0.25 | 0.22 | 0.03 | 1.12| 1.17|
+| 63 |  0.17 | 0.15 | 0.02 | 1.12| 1.15|
+| 630|  0.017 | 0.015 | 0.002 | 1.12| 1.15|
+| 630|  0.25 | 0.22 | 0.03 | 1.12| 1.17|
+
+
+**&lt;span style="color:blue"&gt; But we want _meaningful_ and complementary measures (e.g., RD, RR)!! &lt;/span&gt;**
+
+---
+class: middle
+## “_But my outcome is &lt;span style="color:blue"&gt;dichotomous!_&lt;/span&gt;”
+
+It doesn’t matter!!!
+ 
+ "we are not chained to our output" let's not fell for the ["Risk relativism" By Poole](https://journals.lww.com/epidem/Fulltext/2010/01000/On_the_Origin_of_Risk_Relativism.2.aspx)
+
+We also have &lt;span style="color:blue"&gt;options&lt;/span&gt; and a number of tools at our disposal to directly estimate risks, RRs and RDs 
+
+---
+class: middle
+###Different Approaches
+Parametric: Data/Outcome dependent (&lt;span style="color:red"&gt; Assumptions!&lt;/span&gt;)
+
+1) Frequentist approach
+   - Deductive `\(\to P(Data|H_0)\)`
+   - Uncertainty is given by the 95%Confidence Interval
+   - Maximum likelihood Estimates
+   - Consistent, efficient, asymptotically normal
+
+2) Bayesian approach
+   - Inductive `\(P(\theta|Data)\)`
+   - MCMC, priors!
+   
+
+Be aware of multiplicative models, sample size and number of parameters!
+
+Data cleaning: variables’ coding and missing data
+
+
+---
+class: middle
+
+**Simple models for generating absolute &amp; relative estimates**
+
+
+|Type        | Model               | Estimate  |
+|:----------:|:-------------------:|:---------:|
+|Continuous|Linear Regression | RD  |
+|Binary |Logistic Regression, Binomial Regression|  OR,  **RR**, **RD** |
+|Counts|Poisson, Negative Binomial `\(^1\)` | IR, IRR, **RD**  |
+
+
+**Assuming:** 
+- Simple random sampling from a target population 
+- Adequate sample size
+
+
+`\(^1\)` More on this on Poisson regression's lecture.
+
+---
+### Simulations for the impact of priors in data analysis
+
+Consider several data scenarios, each time assuming that the true parameter values are a = −2 and b = 0.8 and that the values of `\(x\)` are drawn from a uniform distribution between −1 and 1.    
+- To repeat the same analyses (Bayesian &amp; frequentist) with different sample sizes, we write a function.
+- `bayes_sim()` enables the analysis to be sequentially performed as a both standard (maximum likelihood, `glm`) and Bayesian (`stan_glm`) logistic regression with varying sample sizes.       
+
+
+``` r
+library("arm", "rstanarm")   
+set.seed(1234)
+bayes_sim &lt;- function(n, a = -2, b = 0.8) {
+  data &lt;- tibble(x = runif(n, min = -1, max = 1),
+      y = if_else(0 &lt; rlogis(n, location = a + b * x, scale = 1), 1, 0))
+  fit_glm &lt;- glm(y ~ x, family = binomial(link = "logit"), data = data)
+  fit_stan &lt;- stan_glm(y ~ x, family = binomial(link = "logit"),
+      data = data, refresh = 0,
+*     prior = normal(location = 0.5, scale = 0.5))
+  arm::display(fit_glm, digits = 1)
+  cat("\n")
+  print(fit_stan, digits = 1)
+}
+```
+---
+
+### Simulation study n = 10
+
+Focus on inference about b, which was assigned a value = 0.8 when generating the data
+
+
+``` r
+set.seed(1234); bayes_sim(n=10) #small sample size of only 10 obervations
+```
+
+```
+## glm(formula = y ~ x, family = binomial(link = "logit"), data = data)
+##             coef.est coef.se
+## (Intercept) -2.4      1.2   
+## x            1.4      2.8   
+## ---
+##   n = 10, k = 2
+##   residual deviance = 6.2, null deviance = 6.5 (difference = 0.3)
+## 
+## stan_glm
+##  family:       binomial [logit]
+##  formula:      y ~ x
+##  observations: 10
+##  predictors:   2
+## ------
+##             Median MAD_SD
+## (Intercept) -2.1    0.9  
+## x            0.5    0.5  
+## 
+## ------
+## * For help interpreting the printed output see ?print.stanreg
+## * For info on the priors used see ?prior_summary.stanreg
+```
+
+---
+class:middle
+### Simulation study n = 10 interpretation
+
+With only 10 observations, the maximum likelihood estimate is noisy,and in this simulation, `glm` gives a maximum likelihood estimate of 1.4, with a large se = 2.8, confirming that the likelihood provides little precision (information)      
+&lt;br&gt;
+&lt;br&gt;
+
+As expected with little data the Bayesian posterior will be influenced the prior.
+- Inference from `stan_glm` relies heavily on the prior distribution: the Bayes estimate of the coefficient = 0.6 is close to the prior mean of 0.5, being pulled away by the data only slightly.     
+&lt;br&gt;
+
+
+```
+## Priors for model 'fit_stan' 
+## ------
+## Intercept (after predictors centered)
+##  ~ normal(location = 0, scale = 2.5)
+## 
+## Coefficients
+##  ~ normal(location = 0.5, scale = 0.5)
+## ------
+## See help('prior_summary.stanreg') for more details
+```
+
+
+
+
+
+---
+### Simulation study n = 100
+
+
+``` r
+set.seed(1234); bayes_sim(n=100)
+```
+
+```
+## glm(formula = y ~ x, family = binomial(link = "logit"), data = data)
+##             coef.est coef.se
+## (Intercept) -1.7      0.3   
+## x            0.1      0.5   
+## ---
+##   n = 100, k = 2
+##   residual deviance = 84.5, null deviance = 84.5 (difference = 0.0)
+## 
+## stan_glm
+##  family:       binomial [logit]
+##  formula:      y ~ x
+##  observations: 100
+##  predictors:   2
+## ------
+##             Median MAD_SD
+## (Intercept) -1.7    0.3  
+## x            0.3    0.4  
+## 
+## ------
+## * For help interpreting the printed output see ?print.stanreg
+## * For info on the priors used see ?prior_summary.stanreg
+```
+
+---
+class:middle
+### Simulation study n = 100 interpretation
+
+With 100 observations, the maximum likelihood estimate has now excluded  more extreme values and provides a more precise estimate, and in this simulation, `glm` gives a MLE = 0.1, with a smaller se = 0.5 (was 2.4), confirming that the likelihood (data) provides modest precision (information) and the CI includes the true paramter value (0.8)     
+&lt;br&gt;
+&lt;br&gt;
+
+As expected with more data the Bayesian posterior will be less influenced the prior. 
+- Nevertheless, the inference from `stan_glm`, parameter = 0.3 has still seen the data (0.1) pulled towards the prior (0.5) but less than with the previous smaller sample size   
+&lt;br&gt;
+
+---
+### Simulation study n = 1000
+
+
+``` r
+set.seed(1234); bayes_sim(n=1000)
+```
+
+```
+## glm(formula = y ~ x, family = binomial(link = "logit"), data = data)
+##             coef.est coef.se
+## (Intercept) -2.3      0.1   
+## x            0.9      0.2   
+## ---
+##   n = 1000, k = 2
+##   residual deviance = 639.3, null deviance = 663.3 (difference = 23.9)
+## 
+## stan_glm
+##  family:       binomial [logit]
+##  formula:      y ~ x
+##  observations: 1000
+##  predictors:   2
+## ------
+##             Median MAD_SD
+## (Intercept) -2.3    0.1  
+## x            0.9    0.2  
+## 
+## ------
+## * For help interpreting the printed output see ?print.stanreg
+## * For info on the priors used see ?prior_summary.stanreg
+```
+
+---
+class:middle
+### Simulation study n = 1000 interpretation
+
+With 1000 observations, the maximum likelihood estimate now provides an accurate and precise estimate (0.9, se = 0.2) of the known parameter, `\(\beta_1 = 0.8\)`     
+&lt;br&gt;
+&lt;br&gt;
+The Bayes estimate is now also dominated  by the data with an almost negligible effect of the prior.      
+Once $n $is as large as 1000, a weak or even a modest prior distribution doesn’t really make a difference and the two approaches produce essentially identical results.
+
+
+---
+
+### Building a Bayesian logistic regression model - A public health example
+
+**Wells in Bangladesh**     
+Example from [Regression and other Stories - Chapters 13-14](https://avehtari.github.io/ROS-Examples/)
+
+
+&lt;img src="images/bangladesh_map.png" width="50%" style="display: block; margin: auto;" /&gt;
+---
+###Background: 
+
+Research teams from the US and Bangladesh measured  all the wells and labeled them with their arsenic level as well as a characterization as “safe” (&lt;0.5 micrograms per liter)     
+
+People with unsafe wells were encouraged to switch to nearby private  or community wells or to new wells of their own construction.  A few years later, the researchers returned to find out who had switched wells. We shall perform  a logistic regression analysis to understand the factors **predictive **of well switching among the users  of unsafe wells.     
+
+**.red[Variables:]** 
+- **Outcome:** `\(y_i\)` = 1 if household i switched or = 0 if household i continued using its own well.      
+Potential independent (predictor) variables are    
+  • distance (in meters) to the closest known safe well    
+  • arsenic level of respondent’s well      
+  • any household members  active in community organizations     
+  • education level of the head of household     
+  
+We shall first fit the model just using distance to the nearest well and then put in arsenic  concentration, organizational membership, and education. [Regression and other Stories](https://avehtari.github.io/ROS-Examples/)
+---
+
+###Read in the data
+
+``` r
+# Data on arsenic in unsafe wells in Bangladesh
+# remotes::install_github("avehtari/ROS-Examples",subdir = "rpackage")
+library(rosdata)
+data(wells)
+file_common &lt;- here::here("_common.R")  # Specific formating and functions
+source(file_common) # Run common code
+str(wells)
+```
+
+```
+## 'data.frame':	3020 obs. of  7 variables:
+##  $ switch : int  1 1 0 1 1 1 1 1 1 1 ...
+##  $ arsenic: num  2.36 0.71 2.07 1.15 1.1 3.9 2.97 3.24 3.28 2.52 ...
+##  $ dist   : num  16.8 47.3 21 21.5 40.9 ...
+##  $ dist100: num  0.168 0.473 0.21 0.215 0.409 ...
+##  $ assoc  : int  0 0 0 0 1 1 1 0 1 1 ...
+##  $ educ   : int  0 0 10 12 14 9 4 10 0 0 ...
+##  $ educ4  : num  0 0 2.5 3 3.5 2.25 1 2.5 0 0 ...
+```
+---
+class:middle
+###Data overview
+.pull-left[
+Table 1.
+
+``` r
+#summary(wells) # details can found with ?wells
+wells %&gt;%  tbl_summary()
+```
+
+<div id="qeayjdrzqo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#qeayjdrzqo table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#qeayjdrzqo thead, #qeayjdrzqo tbody, #qeayjdrzqo tfoot, #qeayjdrzqo tr, #qeayjdrzqo td, #qeayjdrzqo th {
+  border-style: none;
+}
+
+#qeayjdrzqo p {
+  margin: 0;
+  padding: 0;
+}
+
+#qeayjdrzqo .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#qeayjdrzqo .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#qeayjdrzqo .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#qeayjdrzqo .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#qeayjdrzqo .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qeayjdrzqo .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qeayjdrzqo .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qeayjdrzqo .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#qeayjdrzqo .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#qeayjdrzqo .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#qeayjdrzqo .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#qeayjdrzqo .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#qeayjdrzqo .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#qeayjdrzqo .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#qeayjdrzqo .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qeayjdrzqo .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#qeayjdrzqo .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#qeayjdrzqo .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#qeayjdrzqo .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qeayjdrzqo .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#qeayjdrzqo .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#qeayjdrzqo .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#qeayjdrzqo .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qeayjdrzqo .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#qeayjdrzqo .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#qeayjdrzqo .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qeayjdrzqo .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qeayjdrzqo .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#qeayjdrzqo .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qeayjdrzqo .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#qeayjdrzqo .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qeayjdrzqo .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qeayjdrzqo .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qeayjdrzqo .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qeayjdrzqo .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qeayjdrzqo .gt_left {
+  text-align: left;
+}
+
+#qeayjdrzqo .gt_center {
+  text-align: center;
+}
+
+#qeayjdrzqo .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#qeayjdrzqo .gt_font_normal {
+  font-weight: normal;
+}
+
+#qeayjdrzqo .gt_font_bold {
+  font-weight: bold;
+}
+
+#qeayjdrzqo .gt_font_italic {
+  font-style: italic;
+}
+
+#qeayjdrzqo .gt_super {
+  font-size: 65%;
+}
+
+#qeayjdrzqo .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#qeayjdrzqo .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#qeayjdrzqo .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#qeayjdrzqo .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#qeayjdrzqo .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#qeayjdrzqo .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#qeayjdrzqo .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#qeayjdrzqo .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#qeayjdrzqo div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="label"><span class='gt_from_md'><strong>Characteristic</strong></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="stat_0"><span class='gt_from_md'><strong>N = 3,020</strong></span><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left">switch</td>
+<td headers="stat_0" class="gt_row gt_center">1,737 (58%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">arsenic</td>
+<td headers="stat_0" class="gt_row gt_center">1.30 (0.82, 2.20)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">dist</td>
+<td headers="stat_0" class="gt_row gt_center">37 (21, 64)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">dist100</td>
+<td headers="stat_0" class="gt_row gt_center">0.37 (0.21, 0.64)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">assoc</td>
+<td headers="stat_0" class="gt_row gt_center">1,277 (42%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">educ</td>
+<td headers="stat_0" class="gt_row gt_center">5 (0, 8)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">educ4</td>
+<td headers="stat_0" class="gt_row gt_center">1.25 (0.00, 2.00)</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="2"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> <span class='gt_from_md'>n (%); Median (Q1, Q3)</span></td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+]
+--
+
+.pull-right[
+How many homes with unsafe wells switched?
+
+
+``` r
+wells %&gt;% count(switch) %&gt;% 
+  mutate(prop = n / sum(n))
+```
+
+```
+#&gt;   switch    n  prop
+#&gt; 1      0 1283 0.425
+#&gt; 2      1 1737 0.575
+```
+]
+
+
+
+---
+
+###  Visualization
+.red[A helpful visualization]    
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-11-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
+As expected, the % of households increases with the arsenic level in their well, from about 40% for wells that are just over the safety threshold to perhaps 80% for very high levels. The sparse data for high arsenic levels results in a large uncertainty.        
+What is the .blue[blue] line?             
+--
+&lt;br&gt;
+- The .blue[blue] line is a non-parametric approach to draw a smooth curve through a scatter plot, known as LOWESS (Locally Weighted Scatterplot Smoothing),or sometimes called LOESS (locally weighted smoothing)
+
+---
+###Logistic regression with just one predictor  
+Fit the logistic regression 
+
+``` r
+fit_0 &lt;- stan_glm(switch ~ dist, family=binomial(link="logit"), refresh=0, data=wells, seed=123)
+print(fit_0, digits = 4)
+```
+
+```
+#&gt; stan_glm
+#&gt;  family:       binomial [logit]
+#&gt;  formula:      switch ~ dist
+#&gt;  observations: 3020
+#&gt;  predictors:   2
+#&gt; ------
+#&gt;             Median  MAD_SD 
+#&gt; (Intercept)  0.6073  0.0599
+#&gt; dist        -0.0062  0.0009
+#&gt; 
+#&gt; ------
+#&gt; * For help interpreting the printed output see ?print.stanreg
+#&gt; * For info on the priors used see ?prior_summary.stanreg
+```
+What happens to the `\(\beta\)` coefficient if we change distance in meters to 100 meter units?
+---
+###Logistic regression with just one predictor  
+
+Fit the logistic regression 
+
+``` r
+wells$dist100 &lt;- wells$dist/100  #change distance from meters to 100 meter units
+fit_1 &lt;- stan_glm(switch ~ dist100, family=binomial(link="logit"), refresh=0, data=wells, seed=123)
+print(fit_1, digits = 4)
+```
+
+```
+#&gt; stan_glm
+#&gt;  family:       binomial [logit]
+#&gt;  formula:      switch ~ dist100
+#&gt;  observations: 3020
+#&gt;  predictors:   2
+#&gt; ------
+#&gt;             Median  MAD_SD 
+#&gt; (Intercept)  0.6073  0.0599
+#&gt; dist100     -0.6234  0.0946
+#&gt; 
+#&gt; ------
+#&gt; * For help interpreting the printed output see ?print.stanreg
+#&gt; * For info on the priors used see ?prior_summary.stanreg
+```
+
+.red[If divide (or multiply) units by X then coefficient for X is multiplied (or divided) by X]
+---
+
+class:middle
+###Interpreting coefficients - Three different scales 
+We can interpret the coefficient estimates on 3 different scales    
+`$$log\, odds (switch) = logit\dfrac{p}{1-p} = 0.61 − 0.62 ∗ dist100$$`
+&lt;br&gt;
+`$$odds= exp^{logit} = exp^{0.61 − 0.62 ∗ dist100}$$`
+&lt;br&gt;
+`$$Pr\, (switch) = logit^{-1}(0.61 − 0.62 ∗ dist100) = \dfrac{1}{1 + exp^{-(0.61 − 0.62 ∗ dist100)}}$$`  
+---
+class:middle
+###Interpreting the logistic regression .red[intercept]    
+`$$log\, odds (switch) = logit\dfrac{p}{1-p} = 0.61 − 0.62 ∗ dist100$$`     
+
+**The constant term (intercept) is value when `dist100` = 0 **         
+i) log odds (switching)  = 0.61      
+&lt;br&gt;
+ii) odds (switching) = `\(e^{0.61}\)` = 1.84    
+&lt;br&gt;
+iii) P(switching) `\(p = \dfrac{odds}{odds + 1} = \dfrac{1.84}{2.84} = .65\)`, by rearranging `\(odds = \dfrac{p}{1-p}\)`              
+&lt;br&gt;
+
+--
+More directly, constant term = probability(switching) when `dist100` = 0
+`\(logit^{-1}(0.61) = \dfrac{1}{1+e^{-0.61}} = 0.65\)` or with `R` code  `invlogit(0.61) = 0.65`       
+Thus, model estimates a 65% probability of switching if live right  next to an existing safe well   
+
+---
+###Logistic regression with just one predictor  
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-14-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+The probability of switching is about 65% `invlogit(.61)` for people who  live near a safe well, declining to about 20% for people who live more than 300 meters from any safe  well. This makes sense: the probability of switching is higher for people who live closer to a safe  well.
+---
+class:middle
+###Interpreting the `\(\beta_1\)` regression coefficient      
+
+.large[.red[Remember this interpretation can also be made on 3 different scales]]          
+`$$log\, odds (switch) = logit\dfrac{p}{1-p} = 0.61 − 0.62 ∗ dist100$$`  
+
+i) Change in log odds for unit change in `dist100` = -0.62     
+&lt;br&gt;
+ii) `\(\Delta\)` odds = `exp(-0.62)` = 0.54 (&lt; likely to switch for each 100m increase in distance) 
+.red[The ratio of the Odds, comparing each 100m increase vs 0mts]
+&lt;br&gt;
+iii) Since probability scale is nonlinear, `\(\dfrac{1}{1+e^{-0.61−0.62∗dist100}}\)`, must choose where to evaluate the effect of a 1 unit change in the `dist100` variable
+---
+class:middle
+###Interpreting the `\(\beta_1\)` regression coefficient      
+&lt;br&gt;
+- Often choose predictor mean (steepest part of logistic curve)       
+`mean(wells$dist100)` = 0.48         
+- Linear predictor for logit function = 0.61 − 0.62 ∗ 0.48 = 0.31         
+- P(switching) = `invlogit(.31)` = 0.57 (reverts back to (0,1) probability scale)        
+- Logit linear predictor for a 1 unit increment from the mean value = 0.61 − 0.62 ∗ 1.48 = -0.31     
+- P(switching) = `invlogit(-0.31)` = 0.42    
+
+Thus, adding 100 meters to the distance to the nearest safe well (from the mean distance), decreases the probability of switching by about 15% (57%-42%).    
+
+---
+class:middle
+###Interpreting the logistic regression intercept    
+`$$log\, odds (switch) = logit\dfrac{p}{1-p} = 0.61 − 0.62 ∗ dist100$$`     
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-15-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class:middle
+###Interpreting the `\(\beta_1\)` regression coefficient    
+**Divide  by 4 rule**
+
+The slope (1st derivative) of the inverse logistic function = `\(\frac{d(1/(1+exp(x)^{-1})}{dx}\)`
+`$$\dfrac{e^x}{{(e^{x}+1})^2}$$` 
+(if you forgot how to take  derivatives use `D(expression(1/(1+exp(x)^-1)), "x")`   
+
+--
+
+The logistic curve is steepest at its center, which occurs when the linear predictors `\(\alpha + \beta x\)` = 0 so that `invlogit(0)` = 0.5. 
+
+Substituting x=0 into the 1st derivative equation maximizes the slope and equals `$$\beta\dfrac{e^0}{{(e^{0}+1})^2} = \dfrac{\beta}{4}$$`
+Thus, `\(\dfrac{\beta}{4} = -0.62/4 = -0.15\)` is the maximum `\(\Delta\)` in Pr(y = 1)  corresponding to a unit difference in x.  
+
+---
+
+class: middle
+### Graphing the fitted model with two predictors
+**Probability switching to new well by distance and arsenic level**
+
+
+
+.pull-left[
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-17-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-18-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+## Recall: Linear Regression Model
+Review: _“The effect of a given change in an independent variable is the same regardless the value of that variable at the start of it changes and regardless of the level of the other variables in the model.”_
+
+  `\(y = α+ βx + 𝛅d\)`  
+
+&lt;img src="images/L11lm.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+Adapted from: Long, J., &amp; Freese, J. (2006).Regression models for categorical dependent variables using stata(Second ed.). College Station, Texas: StataCorp LP.
+
+
+
+---
+####Linear Probability Model for RDs when the outcome is binary: 
+.pull-left[
+&lt;table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Observations &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3020 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Dependent variable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; switch &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Type &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; OLS linear regression &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt; &lt;table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; F(1,3018) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 42.57 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; R² &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Adj. R² &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt; &lt;table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 2.5% &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 97.5% &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; t val. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.65 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.62 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.68 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 45.19 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; dist100 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.15 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6.52 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; Standard errors: OLS&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
+]
+
+--
+.pull-right[
+&lt;table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Observations &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3020 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Dependent variable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; switch &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Type &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; OLS linear regression &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt; &lt;table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; F(1,3018) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.90 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; R² &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Adj. R² &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt; &lt;table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 2.5% &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 97.5% &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; t val. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.59 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.57 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 49.88 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; assoc &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.07 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.97 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.05 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; Standard errors: OLS&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
+]
+
+**Remember the divide by 4 rule?**
+`\(\dfrac{\beta}{4} = -0.62/4 = -0.15\)` is the maximum difference in Pr(y = 1)  corresponding to a unit difference in x. **Would it work here too?**
+
+---
+class: middle
+
+### (I) Linear Probability Model for RDs when the outcome is binary: 
+
+.pull-left[
+**&lt;span style="color:blue"&gt; Advantages:&lt;/span&gt;**   	
+- Very easy to fit
+- Single uniform estimate
+- _Economists will love you_
+]
+.pull-right[
+**&lt;span style="color:blue"&gt; Disadvantages:&lt;/span&gt;**  	
+- Possible to get _impossible_ estimates
+- Biostatisticians will hate you
+]
+
+Fit an OLS linear regression on the binary outcome variable:  `\(Pr(Y=1|X=x) = β0 + β1X\)` 
+
+**Note:**  Homoskedasticity assumption cannot be met, since variance is a function of `\(p\)`.  Therefore, use robust variance.  
+
+
+
+---
+class: middle
+###Multiplicative Models 
+Review: _“The effect of a change in a variable **depends** on the values of all variables in the model and it’s no longer simply equal to one of the parameters in the model”_
+
+&lt;img src="images/L11nlm.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+Adapted from: Long, J., &amp; Freese, J. (2006).Regression models for categorical dependent variables using Stata (Second ed.). College Station, Texas: StataCorp LP.
+
+
+---
+class: middle
+###Multiplicative Models - Review
+
+- Binary outcomes
+- Expressed on a transformed scale, it prescribes a linear relationship between the log-odds of Y and X.
+
+`$$P(X=1) = \frac{exp(\alpha + \beta_x)} {1 + exp(\alpha + \beta_x)}$$`
+
+- The log odds of the outcome is linearly related to `\(x\)`, with intercept coefficient `\(\alpha\)` and slope coefficient `\(\beta\)`
+ - i.e., the logistic model is an **additive model** when expressed on the log odds scale.
+
+---
+class: middle
+## Logistic Regression: Log Odds vs Probabilities
+
+&lt;img src="images/L11lr.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: middle
+### (II) Logistic Models for RDs and RRs
+
+.pull-left[
+**&lt;span style="color:blue"&gt; Disadvantages: &lt;/span&gt; **	
+ - Does not give a **single** uniform estimate 
+ - Choose between different formulations		
+]
+.pull-right[
+**&lt;span style="color:blue"&gt; Advantages:  &lt;/span&gt;**  	
+ - Always fits easily
+ - Can never get impossible estimates
+ - Epidemiologists will love you
+]
+
+		
+
+---
+
+class: middle
+### Logistic Models for RDs and RRs
+Several approaches:
+- Transformation of ORs, estimation of RRs/RDs with different models
+
+**Simple as:**
+
+**(1)** Fit a logistic regression
+
+**(2)** Predict probabilities based on the regression parameters (several options to do this!)
+
+**(3)** Use these probabilities to calculate risk ratios/risk differences
+
+---
+class: middle
+### (1) Fit a standard logistic regression model:
+
+.pull-left-narrow[
+**The Frequentist way**
+
+``` r
+mod2a &lt;- glm(switch ~ assoc, data=wells, family = "binomial")
+round(summ(mod2a, confint = T)$"coeftable", 2) #;summ(mod2a)
+```
+
+```
+#&gt;              Est.  2.5% 97.5% z val.    p
+#&gt; (Intercept)  0.37  0.27  0.46   7.50 0.00
+#&gt; assoc       -0.15 -0.29  0.00  -1.97 0.05
+```
+]
+.pull-right-narrow[
+**The Bayesian way:**
+
+``` r
+mod2b &lt;- stan_glm(switch ~ assoc, family=binomial(link="logit"), data=wells, refresh=0) 
+round(mod2b$stan_summary[1:2,1:5-10], 2) #; print(mod2b, digits = 2) #; summary(mod2b)
+```
+
+```
+#&gt;              mean se_mean   sd  2.5% 97.5% n_eff Rhat
+#&gt; (Intercept)  0.36       0 0.05  0.27  0.45  3076    1
+#&gt; assoc       -0.15       0 0.07 -0.29  0.00  3013    1
+```
+]
+
+.pull-right[Next: obtain the predicted probabilities]
+
+---
+class: middle
+###(2) Estimate the probabilities based on/using the regression parameters and the observed data (i)
+
+
+``` r
+p1&lt;- predict(mod2a, newdata = transform(wells, assoc=1), type="response")
+summary(p1) # probabilities among "Exposed"
+```
+
+```
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;   0.554   0.554   0.554   0.554   0.554   0.554
+```
+
+``` r
+p0&lt;- predict(mod2a, newdata = transform(wells, assoc=0), type="response")
+summary(p0) # probabilities among "Unexposed"
+```
+
+```
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;    0.59    0.59    0.59    0.59    0.59    0.59
+```
+
+.pull-right[Next: contrast the predicted probabilities]
+
+---
+class: middle
+###(3) Use these probabilities to calculate average "predictive" risk ratios/risk and differences
+
+
+``` r
+RR&lt;- p1/p0 # Calculate the ratio contrast
+#summary(RR)
+round(mean(RR), 2)
+```
+
+```
+#&gt; [1] 0.94
+```
+
+``` r
+RD&lt;- p1-p0 # Calculate the difference contrast
+#summary(RD) 
+round(mean(RD),2)
+```
+
+```
+#&gt; [1] -0.04
+```
+
+
+.pull-right[ &lt;span style="color:blue"&gt; Then we just obtained our RDs and RRs...&lt;/span&gt; ]
+
+
+---
+class: middle
+#### (2) Estimate the probabilities based on/using the regression parameters and the observed data (ii)
+
+**_Inverse logit_ option:** 
+
+The syntax is simple, using the "linear combination" for each group "Exposed" and "Unexposed" the functions are `inv.logit`, `invlogit` or any other `function` that estimates the inverse logit 
+`$$logit^{-1}(x) = \dfrac{1}{1+e^{x}}$$`
+
+**RR** &lt;- inv.logit(Linear Combination for Exposed) **&lt;span style="color:red"&gt; `\(/\)` &lt;/span&gt;** inv.logit(Linear Combination Unexposed)
+
+**RD** &lt;- inv.logit(Linear Combination for Exposed) **&lt;span style="color:red"&gt; `\(-\)` &lt;/span&gt;** inv.logit(Linear Combination Unexposed)
+
+
+---
+
+class: middle
+Using the `inv.logit` function: **The Frequentist way**
+
+**&lt;span style="color:blue"&gt; Risk Ratio &lt;/span&gt;**
+
+``` r
+#Using the inv.logit
+rr.i&lt;-inv.logit(mod2a$coefficients["(Intercept)"] + mod2a$coefficients["assoc"]) / 
+  inv.logit(mod2a$coefficients["(Intercept)"] )
+round(rr.i, 2)
+```
+
+```
+#&gt; (Intercept) 
+#&gt;        0.94
+```
+
+**&lt;span style="color:blue"&gt; Risk Difference &lt;/span&gt;**
+
+``` r
+rd.i&lt;-inv.logit(mod2a$coefficients["(Intercept)"] + mod2a$coefficients["assoc"]) - 
+  inv.logit(mod2a$coefficients["(Intercept)"] )
+round(rd.i, 2)
+```
+
+```
+#&gt; (Intercept) 
+#&gt;       -0.04
+```
+
+.pull-right[Contrasting the predicted probabilities in a single step]
+
+---
+
+class: middle
+Using the `invlogit` function: **The Bayesian way**
+
+
+``` r
+beta &lt;- coef(mod2b) # to extract the beta coefficients from the model
+beta
+```
+
+```
+#&gt; (Intercept)       assoc 
+#&gt;       0.365      -0.145
+```
+
+``` r
+yes &lt;- 1 #to assign exposed, assoc= 1
+no &lt;- 0 #to assign unexposed, assoc= 0
+```
+
+.pull-left[
+&lt;span style="color:blue"&gt; Risk Ratio &lt;/span&gt;
+
+``` r
+ratio&lt;- invlogit (beta[1] + beta[2]*yes) /
+         invlogit (beta[1] + beta[2]*no)
+round(mean(ratio), 2)
+```
+
+```
+#&gt; [1] 0.94
+```
+]
+
+.pull-right[
+&lt;span style="color:blue"&gt; Risk Difference &lt;/span&gt;
+
+``` r
+diff &lt;- invlogit (beta[1] + beta[2]*yes) -
+         invlogit (beta[1] + beta[2]*no)
+round(mean(diff), 2)
+```
+
+```
+#&gt; [1] -0.04
+```
+]
+Contrasting the predicted probabilities in a single step! 
+
+---
+class: middle
+
+# How do I interpret these??
+
+--
+
+Average **&lt;span style="color:purple"&gt; predictive &lt;/span&gt;**  ratios and differences effects
+
+
+
+&lt;br&gt;
+  Average **&lt;span style="color:blue"&gt; conditional &lt;/span&gt;**  ratios and differences effects
+  
+
+---
+class: middle
+### Average Marginal Effects
+Where/how you fix your covariates has an impact on your estimated probabilities (and your population of inference). [Muller and MacLehose](https://doi.org/10.1093/ije/dyu029) present us three strategies:
+
+- &lt;span style="color:blue"&gt; Prediction at the modes &lt;/span&gt;: conditional predicted probabilities are calculated for each exposure level with every covariate/confounder fixed at its most common value
+
+- &lt;span style="color:blue"&gt; Prediction at the means &lt;/span&gt;: conditional predicted probabilities are calculated for each exposure level with every covariate/confounder fixed at its mean value
+
+- &lt;span style="color:blue"&gt; Marginal standardization &lt;/span&gt;: predicted probabilities of the outcome are calculated for every observed confounder value and then &lt;span style="color:purple"&gt; combined as a weighted average separately for each exposure level&lt;/span&gt;
+
+[Estimating predicted probabilities from logistic regression: different methods correspond to different target populations, by Clemma J Muller &amp; Richard F MacLehose](https://doi.org/10.1093/ije/dyu029)
+
+---
+class: middle
+###Margins at the Modes
+Assumes everyone had most common values of the confounders:
+
+`\(Pr(Y=1|Set[E=e], Z=zm)\)`
+
+- In the case of a single dichotomous confounder, we’d calculate predicted probabilities of the outcome only for the most frequently observed value of the confounder (0 or 1) in the population
+- As the number of confounders increases, the number of observations in our cells will decrease (all are set to their modal value)
+- Could also predict at most common _JOINT_ covariate pattern, but you’re still standardizing estimates to the population of those w/the modal distribution of Z
+- &lt;span style="color:purple"&gt; Might be okay if the modal population is of interest, but likely misleading if you want to say something about the full population &lt;/span&gt;
+
+
+---
+class: middle
+#### Let's go back to our example of **Wells in Bangladesh**
+.pull-left[
+
+<div id="swtqchsyre" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#swtqchsyre table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#swtqchsyre thead, #swtqchsyre tbody, #swtqchsyre tfoot, #swtqchsyre tr, #swtqchsyre td, #swtqchsyre th {
+  border-style: none;
+}
+
+#swtqchsyre p {
+  margin: 0;
+  padding: 0;
+}
+
+#swtqchsyre .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#swtqchsyre .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#swtqchsyre .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#swtqchsyre .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#swtqchsyre .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#swtqchsyre .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#swtqchsyre .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#swtqchsyre .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#swtqchsyre .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#swtqchsyre .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#swtqchsyre .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#swtqchsyre .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#swtqchsyre .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#swtqchsyre .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#swtqchsyre .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#swtqchsyre .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#swtqchsyre .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#swtqchsyre .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#swtqchsyre .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#swtqchsyre .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#swtqchsyre .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#swtqchsyre .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#swtqchsyre .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#swtqchsyre .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#swtqchsyre .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#swtqchsyre .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#swtqchsyre .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#swtqchsyre .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#swtqchsyre .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#swtqchsyre .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#swtqchsyre .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#swtqchsyre .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#swtqchsyre .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#swtqchsyre .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#swtqchsyre .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#swtqchsyre .gt_left {
+  text-align: left;
+}
+
+#swtqchsyre .gt_center {
+  text-align: center;
+}
+
+#swtqchsyre .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#swtqchsyre .gt_font_normal {
+  font-weight: normal;
+}
+
+#swtqchsyre .gt_font_bold {
+  font-weight: bold;
+}
+
+#swtqchsyre .gt_font_italic {
+  font-style: italic;
+}
+
+#swtqchsyre .gt_super {
+  font-size: 65%;
+}
+
+#swtqchsyre .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#swtqchsyre .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#swtqchsyre .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#swtqchsyre .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#swtqchsyre .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#swtqchsyre .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#swtqchsyre .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#swtqchsyre .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#swtqchsyre div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="label"><span class='gt_from_md'><strong>Characteristic</strong></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="stat_0"><span class='gt_from_md'><strong>N = 3,020</strong></span><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left">switch</td>
+<td headers="stat_0" class="gt_row gt_center">1,737 (58%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">arsenic</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Median (Q1, Q3)</td>
+<td headers="stat_0" class="gt_row gt_center">1.30 (0.82, 2.20)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Min, Max</td>
+<td headers="stat_0" class="gt_row gt_center">0.51, 9.65</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">dist100</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Median (Q1, Q3)</td>
+<td headers="stat_0" class="gt_row gt_center">0.37 (0.21, 0.64)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Min, Max</td>
+<td headers="stat_0" class="gt_row gt_center">0.00, 3.40</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">assoc</td>
+<td headers="stat_0" class="gt_row gt_center">1,277 (42%)</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="2"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> <span class='gt_from_md'>n (%)</span></td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+]
+--
+.pull-right[
+**Arsenic Levels in the Wells**
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-34-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-35-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+class: middle
+#### Let's model the "switch" outcome as a function of the As level and whether the owner belongs to a community association.
+.pull-left[
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-36-1.svg" width="95%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-37-1.svg" width="95%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class: middle
+#### Let's model the "switch" outcome as a function of the As. level and whether the owner belongs to a community association.
+**Frequentist**
+
+``` r
+mod3a &lt;- glm(switch ~ assoc + arsenic, data=wells, family = "binomial")
+round(summ(mod3a, confint = T)$"coeftable", 2) #;summ(mod3a)
+```
+
+```
+#&gt;              Est.  2.5% 97.5% z val.    p
+#&gt; (Intercept) -0.25 -0.40 -0.10  -3.18 0.00
+#&gt; assoc       -0.13 -0.28  0.02  -1.72 0.09
+#&gt; arsenic      0.38  0.30  0.45   9.80 0.00
+```
+
+**Bayesian**
+
+``` r
+mod3b &lt;- stan_glm(switch ~ assoc + arsenic, family=binomial(link="logit"), 
+                  data=wells, refresh=0) 
+round(mod3b$stan_summary[1:3,1:5-10], 2) #; print(mod3b, digits = 2) #; summary(mod3b)
+```
+
+```
+#&gt;              mean se_mean   sd  2.5% 97.5% n_eff Rhat
+#&gt; (Intercept) -0.25       0 0.08 -0.41 -0.10  4109    1
+#&gt; assoc       -0.13       0 0.08 -0.28  0.01  3997    1
+#&gt; arsenic      0.38       0 0.04  0.31  0.45  3958    1
+```
+
+
+
+---
+
+class: middle
+#### Predicted probabilities of "switch" to a safer well by whether the owner is member of a community organization througout the observed range of As level in the household wells.
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-40-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+ **&lt;span style="color:blue"&gt; What would be the RD and RR?&lt;/span&gt;**
+ 
+ 
+---
+class: middle
+#### Estimated RR and RD using the probabilities from the logistic model
+
+.pull-left[
+**&lt;span style="color:blue"&gt; Risk Difference &lt;/span&gt;**
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-41-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+**&lt;span style="color:blue"&gt;  Risk Ratio &lt;/span&gt;**
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-42-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+--
+
+
+``` r
+wells$pp0 &lt;- predict(mod3a, newdata = transform(wells, assoc=0), type="response")
+wells$pp1 &lt;- predict(mod3a, newdata = transform(wells, assoc=1), type="response")
+```
+
+.pull-left[
+**&lt;span style="color:blue"&gt; Risk Difference  &lt;/span&gt;**
+
+``` r
+wells$pp.rd &lt;- wells$pp1 - wells$pp0
+plot(wells$arsenic, wells$pp.rd, ylab="Risk Difference" ,xlab="As. level in the well")
+```
+]
+.pull-right[
+**&lt;span style="color:blue"&gt; Risk Ratio &lt;/span&gt;**
+
+``` r
+wells$pp.rr &lt;- wells$pp1 / wells$pp0
+plot(wells$arsenic, wells$pp.rr, ylab="Risk Ratio" ,xlab="As. level in the well")
+```
+]
+---
+
+class: middle
+Using the `inv.logit` function to obtain the **"overall" RR and RD**
+
+
+``` r
+#Using the inv.logit
+rr.i2&lt;-inv.logit(mod3a$coefficients["(Intercept)"] + 
+                   mod3a$coefficients["arsenic"] + mod3a$coefficients["assoc"]) / 
+  inv.logit(mod3a$coefficients["(Intercept)"]+ mod3a$coefficients["arsenic"] )
+round(rr.i2, 2)
+```
+
+```
+#&gt; (Intercept) 
+#&gt;        0.94
+```
+
+``` r
+rd.i2&lt;-inv.logit(mod3a$coefficients["(Intercept)"] + 
+                   mod3a$coefficients["arsenic"]+  mod3a$coefficients["assoc"]) - 
+  inv.logit(mod3a$coefficients["(Intercept)"]+ mod3a$coefficients["arsenic"] )
+round(rd.i2, 2)
+```
+
+```
+#&gt; (Intercept) 
+#&gt;       -0.03
+```
+
+&lt;span style="color:blue" Did the RR and RR estimates change with the new model? &lt;/span&gt;
+
+
+
+---
+class: middle
+### Margins at the Means
+Assumes everyone in the dataset has the mean value of the confounder(s)
+
+`\(Pr(Y=1|Set[E=e], Z= 𝑧)\)`
+
+- If a confounder is continuous/ordinal, the mean might not reflect any particular individual in the data
+
+- If a confounder is binary, the mean reflects the proportion of subjects with that confounder, _but the mean will (probably) not correspond to any observations in the data_ -predictions will not be true for any individual subject
+
++ Sometimes &lt;span style="color:red"&gt; wrongly interpreted &lt;/span&gt; as the average/marginal probability in the population
+
+
+---
+class: middle
+### Margins at the Means
+
+As per Muller (2014):
+
+ _“In the presence of binary covariates, prediction at the means yields results that are not meaningful to any real-world group of individuals.”_
+- It estimates _associations at the mean of each confounder_ in the regression model
+
+- No one can be half hypertensive or 10% diabetic
+
+- _When calculating predicted probabilities, the inverse logit of the averages (prediction at the means) is not equal to the average of the inverse logits (marginal standardization)_
+
+- This is why these approaches differ, and it’s why they can diverge significantly in certain situations 
+
+[Estimating predicted probabilities from logistic regression: different methods correspond to different target populations, by Clemma J Muller &amp; Richard F MacLehose](https://doi.org/10.1093/ije/dyu029)
+
+---
+class: middle
+###Margins at the Means
+`R` does not have the _‘atmeans’_ option (because it is _often_ Meaningless!)
+
+.pull-left[
+
+``` r
+mean(wells$arsenic); mean(wells$assoc)
+```
+
+```
+#&gt; [1] 1.66
+```
+
+```
+#&gt; [1] 0.423
+```
+
+``` r
+mar.means&lt;-margins(mod3a, 
+          at = list(assoc=mean(wells$assoc)), 
+       type = "response")
+mar.means
+```
+
+```
+#&gt;  at(assoc)    assoc arsenic
+#&gt;     0.4228 -0.03079 0.08913
+```
+]
+
+Similarly:
+.pull-right[
+
+``` r
+margins(mod3a, at = list(assoc= mean(wells$assoc), 
+        arsenic=mean(wells$arsenic)), 
+        type = "response")
+```
+
+```
+#&gt;  at(assoc) at(arsenic)    assoc arsenic
+#&gt;     0.4228       1.657 -0.03178   0.092
+```
+
+&lt;img src="images/L11halfperson.png" width="20%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+class: middle
+###Marginal Standardization
+
+- Prediction at the means involves hypothetical people (with likely impossible covariate patterns), whereas marginal standardization involves hypothetical populations 
+
+- Under this approach, you’re comparing two hypothetical populations that are identical except for exposure status 
+
+- Since the only difference between these two populations is their **exposure status**, we can attribute any differences in the probability of the outcome to the exposure 
+
+- The resulting estimates are essentially weighted to the distribution of confounders in the sample = **Average Marginal Effect (AME)**
+
+
+
+
+---
+class: middle
+### Marginal Standardization
+Basic steps for the AME (assuming a binary exposure): 
+
+- Start at subject #1. Treat that person as though they were exposed (i.e., change exposure to “1”), but don’t change anything else. Compute this subject’s probability of the outcome. 
+
+- Now switch the same subject’s exposure status to “0” (unexposed) and repeat the probability calculation. 
+
+- Take the individual-level difference in the two probabilities 
+  - This is the marginal effect for that subject 
+  - Repeat the process for every subject in the sample 
+  - Compute the average of all the subject-specific marginal effects.
+
+- This gives you the **AME of your exposure!**. 
+
+---
+class: middle
+### Marginal Standardization
+`\(Pr(Y)\)` will be determined by confounder `\((Z)\)` pattern: 
+
+Assuming a binary exposure, the marginal RR/RD are simply: 
+
+`\(RR = Pr(Y=1|Set[E=1]) / Pr(Y=1|Set[E=0])\)`
+
+`\(RD = Pr(Y=1|Set[E=1]) – Pr(Y=0|Set[E=0])\)`
+
+(Z drops out of these equations as we’ve predicted probabilities under the same distribution of Z for both groups) 
+
+&lt;span style="color:blue"&gt;Sounds familiar? ... We have a name for this... &lt;/span&gt;
+
+
+
+---
+class: middle
+###Marginal Standardization
+
+The steps:
+- Generate one new variable representing the predicted risk of the outcome if everyone had been **_exposed_**
+- Generate another new variable representing the predicted risk if everyone had been **_unexposed_**
+
+This will often give you a &lt;span style="color:blue"&gt; different quantity&lt;/span&gt; than you’d get if you ran the usual postestimation commands (i.e., run the logistic, predict the probabilities, and calculate the ratio/difference) 
+
+####This is marginal standardization!
+
+
+---
+class: middle
+###Marginal Standardization (i)
+
+``` r
+#to obtain the conditional probability
+wells$predprob&lt;-predict(mod3a, wells=transform(wells), type="response") 
+#to change the exposure statures with the predicted probabilities
+wells$unex&lt;- wells$predprob
+wells$unex[wells$assoc==1]&lt;- inv.logit(mod3a$coefficients["(Intercept)"]+ 
+                            (mod3a$coefficients["arsenic"]*wells$arsenic)) 
+wells$exp&lt;-wells$predprob
+wells$exp[wells$assoc==0]&lt;- inv.logit(mod3a$coefficients["(Intercept)"] + 
+                           (mod3a$coefficients["arsenic"]*wells$arsenic) + 
+                            (mod3a$coefficients["assoc"]*wells$assoc)) 
+#summary(wells$exp); summary(wells$unex)
+```
+.pull-left[
+**RD**
+
+``` r
+mar.RD &lt;-mean(wells$exp) - (mean(wells$unex))
+wells$m.diff &lt;- (wells$exp-wells$unex)
+mar.RD
+```
+
+```
+#&gt; [1] -0.0208
+```
+
+``` r
+round(summary(wells$m.diff), 2)
+```
+
+```
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;   -0.46   -0.10   -0.02   -0.02    0.06    0.43
+```
+]
+.pull-right[
+**RR**
+
+``` r
+mar.RR &lt;-mean(wells$exp) /(mean(wells$unex))
+wells$m.rr &lt;- (wells$exp/wells$unex)
+mar.RR
+```
+
+```
+#&gt; [1] 0.965
+```
+
+``` r
+round(summary(wells$m.rr), 2)
+```
+
+```
+#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#&gt;    0.50    0.84    0.96    0.98    1.10    1.88
+```
+]
+
+
+
+
+---
+class: middle
+###Marginal Standardization (ii)
+Using Standardization `stdReg` package 
+
+``` r
+#install.packages("stdReg")
+require(stdReg)
+condprob&lt;- stdGlm(fit=mod3a,data = wells, X="assoc", x=c(0:1)); summary(condprob)$est.table #Risk by group
+```
+
+```
+#&gt;   Estimate Std. Error lower 0.95 upper 0.95
+#&gt; 0    0.588     0.0117      0.565      0.611
+#&gt; 1    0.557     0.0138      0.530      0.584
+```
+
+``` r
+summary(condprob, contrast="difference", reference=0)$est.table #std RD
+```
+
+```
+#&gt;   Estimate Std. Error lower 0.95 upper 0.95
+#&gt; 0   0.0000     0.0000      0.000    0.00000
+#&gt; 1  -0.0308     0.0179     -0.066    0.00434
+```
+
+``` r
+summary(condprob, contrast="ratio", reference=0)$est.table #std RR; #summary(condprob, transform="odds", contrast="ratio", reference=0)$est.table #std OR
+```
+
+```
+#&gt;   Estimate Std. Error lower 0.95 upper 0.95
+#&gt; 0    1.000     0.0000      1.000       1.00
+#&gt; 1    0.948     0.0298      0.889       1.01
+```
+
+Nice walk through here: [SjölanderA. Regression standardization with the R package stdReg. European journal of epidemiology. 2016 May 14:1-2.](https://doi.org/10.1007/s10654-016-0157-3)
+
+---
+class: middle
+###Marginal Standardization (ii)
+ Using `Margins` package
+
+``` r
+require(margins)
+margins_summary(mod3a) #; margins(mod3a, at = list(assoc=1), type = "response")
+```
+
+```
+#&gt;   factor     AME     SE       z      p   lower  upper
+#&gt;  arsenic  0.0890 0.0085 10.4179 0.0000  0.0723 0.1058
+#&gt;    assoc -0.0308 0.0178 -1.7253 0.0845 -0.0657 0.0042
+```
+
+``` r
+avdiff&lt;-dydx(wells, mod3a, "assoc", change = "minmax") #; mean(avdiff$dydx_assoc, na.rm = T) ; summary(avdiff)
+```
+--
+- On the scale of the linear predictor
+
+``` r
+margins(mod3a, at = list(assoc=1), type = "link"); exp(-0.1305)
+```
+
+```
+#&gt;  at(assoc)   assoc arsenic
+#&gt;          1 -0.1305  0.3777
+```
+
+```
+#&gt; [1] 0.878
+```
+ 
+ **What's this?**
+
+
+---
+
+class: middle
+###Comparing results
+
+|Model                                  | Frequentist Estimates         | Bayesian Estimates          |
+|:-------------------------------------:|:----------------------------:|:--------------------------:|
+|Linear Model `\(^1\)` | -0.036 | -0.035 |
+|Logit Model (Predicted probs.) `\(^1\)` | RD= -0.036; RR= 0.939 | RD = -0.035; RR= 0.94|
+|Logit Model (Predicted probs.) `\(^2\)` | RD= -0.033; RR= 0.939 | RD= -0.031; RR= 0.945 |
+|AME (prediction `StdGLM`) `\(^2\)` | RD= -0.031; RR= 0.948| - |
+|AME (`margins` at means) `\(^2\)` | RD= -0.031  | - |
+|AME (marginal standardization) `\(^2\)` | RD= -0.021 ; RR= 0.965 | RD= -0.032 ; RR= 0.946 |
+
+
+ `\(^1\)` Single predictor;  `\(^2\)` Two predictors
+ 
+---
+class: middle
+####Estimated RR and RD using the probabilities from the logistic model
+&lt;img src="images/L11clemma.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+Figure 1. Half of a sigmoid curve depicting calculation of predicted probabilities following logistic regression using marginal standardization (dashed straight line) and prediction at the means (solid curved line) in unexposed people from a hypothetical population.
+
+
+[Estimating predicted probabilities from logistic regression: different methods correspond to different target populations, by Clemma J Muller &amp; Richard F MacLehose](https://doi.org/10.1093/ije/dyu029)
+
+
+---
+class: middle
+### (III) Other Generalized Linear Models: 
+**Log binomial:** The log-link function maps the probability of disease 
+
+- Attempts to find a MLE if it exists. 
+- Useful for RDs and RRs
+- Software/packages: SAS’s GENMOD, R’s GLM or STATA’s GLM/binreg. 
+- The MLE can be on the boundary of the parameter space, leading to the difficulty of finding the MLE. 
+
+- The log-link function maps the probability of disease onto the negative real line, requiring the constraint that a linear predictor must be negative.
+
+---
+class: middle
+### Log-Binomial
+.pull-left[
+**&lt;span style="color:blue"&gt; Advantages:&lt;/span&gt;**   	
+- Single uniform estimate
+- Biostatisticians will love you
+]
+.pull-right[
+**&lt;span style="color:blue"&gt; Disadvantages:&lt;/span&gt;**   	 
+- Very difficult to fit
+- Still possible to get impossible values
+]
+
+
+For RDs, fit a GLM with a binomial variance and an identity link
+
+
+`$$g[Pr(Y=1|X=x)] = \beta_0 + \beta_1 X$$`
+
+
+
+      Wacholder S.Binomial regression in GLIM: estimating risk ratios and risk differences. 
+      Am J Epidemiol 1986. Jan;123(1):174-84.62
+
+      Spiegelman D, Hertzmark E. Easy SAS calculations for risk or prevalence ratios and differences. 
+      Am J Epidemiol 2005 Aug 1;162(3):199-200. 
+
+---
+class: middle
+### Logistic vs Log-Binomial
+
+- Both model `\(Pr(Y|X, c)\)`
+- Both assume that the error terms have a binomial distribution.
+- Different links between the X and the Pr(Y):
+  - Logistic regression, the &lt;span style="color:blue"&gt; _logit_ &lt;/span&gt; function
+  - Log-binomial model, the &lt;span style="color:blue"&gt; _log_ &lt;/span&gt; function
+- In general, the log-binomial model produces an unbiased estimate of the adjusted relative risk. 
+- Minimal restriction unless adjustment for many confounders is needed. 
+- The CIs for the adjusted RR may be narrower than is true
+
+
+---
+class: middle
+## Log-Binomial
+
+Let's estimate our RD and RR Using `glm` or `glm2` package
+
+``` r
+mod4a &lt;- glm(switch ~ assoc + arsenic, data = wells, 
+             family=binomial(link="identity"))
+summ(mod4a, confint=T)
+mod4b &lt;-glm(switch ~ assoc + arsenic,  data = wells, 
+            family = binomial(link = "log"))
+summ(mod4b, confint=T)
+```
+
+--
+
+**&lt;span style="color:red"&gt; Error! &lt;/span&gt;**
+&lt;img src="images/L11errorlogbinomial.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: middle
+#### To understand convergency issues we need to talk about:
+**The Likelihood function**, defined (in a regression model) as the probability density of the data given the parameters and predictors.
+- Maximizing the likelihood requires minimizing the sum of squared residuals; 
+  - Hence the least squares estimate can be viewed as a maximum likelihood estimate under the normal model (OLS).
+
+.pull-left[
+&lt;img src="images/L11ros81.png" width="130%" style="display: block; margin: auto;" /&gt;
+] 
+.pull-right[
+&lt;img src="images/L11ros82.png" width="80%" style="display: block; margin: auto;" /&gt;
+] 
+
+[ROS-Gelman, Hill &amp; Vehtari](https://users.aalto.fi/~ave/ROS.pdf)
+
+---
+class: middle
+## Likelihood for GLM - Logistic Regression
+For binary logistic regression with data `\(y_i =\)`  0 or 1, the likelihood is:
+
+`$$p(y|\beta, X) = \prod_{i=1}^n (logit^{-1}(X_i \beta))^{y_i} (1-logit^{-1}(X_i \beta))^{1-{y_i}}$$`
+To find the `\(\beta\)` that maximizes this expression:
+ - Compute the derivative of the logarithm of the likelihood.
+ - Set this derivative equal to 0, and solve for `\(\beta\)`. 
+ 
+There is **no closed-form solution**, but the maximum likelihood estimate can be found using an &lt;span style="color:blue"&gt; iterative optimization algorithm &lt;/span&gt; that converges to a point of _zero_ derivative and 
+  - Thus the vector of coefficients `\(\beta\)` that maximizes the likelihood, when such a maximum exists. 
+
+
+[ROS-Gelman, Hill &amp; Vehtari](https://users.aalto.fi/~ave/ROS.pdf)
+
+---
+class: middle
+### Convergency Log-Binomial
+- Failed convergence occurs whenever the maximizing process fails to find the MLE. 
+- Estimation challenges can be grouped based on the location of the true maximum of the log-likelihood function, relative to the parameter space. 
+ - On the boundary of the parameter space (i.e., where the linear predictor equals 0); 
+ - In the limit (i.e., as the linear predictor heads towards −∞); 
+ - Inside the parameter space. 
+
+These three regions span the entire parameter space and are mutually exclusive.
+
+.pull-left[
+&lt;img src="images/L11convergence1.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="images/L11convergence3.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+[Williamson, T.Log-binomial models: exploring failed convergence](https://doi.org/10.1186/1742-7622-10-14)
+
+---
+class: middle
+### Convergency Log-Binomial
+
+- Software utilizes iterative weighted least squares (IWLS*) approach or variations of IWLS to find MLEs for generalized linear models. 
+
+- For log-binomial models, the weights used by the IWLS approach contain the term `\(1/(1-p)\)`, where `\(p = exp(X^Tβ)\)` with a range from 0 to 1. 
+
+- The MLE of a log-binomial model is likely to be too sensitive to outliers because a very large p has a large influence on the weights.
+
+- MLE and pseudolikelihood estimators are deteriorated in presence of outliers. 
+
+- The level of deterioration differed when the relationships between the confounder and the outcome was not in a simple form.
+
+
+[Chen et al.: BMC Medical Research Methodology 2014 14:82.](https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/1471-2288-14-82)
+
+---
+class: middle
+###Convergence Issues
+&lt;span style="color:blue"&gt;... _Requirement that the linear predictor be constrained to be negative_&lt;/span&gt;
+... _when the issue is the boundary of the parameter space (i.e., where the linear predictor equals 0)_ the solution resides on the boundary 
+
+
+``` r
+wells$assoc1 &lt;- 1- wells$assoc
+mod4b &lt;-glm(switch ~ -1 + assoc1 + arsenic,  data = wells, 
+            family = binomial(link = "log")) 
+round(summ(mod4b, confint=T, exp=T)$"coeftable", 2)
+```
+
+```
+#&gt;         exp(Est.) 2.5% 97.5% z val. p
+#&gt; assoc1       0.77 0.74  0.81  -10.2 0
+#&gt; arsenic      0.79 0.77  0.81  -21.1 0
+```
+
+&lt;span style="color:red"&gt; Interpretation???, setting intercept to 1; log(1) =0; Pr(Y=1) = 0.5 ??&lt;/span&gt;
+
+[Williamson, T. Log-binomial models: exploring failed convergence](https://doi.org/10.1186/1742-7622-10-14)
+
+---
+class: middle
+###Convergence Issues
+&lt;span style="color:blue"&gt; Requirement that the linear predictor be constrained to be negative (ii)&lt;/span&gt;
+
+.pull-left[
+
+``` r
+library(glm2)
+mod4b1 &lt;-glm2(switch ~ assoc + arsenic, 
+      data = wells, 
+      family = binomial(link = "log"), 
+      start = c(-1, -1,-1))
+round(summ(mod4b1, confint = T, exp = T)$"coeftable", 2) 
+```
+
+```
+#&gt;             exp(Est.) 2.5% 97.5% z val.    p
+#&gt; (Intercept)      0.42 0.40  0.44 -35.87 0.00
+#&gt; assoc            0.92 0.87  0.98  -2.69 0.01
+#&gt; arsenic          1.10 1.10  1.11  28.72 0.00
+```
+]
+--
+.pull-right[
+
+``` r
+#
+mod4b2 &lt;-glm2(switch ~ assoc + arsenic, 
+        data = wells, 
+        family = binomial(link = "log"), 
+        start = c(-0.5, -0.5,-0.5))
+round(summ(mod4b2, confint = T, exp = T)$"coeftable", 2) 
+```
+
+```
+#&gt;             exp(Est.) 2.5% 97.5% z val.    p
+#&gt; (Intercept)      0.48 0.46  0.51 -29.35 0.00
+#&gt; assoc            0.93 0.88  0.98  -2.57 0.01
+#&gt; arsenic          1.09 1.08  1.09  29.35 0.00
+```
+]
+
+---
+class: middle
+## Log-Binomial
+
+**Using the `logbin` package**
+
+``` r
+library(logbin)
+mod4c&lt;- logbin(switch ~ assoc + arsenic, data = wells)
+round(summ(mod4c, confint = T, exp = T)$"coeftable", 2)
+mod4d&lt;- logbin(switch ~ assoc + arsenic, data = wells, trace = 1, maxit = 100000)
+round(summ(mod4d, confint = T, exp = T)$"coeftable", 2)
+```
+
+&lt;img src="images/L11errorlogbin.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: middle
+## The **Bayesian** way 
+Estimating **RD**
+
+``` r
+mod5a &lt;- stan_glm(switch ~ assoc + arsenic, data = wells, family="gaussian", refresh=0)
+round(mod5a$stan_summary[1:3,1:5-10], 3) #;print(mod5a, digits=3)
+```
+
+```
+#&gt;               mean se_mean    sd   2.5% 97.5% n_eff Rhat
+#&gt; (Intercept)  0.453       0 0.018  0.418 0.489  4972    1
+#&gt; assoc       -0.031       0 0.018 -0.066 0.003  5077    1
+#&gt; arsenic      0.082       0 0.008  0.066 0.098  5004    1
+```
+
+--
+&gt;_"In Bayesian inference, the uncertainty for each parameter in the model automatically accounts for the uncertainty in the other parameters. This property of Bayesian inference is particularly relevant for models with many predictors, and for advanced and hierarchical models."_
+
+&lt;img src="images/L11ros93.png" width="30%" style="display: block; margin: auto;" /&gt;
+[ROS-Gelman, Hill &amp; Vehtari](https://users.aalto.fi/~ave/ROS.pdf)
+
+---
+class: middle
+## The **Bayesian** way 
+
+Estimating **RR**
+
+``` r
+mod5b &lt;-stan_glm(switch ~ assoc + arsenic, data = wells, 
+                 family = binomial(link = "log"), refresh=0)
+round(mod5b$stan_summary[1:3,1:5-10], 3)#; print(mod5b, digits=3)
+```
+
+```
+#&gt;               mean se_mean    sd   2.5%  97.5% n_eff Rhat
+#&gt; (Intercept) -0.650   0.000 0.022 -0.691 -0.607  2876    1
+#&gt; assoc       -0.067   0.001 0.025 -0.121 -0.018  1650    1
+#&gt; arsenic      0.071   0.000 0.004  0.062  0.077  1758    1
+```
+
+``` r
+exp(mod5b$coefficients["assoc"] )
+```
+
+```
+#&gt; assoc 
+#&gt; 0.936
+```
+
+---
+class: middle
+## The **Bayesian** way 
+
+
+&gt;_If the prior distribution on the parameters is uniform, then the posterior density is proportional to the likelihood function, and the posterior mode—the vector of coefficients `\(𝛽\)` that maximizes the posterior density is the same as the maximum likelihood estimate._
+
+&gt;_The benefit of Bayesian inference with a non-informative prior is that we can use simulations from the entire posterior distribution_
+  - _Not just a maximum or any other point estimate—to summarize uncertainty, and we can also use these simulations to make probabilistic predictions._
+
+[ROS-Gelman, Hill &amp; Vehtari](https://users.aalto.fi/~ave/ROS.pdf)
+
+---
+class: middle
+### Comparing results
+
+|Model                            | Frequentist Estimates       | Bayesian Estimates        |
+|:-------------------------------:|:--------------------------:|:------------------------:|
+|Logit Model (Predicted probs.) `\(^2\)` | RD= -0.033; RR= 0.939 | RD= -0.031; RR= 0.945 |
+|AME (prediction `StdGLM`) `\(^2\)` | RD= -0.031; RR= 0.948|-|
+|AME (`margins` at means) `\(^2\)` | RD= -0.031  | - |
+|AME (marginal standardization) `\(^2\)` | RD= -0.021 ; RR= 0.965 | RD= -0.032 ; RR= 0.946 |
+|GLM: Log-Binomial `\(^2\)` | RD= ?; RR= 0.928 or RRa= 0.773| RD= -0.031; RR= 0.936| 
+
+ `\(^1\)` Single predictor;  `\(^2\)` Two predictors
+
+---
+### What about Confidence Intervals??
+
+.pull-left[
+1) **&lt;span style="color:darkred"&gt; Bootstrap!!!&lt;/span&gt;**
+
+``` r
+RR &lt;- function(data,d) {
+ dta &lt;- data[d,]
+ mod &lt;- glm(switch ~ assoc + arsenic, data=dta, family = "binomial")
+ pp0 &lt;- predict(mod, newdata=transform(dta,assoc=0), type="response")
+ pp1 &lt;- predict(mod, newdata=transform(dta,assoc=1), type="response")
+ return(RR=pp1/pp0)
+ }
+
+ RD &lt;- function(data,d) {
+ dta &lt;- data[d,]
+ modd &lt;- glm(switch ~ assoc + arsenic, data=dta, family=binomial)
+ pp0 &lt;- predict(modd, newdata=transform(dta,assoc=0), type="response")
+ pp1 &lt;- predict(modd, newdata=transform(dta,assoc=1), type="response")
+ return(RD=pp1-pp0)
+}
+
+library(boot)
+boot.RR &lt;- boot(data=wells, statistic=RR, R=1000)
+boot.RD &lt;- boot(data=wells, statistic=RD, R=1000)
+
+RR &lt;- quantile(boot.RR$t, probs=c(0.5,0.025,0.975))
+RD &lt;- quantile(boot.RD$t, probs=c(0.5,0.025,0.975))
+```
+]
+.pull-right[
+
+``` r
+RR 
+```
+
+```
+#&gt;   50%  2.5% 97.5% 
+#&gt; 0.947 0.878 1.004
+```
+
+``` r
+RD
+```
+
+```
+#&gt;      50%     2.5%    97.5% 
+#&gt; -0.03027 -0.07100  0.00528
+```
+
+--
+
+2) Alternatively, use prudently the `margins` or `StdReg` and other resources 
+
+3) **&lt;span style="color:blue"&gt;Use Bayesian Inference!!!&lt;/span&gt;**
+]
+ 
+
+---
+class: middle
+###Conclusions: 
+
+1) You don’t ever have to report another OR again, (unless you have a cumulative case-control study with an unknown sampling fraction)
+  - The popularity of the OR was based largely on statistical convenience, but modern software has largely overcome those early limitations.  
+
+2) The interpretation depends on the method and the assumptions required for each estimation!!!
+
+--
+&lt;img src="images/L11noOR.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+.pull-right[&lt;span style="color:blue"&gt; A kind message  from Dr. Jay Kaufman!&lt;/span&gt;]
+
+---
+
+class: middle
+
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+
+---
+.pull-left[
+&lt;img src="images/L11tweet1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="images/L11tweet.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+---
+
+### Extra slides
+Summary table of What, When and Why
+
+| Method   | Characteristics  |  Outcome    | Measure  |
+|:---------|:----------------:|:------------|:--------:|
+|Standardization| Weight-based adjustment; Depends on the standard pop. selected; No homogeneity needed | Binary or categorical | SMR|
+|Mantel- Haenszel Adjustment| Requires homogeneity; Do not handle clusters | Binary or categorical |RD, RR, OR|
+|Regression Adjustment| Efficient, Useful for prediction, adjust for several covariates, *require assumptions* | Any type |RD, RR, OR; AME/ATE | 
+|IPTW  `\(^1\)` | Regression + Weights: 1/Pr(X=1, covars);  Ensure Exchangeability; Only for measured Confounders | Any type | **Causal** RD, RR, OR; AME/ATE |
+
+---
+class: middle
+### Standardization &amp; M-H Adjustment
+
+- Non-parametric
+
+- Adjustment based on weights
+
+- Useful of a small number of covariates
+
+- Basic arithmetic calculations
+
+- Homogeneity assumption for M-H Adjustment
+
+- Useful for few categorical covariate, limited for continuous variables
+
+---
+class: middle
+
+### Regression Adjustment
+- Parametric*
+
+- Efficient (could provide measures of association for different covariates)
+
+- Adjustment for more than one covariate at a time
+
+- Handles different types of covariates (continuous, binary, counts, etc.)
+
+- Control/Adjust for confounding
+
+- Helpful for prediction
+
+.pull-right[ &lt;span style="color:red"&gt; But it has a cost! &lt;/span&gt;]
+
+
+
+---
+class: middle
+##Outcome’s Distribution
+
+|Type        | Model               | Estimate  |
+|:----------:|:-------------------:|:---------:|
+|Continuous|Linear Regression | RD  |
+|Binary |Logistic Regression|  OR `\(\cong\)` RR; **RD** |
+|Categorical|Multinomial /Polytomous Logistic Regression|  OR ; **RD**  |
+|Ordinal|Ordinal Logistic Regression|   OR; **RD**  |
+|Counts|Poisson, Negative Binomial| IR, IRR  |
+
+
+---
+class:middle
+###Graphing functions 
+.pull-left[
+logit maps the range (0, 1) to (−∞, ∞) useful to model binary outcomes
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-78-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+Inverse logit (logistic)  maps back to the probability scale
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-79-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+Remember invlogit  = `\(\dfrac{e^{\beta x}}{1+e^{\beta x}}\)`  how does graph change i) as coefficient of x varies? ii) with addition of intercept?     
+If x = 0, invlogit  = `\(\dfrac{e^{0}}{1+e^{0}} = \dfrac{1}{1 + 1} = 0.5\)` as shown on the graph
+---
+### Inverse logit graphs
+
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-80-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+Notice maximum slope remains at invlogit = 0.5 or x = 0     
+As `\(\beta_{1}\)` changes, slope becomes steeper ($\beta_{1}$ increases) or shallower ($\beta_{1}$ decreases) but the curve doesn't shift position.
+
+---
+### Inverse logit graphs
+
+&lt;img src="L12_EPIB704_Alternative_Binary_Models_files/figure-html/unnamed-chunk-81-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+Shifts the curves **horizontally** but slope remains constant and maximum remains at invlogit(x) = 0.5 or x = - intercept
+
+---
+class: middle
+###R - extension of ‘margins’ and more
+
+- Marginal effects of the adjusted estimates 
+- Provides estimates for all covariates
+- R-margins does not include the “over” option but is replaced by the “at=list” option
+
+Useful resources:
+
+[Margins](https://cran.r-project.org/web/packages/margins/vignettes/Introduction.html)
+
+[Margins, blog](https://www.brodrigues.co/blog/2017-10-26-margins_r/)
+
+[Estimating Risk Ratios and Risk Differences Alternatives to Odds Ratios](https://www.medschool.lsuhsc.edu/pulmonary/fellowship/docs/jama_holmberg_2020_gm_200012_1600069989.70491.pdf)
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "3:2",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
