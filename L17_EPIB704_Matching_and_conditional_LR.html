@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Matching &amp;</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mabel Carabali" />
+    <script src="libs/header-attrs-2.28/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Matching &amp;
+]
+.subtitle[
+## Conditional Logistic Regression
+]
+.author[
+### Mabel Carabali
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### (updated: 2024-11-06)
+]
+
+---
+
+
+
+
+
+
+
+
+class:middle
+&lt;img src="images/pair_matching.jpg" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class:middle
+### Expected competencies
+- Knows why we use "matching" in epidemiology.
+- Knows advantages and disadvantages of matching
+
+## Objectives
+- To discuss advantages and disadvantages of matching
+- To illustrate the use of logistic regression in presence of paired data
+- To illustrate and discuss the use of (conditional) logistic regression for the analysis of matched/paired data
+
+.pull-right[
++ Slides 3 - 58: Main content
++ Slides 59 - 73: Additional worked example
+]
+
+---
+class:middle
+## Paired Data vs Matched data
+
+.pull-left[
+&lt;img src="images/L12funnymatching.jpeg" width="70%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="images/L12twins1.jpeg" width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+class:middle
+## Paired data
+
+- Expected to account for _.red["known &amp; unknown"]_ potential confounders
+
+- Correlated - by nature 
+  - E.g., twins, same people pre-post observations, eyes in the same individual, etc.
+
+- Variable correlation type
+  -  `\(t_1 \neq t_0\)`,constant, exchangeable, lagged, etc.
+
+---
+
+class:middle
+## Matching 
+
+- Making comparable a set of subjects:
+
+&gt; _“Matching refers to the selection of a reference series – unexposed subjects in a cohort study or controls in a case-control study – that is **.blue[identical, or nearly so, to the index series]** with respect to the distribution of one or more potentially confounding factors.”_ (RGL 2008, p. 171)
+
+--
+
+&gt; _"When estimating causal effects using observational data, it is desirable to replicate a randomized experiment as closely as possible by obtaining treated and control groups with similar covariate distributions. This goal can often be achieved by choosing **.rd[well-matched]** samples of the original treated and control groups, thereby reducing bias due to the covariates."_ (Stuart E, 2010) [Matching methods for causal inference: A review and a look forward](https://projecteuclid.org/journals/statistical-science/volume-25/issue-1/Matching-Methods-for-Causal-Inference--A-Review-and-a/10.1214/09-STS313.full)
+
+
+---
+class:middle
+### Why do we match?
+
+The main objective of matching is to make the comparison groups as similar as possible on everything **except** the variable of interest.
+
+- &lt;span style="color:darkred"&gt;Address confounding&lt;/span&gt;
+  - Remember **&lt;span style="color:blue"&gt; Exchangeability &lt;/span&gt;** ?  
+  `\(Pr(Y^x | X=1) = Pr(Y^x |X=0)\)` or `\(Y^{x} \perp \!\!\! \perp {X}\)` 
+
+--
+
+  - The related term, &lt;span style="color:blue"&gt; Ignorability &lt;/span&gt;, assumes that there are no unobserved differences between the treatment and control groups, **conditional on the observed covariates**.
+
+- Also called &lt;span style="color:blue"&gt; Conditional Exchangeability &lt;/span&gt;:  `\(X \perp \!\!\! \perp Y^{(0)}, Y^{(1)} | Z\)`
+
+---
+
+class:middle
+### Why do we match?
+
+&gt;"_Although causal assumptions are often invoked when using matching, **matching is simply an adjustment method** that can be used regardless of whether these assumptions are met; it is **the interpretation of the estimated effect after matching** as causal that requires these assumptions."_
+
+[Matching Methods for Confounder Adjustment: An Addition to the Epidemiologist’s Toolbox, Epidemiologic Reviews, Volume 43, Issue 1, 2021, Pages 118–129](https://doi.org/10.1093/epirev/mxab003)
+
+---
+class:middle
+## Two settings
+
+**(1) Outcome values are not yet available:**
+- Matching is used to select subjects for follow-up. 
+- Relevant for high cost studies or logistics considerations preventing data collection for the full control group.
+- The basis for original theoretical work and developments, comparing selecting matched versus random samples of the control group. 
+
+--
+
+**(2) Outcome data is already available:**
+- The goal of the matching is to reduce bias in the estimation of the treatment effect.
+
+
+.right[
+- &lt;span style="color:darkcyan"&gt; Outcome values are not used in the matching process!&lt;/span&gt;
+- &lt;span style="color:darkcyan"&gt; The matching can be done multiple times &lt;/span&gt;
+- &lt;span style="color:darkcyan"&gt; Best balance –_the most similar treated and control groups_– the final matched samples. &lt;/span&gt;
+]
+
+.small[[Matching methods for causal inference: A review and a look forward](https://projecteuclid.org/journals/statistical-science/volume-25/issue-1/Matching-Methods-for-Causal-Inference--A-Review-and-a/10.1214/09-STS313.full)]
+
+---
+class:middle
+###Claimed Advantages of Matching for Causal Inference
+by Liz Stuart: 
+- "_1, matching methods &lt;span style="color:darkred"&gt; should not be seen in conflict with regression adjustment &lt;/span&gt; and in fact the two methods are &lt;span style="color:blue"&gt; complementary and best used in combination.&lt;/span&gt;_ 
+--
+
+- "_2, matching methods highlight areas of the covariate distribution where there is not sufficient overlap between the treatment and control groups, ... treatment effect estimates would &lt;span style="color:darkred"&gt;rely heavily on extrapolation&lt;/span&gt;._ 
+  - _Selection models and regression models perform poorly when there is &lt;span style="color:blue"&gt;insufficient overlap&lt;/span&gt;, ... standard diagnostics do not checking this._ 
+  - _Matching methods in part serve to make researchers aware of the quality of resulting inferences"._ 
+
+- _3, matching methods have straightforward diagnostics by which their performance can be assessed"._
+
+[Matching methods for causal inference: A review and a look forward](https://projecteuclid.org/journals/statistical-science/volume-25/issue-1/Matching-Methods-for-Causal-Inference--A-Review-and-a/10.1214/09-STS313.full)
+
+---
+class:middle
+### Matching by study design
+Matching is often thought about as analogous to physical control in randomized experiments
+
+**Case Controls**: The effect of matching in a case-control study is to introduce bias into the crude association, which is accounted for only by adjusting for the matching factors in the analysis.
+- If the matching factors are associated with exposure, then matching on such factors will introduce a confounding-like bias that needs to be accounted for in the analysis.
+- &lt;span style="color:blue"&gt;Conditional logistic regression is a multivariate regression approach which treats each matched pair as a separate stratum and is the analytic control of choice for the matching introduced bias&lt;/span&gt;. 
+
+--
+
+**Cohort studies**: Matching exposed to unexposed subjects according to some matching factors requires no additional `\(^1\)` analytic control for these matching factors in cohort studies.
+
+`\(^1\)` Debatable for some, but in principle.
+
+---
+class: middle
+####&lt;span style="color:blue"&gt;Case–control matching: effects, misconceptions, and recommendations&lt;/span&gt;
+1. Matching, even for non-confounders, can create selection bias; 
+2. Matching distorts dose–response relations between matching variables and the outcome; 
+3. Unbiased estimation requires accounting for the actual matching protocol as well as for any residual confounding effects;
+4. For efficiency, identically matched groups should be collapsed; 
+5. Matching may harm precision and power; 
+6. Matched analyses may suffer from sparse-data bias, even when using basic sparse-data methods. 
+&lt;br&gt;
+--
+
+.small[
+_"Supporting advice to limit case–control matching to a few strong well- measured confounders, which would devolve to no matching if no such confounders are measured"_.
+
+_"On the positive side, odds ratio modification by matched variables can be assessed in matched case–control studies without further data, and when one knows either the distribution of the matching factors or their relation to the outcome in the source population, one can estimate and study patterns in absolute rates."_ 
+
+[Mansournia, M.A., Jewell, N.P. &amp; Greenland, S. Case–control matching: effects, misconceptions, and recommendations. Eur J Epidemiol 33, 5–14 (2018).](https://doi.org/10.1007/s10654-017-0325-0)
+]
+
+---
+class:middle
+#### &lt;span style="color:darkblue"&gt;If matching INDUCES confounding and/or selection bias in case-control studies, why do we do it?&lt;/span&gt;
+.pull-left[
+&lt;img src="images/L12funnymatching.jpeg" width="40%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="images/L12twins1.jpeg" width="40%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+#&lt;span style="color:darkgreen"&gt; Efficiency !! &lt;/span&gt;
+]
+- By selecting only the most relevant controls, one save time and money (except if data is already collected).
+- Some argue that matching provides non-parametric control (e.g., Ho et al., Political Analysis 2007)
+
+
+---
+class: middle
+## How do we match people? 
+
+&lt;img src="images/L12matchingpeople.jpeg" width="60%" style="display: block; margin: auto;" /&gt;
+
+- Matching can involve subset selection (i.e., selecting units from the sample to retain and dropping the rest) or,
+- Stratification (i.e., assigning units to pairs or strata containing both exposed and unexposed units); 
+ - Some methods, like pair matching, involve both.
+
+---
+class: middle
+###Matching steps
+
+Matching methods have four key steps: #1 to #3 for “design” and #4 “analysis:”
+1. Defining &lt;span style="color:blue"&gt;“closeness”&lt;/span&gt;: the distance measure used to determine whether an individual is a good match for another,
+2. &lt;span style="color:blue"&gt;Implementing &lt;/span&gt; a matching method, given that measure of closeness,
+3. Assessing the &lt;span style="color:blue"&gt;quality of the resulting matched samples &lt;/span&gt;, and perhaps iterating with
+Steps (1) and (2) until well-matched samples result, and
+4. &lt;span style="color:blue"&gt;Analysis&lt;/span&gt; of the outcome and estimation of the treatment effect, given the matching done in Step (3).
+
+[Matching methods for causal inference: A review and a look forward](https://projecteuclid.org/journals/statistical-science/volume-25/issue-1/Matching-Methods-for-Causal-Inference--A-Review-and-a/10.1214/09-STS313.full)
+
+
+---
+class: middle
+## 1) Closeness (i)
+Two main aspects to determining the measure of distance (or “closeness”) to use in matching: 
+
+**A) Determining which covariates to include** 
+- The key concept is &lt;span style="color:darkmagenta"&gt; strong ignorability. &lt;/span&gt;
+- The assumption: &lt;span style="color:darkmagenta"&gt; no unobserved differences&lt;/span&gt; between the treatment and control groups, conditional on the observed covariates.
+- &lt;span style="color:darkmagenta"&gt; Include &lt;/span&gt;  all variables  &lt;span style="color:darkmagenta"&gt; known &lt;/span&gt; to be related to both treatment assignment and the outcome.
+- &lt;span style="color:darkmagenta"&gt;Should not include &lt;/span&gt; variables that may have been  &lt;span style="color:darkmagenta"&gt; affected by the treatment&lt;/span&gt; of interest (Rosenbaum, 1984; Frangakis and Rubin, 2002; Greenland, 2003). 
+
+--
+
+**B) Combining those covariates into one distance measure.**
+- “Distance:” is a measure of the &lt;span style="color:blue"&gt;similarity&lt;/span&gt; between two individuals
+
+[Matching methods for causal inference: A review and a look forward](https://projecteuclid.org/journals/statistical-science/volume-25/issue-1/Matching-Methods-for-Causal-Inference--A-Review-and-a/10.1214/09-STS313.full)
+
+---
+class: middle
+## 1) Closeness (ii)
+Four primary ways to define the distance `\(D_{ij}\)` between individuals `\(i\)` and `\(j\)` for matching:
+1. Exact: `\(D_{ij} = 0, \ if \ X_i=X_j ;\ D_{ij} = \infty ,\ if \ X_i \neq X_j\)`
+2. Mahalanobis (Distance between a point and a distribution):  distance of the vector from the mean divided by the covariance matrix to account for correlation
+3. Propensity score `\(^1\)`
+4. Linear propensity score `\(^1\)`
+
+--
+
+.small[
+- These measures can  be combined, e.g., exact matching on key covariates followed by propensity score matching within  groups. 
+- When exact matching is not possible (e.g., sample size limitations), “fine balance” methods  may be a good alternative (Rosenbaum et al., 2007).
+- Exact matches often leads to many individuals not being matched, which can result in larger bias than if the matches are inexact but more individuals remain in the analysis.
+]
+
+`\(^1\)` We have a lecture on this!
+
+[Matching methods for causal inference: A review and a look forward](https://projecteuclid.org/journals/statistical-science/volume-25/issue-1/Matching-Methods-for-Causal-Inference--A-Review-and-a/10.1214/09-STS313.full)
+
+
+---
+class: middle
+#### Matching and weighting for the average exposure effect in the exposed
+.pull-left[
+&lt;img src="images/L12matchingweighting.jpg" width="50%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+_Exposed units (filled circles) and unexposed units (unfilled circles) are aligned horizontally by their propensity score. The size of the dots corresponds to the value of the resulting matching weights for the matching methods and propensity score weights for weighting by the odds._
+] 
+
+[Matching Methods for Confounder Adjustment: An Addition to the Epidemiologist’s Toolbox, Epidemiologic Reviews, Volume 43, Issue 1, 2021, Pages 118–129](https://doi.org/10.1093/epirev/mxab003)
+
+
+---
+class: middle
+### 2) Implementing matching
+- &lt;span style="color:blue"&gt; Type: &lt;/span&gt; “Individually matched” or “Group matched” 
+- The most commonly used design is 1:1 matched
+  - Nearest neighbor matching
+  - The order of matching for "treated" may change the quality of the matches
+
+--
+
+Selecting the &lt;span style="color:blue"&gt; number of matches &lt;/span&gt; involves a bias : variance trade-off. 
+- Multiple controls for each treated individual will generally increase bias since the 2nd, 3rd, and 4th closest matches are, by definition, further away from the treated individual than is the 1st closest match. 
+- Multiple matches can decrease variance due to the larger matched sample size. 
+
+&lt;span style="color:blue"&gt; With or without replacement:&lt;/span&gt; controls that look similar to many treated individuals can be used multiple times and replacement can decrease bias. Also, the order in which the treated individuals are matched does not matter.
+- **Recall:** Once we match on certain factors, &lt;span style="color:red"&gt;we are forfeiting estimating their effect&lt;/span&gt;
+
+[Matching Methods for Confounder Adjustment](https://doi.org/10.1093/epirev/mxab003)
+
+---
+class: middle
+#### &lt;span style="color:darkblue"&gt;[Impletment matching](https://doi.org/10.1093/epirev/mxab003)&lt;/span&gt;
+|Option	           | Benefits	                         | Cautions                          |
+|:----------------:|:----------------------------------|:----------------------------------|
+|Matching on the covariates directly (e.g., Mahalanobis distance matching)| 	Can better balance the joint distribution of covariates; does not require an exposure model| May not perform well with many covariates, due to curse of dimensionality |
+|Matching on the propensity score| 	Requires matching only on a single dimension; has theoretical balancing properties; tends to perform well empirically| 	Relies on specification of exposure model, pairs may not be close on covariates| 
+|Restrictions on closeness of matches| 	Can improve balance; yields close pairs; improves robustness to assumptions about outcome model| 	Dropping units decreases precision and can change the target population/estimand| 
+|Matching with replacement| 	Better balance than without replacement; good with small unexposed samples or when ratio of exposed to unexposed is high| 	Reusing units decreases precision; increases reliance on a few units |
+|k:1 matching |	Retains more units, thereby increasing precision| 	Balance can be worse| 
+
+[Matching Methods for Confounder Adjustment: An Addition to the Epidemiologist’s Toolbox, Epidemiologic Reviews, Volume 43, Issue 1, 2021, Pages 118–129](https://doi.org/10.1093/epirev/mxab003)
+
+---
+class: middle
+## 3) Assess quality of the matching (i)
+Covariate balance and effective sample size.
+
+- **Balance:** The “standardized bias” or “standardized difference in means” (SDM)
+  - The difference in means of each covariate, divided by the standard deviation in the full treated group. 
+  - Similar to an effect size and is compared before and after matching (Rosenbaum and Rubin, 1985b). 
+  - The SDM should be computed for each covariate, as well as two-way interactions and squares. 
+
+- For regression adjustment to be &lt;span style="color:blue"&gt; trustworthy,&lt;/span&gt; the absolute SDM should be &lt;span style="color:blue"&gt; `\(&lt; 0.25\)` &lt;/span&gt; and the variance ratios should be between 0.5 and 2 (Rubin 1973, Cochran and Rubin 1973 &amp; Rubin 2001). 
+
+---
+class: middle
+#### Standardized Difference in Means (SDM)
+**Data**
+
+``` r
+library(stddiff); library("MatchIt") #?matchIt
+set.seed(7042023); treat&lt;- rbinom(100, 1, .45); outc&lt;- rbinom(100, 1, .25); 
+numeric1&lt;-round(abs(rnorm(100)+1)*10,0); binary1&lt;- rbinom(100, 1, .55); 
+numeric2&lt;-round(abs(rnorm(100)+1)*10,0); binary2&lt;- rbinom(100, 1, .25)
+data&lt;-data.frame(outc, treat, numeric1, binary1, numeric2, binary2) #;summary(data)
+```
+
+--
+**Estimation of the SDM**
+
+``` r
+##the std difference using the package
+stddiff.numeric(data=data, gcol=2,vcol=c(3, 5)) #;stddiff.binary(data=data, gcol=2,vcol=c(2,4,6))
+```
+
+```
+##          mean.c  sd.c mean.t  sd.t missing.c missing.t stddiff stddiff.l
+## numeric1 10.745 8.033 11.756 6.661         0         0   0.137    -0.258
+## numeric2 11.145 7.901 11.111 9.203         0         0   0.004    -0.390
+##          stddiff.u
+## numeric1     0.531
+## numeric2     0.398
+```
+
+``` r
+##the std difference in means by hand
+(mean(data$numeric1[data$treat==1])- mean(data$numeric1[data$treat==0]))/
+  sd(data$numeric1[data$treat==1])
+```
+
+```
+## [1] 0.151641
+```
+
+
+---
+class: middle
+### Assess quality of the matching (ii)
+.small[ 
+_Hypothesis tests and p-values that incorporate information on the sample size (e.g., t-tests) &lt;span style="color:darkmagenta"&gt; should not be used as measures of balance_ &lt;/span&gt; (Austin, 2007; Imai et al., 2008). 
+1. Balance is inherently an in-sample property, without reference to any broader population or super-population. 
+2. NHST can be misleading as measures of balance, because they often conflate changes in balance with changes in statistical power. E.g., randomly discarding control individuals seemingly leads to increased balance, simply because of the reduced power. 
+- _Hypothesis tests should not be used as part of a stopping rule to select a matched sample when those samples have varying sizes (or effective sample sizes)._ 
+- _Some argue that NHST are OK for testing balance due to the reduced power for estimating the treatment effect (Hansen, 2008), but that argument requires trading off Type I and Type II errors_.  _The cost of those two types of errors may differ for balance checking and treatment effect estimation._
+]
+
+&lt;span style="color:red"&gt; What about the "observations are _independent_" assumption?
+
+[Matching methods for causal inference: A review and a look forward](https://projecteuclid.org/journals/statistical-science/volume-25/issue-1/Matching-Methods-for-Causal-Inference--A-Review-and-a/10.1214/09-STS313.full)
+
+---
+class: middle
+## 4) Analyze
+
+When satisfactory matching (i.e., good covariate balance and a reasonable effective sample size) .red[is NOT achieved] after repeated specification and assessment of the quality, maybe the sample is fundamentally so different that no effect can be robustly estimated. 
+
+--
+
+When satisfactory matching .blue[is achieved], one can estimates the exposure effect and its uncertainty (i.e., its standard error, confidence interval, and _p-value_).
+- Stratification and Regression.
+- Similar to the idea of &lt;span style="color:blue"&gt;“double robustness”&lt;/span&gt;, and the intuition is that regression adjustment is used to “clean up” small residual covariate imbalance between the groups. 
+- Matching methods should also make the treatment effect estimates less sensitive to particular outcome model specifications (Ho et al., 2007).
+
+---
+class: middle
+### 4) Analyze
+
+&lt;img src="images/matched_analysis.jpg" width="90%" style="display: block; margin: auto;" /&gt;
+.small[Lee B, Kim N, Won S, Gim J.  Propensity score matching for comparative studies: a tutorial with R and Rex.  J Minim Invasive Surg 2024;27:55-71.  https://doi.org/10.7602/jmis.2024.27.2.55]
+
+---
+class: middle
+### Stratification for Matching
+Assume case-control data: Consider 100 matched pairs (i.e., 100 cases and 100 controls, each paired by matching factors) 
+
+There are 100 2x2 tables, each containing the two observations in the matched pair, which can be grouped by their combination of exposure and cases vs controls as: W, X, Y, and Z pairs.
+--
+
+.pull-left[
+**W** pairs
+
+|     |E   | -E |
+|:---:|----|----|
+| **D**  | 1 |0  |
+| **-D** | 1 |0  |
+
+**X** pairs
+
+|     |E   | -E |
+|:---:|----|----|
+| **D** | 1 |0  |
+| **-D** | 0 |1  |
+
+]
+.pull-right[
+**Y** pairs
+
+|     |E   | -E |
+|:---:|----|----|
+| **D** | 0 | 1 |
+| **-D** | 1 |0  |
+
+**Z** pairs
+
+|     |E   | -E |
+|:---:|----|----|
+| **D** | 0 | 1 |
+| **-D** | 0 |1  |
+]
+
+
+---
+
+class: middle
+### Stratification for Matching
+The 100 2x2 tables can be summarized further as follows:
+
+**Example:** W=30, X=30, Y=10, Z=30 `\(\to\)` W + X + Y + Z = 100 TOTAL PAIRS
+
+|      |      |       | **Disease Present** | 
+|------|:----:|:-----:|:-----:|
+|      |      |**Exposure(+)**  |**Exposure (-)** |
+|**~Disease absent**|**Exposure(+)** | W = 30     | X  = 30   | 
+|      |**Exposure(-)**| Y = 10    | Z   = 30   |
+
+
+For all tables, from `\(i=1\)` to 100, `\(N+i =2\)`.
+
+--
+
+.pull-right[
+**.red[Then, how to analyze this?]**
+]
+
+---
+
+class: middle
+### Two stratified analysis options for Matching:
+**1) Mantel-Haenszel Odds Ratio (ME3 2008, p. 287, eq 16-8)**
+
+`$$OR_{MH} = \left(\frac{\sum_i A_{1i} B_{0i} / N{+i}} {\sum_i A_{0i} B_{1i} / N{+i}}\right)$$` 
+&lt;br&gt;
+--
+&lt;br&gt;
+
+**2) McNemar Test and McNemar Odds Ratio (ME3 2008, p. 286-288)**
+
+`\(X^2 = \left(\frac{(X- Y)^2}{X + Y}\right), df = 1\)`, with `\(OR_{McN} = X/Y\)` 
+
+---
+class: middle
+
+**1) Mantel-Haenszel Odds Ratio for Matching**
+
+`$$OR_{MH} = \left(\frac{\sum_i A_{1i} B_{0i} / N{+i}} {\sum_i A_{0i} B_{1i} / N{+i}}\right)$$` 
+
+- Type W tables (case and control are exposed), `\(A_{1i} = B_{1i} = 1\)` and `\(A_{0i} = B_{0i} = 0\)`.
+
+- Type X tables (case is exposed, control is unexposed), `\(A_{1i} = B_{0i} =1\)` and `\(A_{0i} = B_{1i} =0\)` 
+
+- Type Y tables (case is unexposed, control is exposed), `\(A_{1i} = B_{0i} =0\)` and `\(A_{0i} = B_{1i} =1\)` 
+
+- Type Z tables (case and control are unexposed), `\(A_{1i} = B_{1i} = 0\)` and `\(A_{0i} = B_{0i} = 1\)`.
+
+
+
+---
+class: middle
+**1) Mantel-Haenszel Odds Ratio**
+- Type W tables (case and control are exposed), `\(A_{1i} = B_{1i} = 1\)` and `\(A_{0i} = B_{0i} = 0\)`.
+- &lt;span style="color:blue"&gt; Type X tables (case is exposed, control is unexposed), `\(A_{1i} = B_{0i} =1\)` and `\(A_{0i} = B_{1i} =0\)`  &lt;/span&gt;
+- &lt;span style="color:blue"&gt; Type Y tables (case is unexposed, control is exposed), `\(A_{1i} = B_{0i} =0\)` and `\(A_{0i} = B_{1i} =1\)` &lt;/span&gt;
+- Type Z tables (case and control are unexposed), `\(A_{1i} = B_{1i} = 0\)` and `\(A_{0i} = B_{0i} = 1\)`.
+&lt;br&gt;
+
+--
+- The Type W and Type Z tables have values of zero for all products of `\(A_{1i}\)` and `\(B_{0i}\)` as well as all products of `\(A_{0i}\)` and `\(B_{1i}\)`.
+
+- W and Z are concordant pairs, cases and controls have the same exposure level and in the `\(OR_{MH}\)` .red[do not contribute to the OR estimation.]
+
+---
+class: middle
+**1) Mantel-Haenszel Odds Ratio**
+
+.pull-left[
+
+`$$OR_{MH} = \left(\frac{\sum_i A_{1i} B_{0i} / N{+i}} {\sum_i A_{0i} B_{1i} / N{+i}}\right)$$` 
+
+]
+
+.pull-right[
+
+|      |      |       | **D** | 
+|------|:----:|:-----:|:-----:|
+|      |      |**E**  |**-E** |
+|**~D**|**E** | W = 30     | X  = 30   | 
+|      |**-E**| Y = 10    | Z   = 30   |
+
+]
+
+--
+&lt;br&gt;
+- Estimating `\(OR_{MH}= (30/2)/(10/2)\)` .red[using tables X and Y Type tables], the OR estimate is 15/5 = 3.0.
+
+- Can be obtained using `mantelhaen.test` function of the `stats` package, the `cmh.test` function of the `lawstat`,  `stratastats`, or `epi.2by2`. Input data must be either a list of 2x2 tables or a 3Dimensional array (e.g. 3 levels or 2x2x2 table).
+
+---
+class: middle
+###Two stratified analysis options:
+
+**2) McNemar Test and McNemar Odds Ratio**
+
+Sum across all matched pair tables to form a single summary table:
+
+.pull-left[
+
+|      |      |       | **D** | 
+|------|:----:|:-----:|:-----:|
+|      |      |**E**  |**-E** |
+|**~D**|**E** | W (30)    | X (30)    | 
+|      |**-E**| Y (10)    | Z (30)   |
+
+
+]
+
+--
+
+.pull-right[
+`\(X^2 = \left(\frac{(X- Y)^2}{X + Y}\right), df = 1\)`
+
+`\(OR_{McN} = X/Y =  30/10 = 3\)` 
+
+`\(SE= \sqrt{(1/X + 1/Y)}\)` = `\(\sqrt{(1/30 + 1/10)}\)` = 0.365
+]
+
+--
+
+The McNemar `\(χ2\)` test the null hypothesis of no association between exposure and outcome.
+- Using the numbers above, `\(χ2= (30-10)2 / (30+10) = 400/40 = 10\)`. 
+
+`\(OR_{McN}=\)` **3** and the 95% CI is exp(1.099 ± 1.96(0.365))
+= exp(0.383, 1.814) = **(1.467, 6.14)**
+
+---
+class: middle
+**2) McNemar Test and McNemar Odds Ratio **
+
+
+``` r
+X &lt;- cbind(c(30,10), c(30,30));
+mn_test &lt;- mcNemar(X, alpha = 0.05)
+mn_test
+```
+
+```
+## 
+## Matched Pairs Analysis: McNemar's Chi^2 Statistic and Odds Ratio
+##  
+## McNemar's Chi^2 Statistic (corrected for continuity) = 9.025 which has a p-value of: 0.003
+##  
+## McNemar's Odds Ratio (b/c): 3
+## 95% Confidence Limits for the OR are: [1.521, 8.68]
+```
+
+---
+class: middle
+**2) McNemar Test and McNemar Odds Ratio **
+
+
+``` r
+kable(mn_test$X)
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Exposed Person: Disease Present &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Exposed Person: Disease Absent &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Control Person: Disease Present &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 30 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 30 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Control Person: Disease Absent &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 30 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Can use this code to obtain details
+
+``` r
+summary(mn_test)
+```
+
+---
+class: middle
+
+### .red[What to do if I have more data, other covariates to account for?]
+
+--
+&lt;br&gt;
+
+### As long as you have gone through steps 1 to 3, one can move to the analysis step using Regressions...
+
+---
+class: middle
+### Regression _Adjustment_ for Matching
+
+**Straightforward way:** Fit a regression model including the matching weights in the estimation and using the coefficient on exposure as the exposure effect estimate; which is equivalent to computing a (weighted) difference in means. 
+- A binary regression model with a log link can be used to estimate the risk ratio. 
+
+--
+- **_g-computation_** methods and targeted minimum loss-based estimation, can be used to ensure the resulting effect estimate is interpretable as marginal rather than conditional when the effect measure is non-collapsible. 
+
+--
+- The coefficient on exposure in stratified, conditional, and covariate-adjusted models for odds or hazard ratios corresponds to a conditional effect; thus, these models should be avoided after matching, which is best suited for estimating marginal effects.
+
+---
+class:middle
+
+
+&lt;img src="images/L12gelmanmatching.png" width="120%" height="110%" style="display: block; margin: auto;" /&gt;
+
+
+[It’s not matching or regression, it’s matching and regression.](https://statmodeling.stat.columbia.edu/2014/06/22/matching-regression-matching-regression/)
+
+---
+class: middle
+**Example: Infertility after Spontaneous and Induced Abortion**: This is a matched case-control study dating from before the availability of conditional logistic regression. There are 83-strata indicated by the variable **`stratum`**.
+
+``` r
+data("infert"); set.seed(7042024); infert$treat &lt;- rbinom(length(infert$case), 1, .6) #creating a NEW variable for treatment
+summary(infert[, c("case", "treat","education", "parity", "induced", 
+                  "age", "spontaneous", "stratum")]); dim(infert) #?infert
+```
+
+```
+##       case            treat          education       parity     
+##  Min.   :0.0000   Min.   :0.0000   0-5yrs : 12   Min.   :1.000  
+##  1st Qu.:0.0000   1st Qu.:0.0000   6-11yrs:120   1st Qu.:1.000  
+##  Median :0.0000   Median :1.0000   12+ yrs:116   Median :2.000  
+##  Mean   :0.3347   Mean   :0.6048                 Mean   :2.093  
+##  3rd Qu.:1.0000   3rd Qu.:1.0000                 3rd Qu.:3.000  
+##  Max.   :1.0000   Max.   :1.0000                 Max.   :6.000  
+##     induced            age         spontaneous        stratum     
+##  Min.   :0.0000   Min.   :21.00   Min.   :0.0000   Min.   : 1.00  
+##  1st Qu.:0.0000   1st Qu.:28.00   1st Qu.:0.0000   1st Qu.:21.00  
+##  Median :0.0000   Median :31.00   Median :0.0000   Median :42.00  
+##  Mean   :0.5726   Mean   :31.50   Mean   :0.5766   Mean   :41.87  
+##  3rd Qu.:1.0000   3rd Qu.:35.25   3rd Qu.:1.0000   3rd Qu.:62.25  
+##  Max.   :2.0000   Max.   :44.00   Max.   :2.0000   Max.   :83.00
+```
+
+```
+## [1] 248   9
+```
+One case with two prior spontaneous abortions and two prior induced abortions is omitted. Source: Trichopoulos et al (1976) Br. J. of Obst. and Gynaec. 83, 645–650. R-datasets packages
+
+---
+class: middle
+**Assessing the dataset, closeness and quality of the matching** Example
+The “standardized difference in means” (SDM) using [`stddiff`](https://rdrr.io/cran/stddiff/man/stddiff.html) package 
+
+``` r
+#(mean(infert$age[infert$treat==1])- mean(infert$age[infert$treat==0]))/
+#                        sd(infert$age[infert$treat==1])
+stddiff.numeric(data=infert,gcol=9,vcol=c(2,3 ))
+```
+
+```
+##        mean.c  sd.c mean.t  sd.t missing.c missing.t stddiff stddiff.l
+## age    31.796 5.079 31.313 5.370         0         0   0.092    -0.162
+## parity  2.194 1.232  2.027 1.264         0         0   0.134    -0.121
+##        stddiff.u
+## age        0.347
+## parity     0.389
+```
+
+``` r
+# stddiff.category(data=infert,gcol=9,vcol=c(4,6, 1))
+stddiff.binary(data=infert,gcol=9,vcol=c(4,6 )) 
+```
+
+```
+##               p.c   p.t missing.c missing.t stddiff stddiff.l stddiff.u
+## induced     0.551 0.587         0         0   0.072    -0.183     0.327
+## spontaneous 0.704 0.493         0         0   0.440     0.183     0.698
+```
+.red[This is the step to check the balance across variables]
+
+---
+class: middle
+**Implementing the matching** Example
+The “standardized difference in means” (SDM) using [`matchIt`](https://cran.r-project.org/web/packages/MatchIt/vignettes/MatchIt.html ) package **Assessing the matching**
+
+``` r
+m.out&lt;- matchit(treat ~  age+ parity + spontaneous + induced + education, 
+                 data = infert, method = NULL, distance = "glm")
+m.out
+```
+
+```
+## A matchit object
+##  - method: None (no matching)
+##  - distance: Propensity score
+##              - estimated with logistic regression
+##  - number of obs.: 248 (original)
+##  - target estimand: ATT
+##  - covariates: age, parity, spontaneous, induced, education
+```
+
+.red[This is the step to ask the software to match/check individuals treated and not treated by the given covariates]
+
+---
+class: middle
+
+**Assessing the matching** using `matchIt` package: Example
+
+``` r
+round(summary(m.out)$"sum.all"[,1:4], 3) #summary(m.out)
+```
+
+```
+##                  Means Treated Means Control Std. Mean Diff. Var. Ratio
+## distance                 0.621         0.581           0.426      0.928
+## age                     31.313        31.796          -0.090      1.118
+## parity                   2.027         2.194          -0.132      1.051
+## spontaneous              0.493         0.704          -0.313      0.704
+## induced                  0.587         0.551           0.048      1.026
+## education0-5yrs          0.060         0.031           0.124         NA
+## education6-11yrs         0.507         0.449           0.115         NA
+## education12+ yrs         0.433         0.520          -0.176         NA
+```
+
+.red[This is the step to check the balance across variables before matching. Recall in this data individuals were already matched]
+
+---
+class: middle
+
+**Assessing the quality of the matching** using `matchIt` package: Example
+
+**Plot of “standardized difference in means” (SDM)**
+&lt;img src="L17_EPIB704_Matching_and_conditional_LR_files/figure-html/unnamed-chunk-19-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+.red[This plot helps with the visualization of the (un)balance across variables]
+
+
+---
+class: middle
+### Regression model for Matched Data
+The model for a matched data with k = 1, ..., K strata is 
+`$$logit[π_k(X)] = α_k + β_1X_1 + ... + β_pX_p$$`
+
+Where `\(D\)` is "Disease/Outcome, `\(π_k(X) = Pr(D_{ik} = 1|X)\)`, `\(α_k\)` is log-odds in the `\(k_{th}\)` stratum
+
+- Unless the number of subjects in each stratum is large, fitting these models using the unconditional ML does not work well.
+- In individually matched there is only one case in each stratum and hence we need some way of getting rid of the nuisance parameters.
+
+--
+
+**.red[Conditional likelihood:]**  the probability of the observed data conditional on the stratum total and the number of cases observed is the conditional likelihood for the _k_ the stratum. 
+
+
+---
+class: middle
+### Considerations for Regression Adjustment with Matched Data
+
+- Using standard logistic regression model to analyze the matched data, the effect estimates (i.e., exponentiated slope coefficients) will generally be overestimates. 
+
+- If the data are matched 1-to-1 in pairs, the OR estimate obtained from a standard logistic model will be the square of the correct value.
+
+--
+
+- To complete the matched data analysis, .red[one needs a set of indicator variable that records that matched strata].
+
+  - The coefficients for the `\(k - 1\)` indicator variables (i.e. stratum-specific intercepts) are “nuisance parameters” in the sense that they have no epidemiologic interpretation. 
+  
+---
+class: middle
+
+**Standard Logistic Regression for matching:**
+.red[Regression Example using the `infert` data set]
+
+``` r
+mod.logistic &lt;- glm(case ~ treat + age + parity + education + spontaneous +induced, 
+                    family = binomial(), data = infert)
+```
+--
+.pull-left[
+
+```
+##                  Coeff 2.5 % 97.5 %
+## (Intercept)      -1.03 -3.94   1.84
+## treat            -0.10 -0.72   0.53
+## age               0.04 -0.02   0.10
+## parity           -0.83 -1.24  -0.46
+## education6-11yrs -1.06 -2.63   0.54
+## education12+ yrs -1.43 -3.10   0.24
+## spontaneous       2.04  1.46   2.68
+## induced           1.29  0.72   1.91
+```
+]
+--
+.pull-right[
+
+```
+##                    OR 2.5 % 97.5 %
+## (Intercept)      0.36  0.02   6.27
+## treat            0.91  0.49   1.70
+## age              1.04  0.98   1.11
+## parity           0.43  0.29   0.63
+## education6-11yrs 0.35  0.07   1.72
+## education12+ yrs 0.24  0.04   1.28
+## spontaneous      7.70  4.31  14.64
+## induced          3.65  2.05   6.75
+```
+]
+
+.red[Although the model ran and produced results, we know this model is wrong because does not account for the matched structure]
+---
+class: middle
+**Standard Logistic Regression** .red[Example using the `infert` data set]
+**Adding the stratum (n=83) variable**
+
+``` r
+mod.logistic1 &lt;- glm(case ~ treat + age + parity+ education + spontaneous +induced + 
+*                      factor(stratum),
+                     family = binomial(), data = infert)
+```
+
+.pull-left[
+
+```
+##                   Coeff  2.5 % 97.5 %
+## (Intercept)       -2.70 -31.88  24.10
+## treat             -0.38  -1.19   0.43
+## age               -0.02  -0.64   0.60
+## parity            -0.57  -6.76   6.47
+## education6-11yrs   1.76 -29.00  36.37
+## education12+ yrs   0.05 -30.71  34.27
+## spontaneous        3.25   2.40   4.25
+## induced            2.25   1.38   3.24
+## factor(stratum)2   2.83 -36.39  47.06
+## factor(stratum)3   1.96  -7.07  11.07
+## factor(stratum)4   0.28 -16.76  19.30
+## factor(stratum)5  -1.27 -10.68   7.55
+## factor(stratum)6  -3.29 -18.61  10.49
+## factor(stratum)7   1.41  -5.23   8.37
+## factor(stratum)8  -0.98  -6.86   4.97
+## factor(stratum)9  -1.33  -8.60   6.26
+## factor(stratum)10 -0.46  -7.85   7.02
+## factor(stratum)11  0.02  -6.89   7.05
+## factor(stratum)12 -2.39 -17.23  11.03
+## factor(stratum)13  0.95  -5.49   7.43
+## factor(stratum)14 -2.23 -14.83   9.46
+## factor(stratum)15 -1.37  -7.92   5.07
+## factor(stratum)16 -0.61  -8.64   7.43
+## factor(stratum)17 -3.95 -29.34  18.64
+## factor(stratum)18 -0.44  -6.76   5.88
+## factor(stratum)19 -3.17 -18.06  10.70
+## factor(stratum)20 -0.40 -11.59  11.66
+## factor(stratum)21  0.68  -8.67  10.73
+## factor(stratum)22  0.55  -5.31   6.39
+## factor(stratum)23 -2.67 -10.38   5.02
+## factor(stratum)24 -0.89  -8.51   7.17
+## factor(stratum)25 -3.28 -11.30   4.68
+## factor(stratum)26 -0.43  -7.18   6.26
+## factor(stratum)27 -0.37  -6.98   6.19
+## factor(stratum)28 -0.18 -11.19  10.32
+## factor(stratum)29 -4.72 -24.45  13.05
+## factor(stratum)30 -1.79 -20.33  14.89
+## factor(stratum)31  0.40  -6.28   7.22
+## factor(stratum)32  0.41  -4.83   5.82
+## factor(stratum)33  0.29  -9.87  11.26
+## factor(stratum)34 -2.59  -8.79   3.59
+## factor(stratum)35  1.00  -7.79  10.46
+## factor(stratum)36 -0.43  -7.12   6.20
+## factor(stratum)37  0.42  -7.46   8.69
+## factor(stratum)38 -3.47 -13.84   6.11
+## factor(stratum)39 -1.27 -13.55  10.21
+## factor(stratum)40 -0.56  -6.80   5.65
+## factor(stratum)41 -0.98  -9.25   7.04
+## factor(stratum)42  1.79  -5.33   9.38
+## factor(stratum)43  1.79  -7.77  12.19
+## factor(stratum)44    NA     NA     NA
+## factor(stratum)45  2.52  -1.64   6.88
+## factor(stratum)46  1.33  -5.79   9.42
+## factor(stratum)47 -0.31  -6.72   5.93
+## factor(stratum)48 -0.89 -20.52  17.01
+## factor(stratum)49  0.87  -5.89   7.58
+## factor(stratum)50  0.65  -7.74   8.91
+## factor(stratum)51 -3.07 -17.48  10.39
+## factor(stratum)52 -2.13 -23.99  17.80
+## factor(stratum)53 -0.99 -13.70  10.86
+## factor(stratum)54  0.15  -3.42   3.53
+## factor(stratum)55 -1.46  -7.01   4.03
+## factor(stratum)56 -0.49  -5.28   4.12
+## factor(stratum)57 -0.54  -6.32   5.19
+## factor(stratum)58 -1.20  -7.18   4.70
+## factor(stratum)59  1.10  -2.63   4.72
+## factor(stratum)60 -0.22  -7.11   6.52
+## factor(stratum)61 -0.91  -5.42   3.40
+## factor(stratum)62  0.69  -2.79   3.82
+## factor(stratum)63  2.16  -3.64   8.66
+## factor(stratum)64  0.18  -5.33   5.54
+## factor(stratum)65 -0.70  -7.82   6.33
+## factor(stratum)66  1.23  -3.50   6.54
+## factor(stratum)67  0.53  -3.84   5.35
+## factor(stratum)68 -1.99 -14.50   9.68
+## factor(stratum)69 -1.55  -9.85   6.62
+## factor(stratum)70  1.65  -1.91   4.91
+## factor(stratum)71  1.63  -3.08   6.90
+## factor(stratum)72  1.08  -2.50   4.48
+## factor(stratum)73  0.74  -3.63   5.57
+## factor(stratum)74  0.72 -27.25  26.17
+## factor(stratum)75 -2.35  -9.08   4.33
+## factor(stratum)76  1.21  -3.17   6.02
+## factor(stratum)77  0.28  -4.41   4.85
+## factor(stratum)78  1.25  -2.36   4.66
+## factor(stratum)79  0.92  -3.47   5.77
+## factor(stratum)80  2.27  -3.59   8.83
+## factor(stratum)81    NA     NA     NA
+## factor(stratum)82    NA     NA     NA
+## factor(stratum)83    NA     NA     NA
+```
+]
+--
+
+.pull-right[
+
+```
+##                      OR 2.5 %       97.5 %
+## (Intercept)        0.07  0.00 2.922792e+10
+## treat              0.68  0.30 1.530000e+00
+## age                0.98  0.53 1.820000e+00
+## parity             0.57  0.00 6.431500e+02
+## education6-11yrs   5.82  0.00 6.261757e+15
+## education12+ yrs   1.05  0.00 7.646079e+14
+## spontaneous       25.83 10.98 7.018000e+01
+## induced            9.49  3.98 2.555000e+01
+## factor(stratum)2  16.90  0.00 2.744061e+20
+## factor(stratum)3   7.13  0.00 6.451847e+04
+## factor(stratum)4   1.33  0.00 2.399727e+08
+## factor(stratum)5   0.28  0.00 1.905830e+03
+## factor(stratum)6   0.04  0.00 3.585211e+04
+## factor(stratum)7   4.11  0.01 4.314480e+03
+## factor(stratum)8   0.38  0.00 1.444700e+02
+## factor(stratum)9   0.26  0.00 5.245200e+02
+## factor(stratum)10  0.63  0.00 1.119140e+03
+## factor(stratum)11  1.02  0.00 1.151240e+03
+## factor(stratum)12  0.09  0.00 6.194493e+04
+## factor(stratum)13  2.58  0.00 1.686550e+03
+## factor(stratum)14  0.11  0.00 1.285116e+04
+## factor(stratum)15  0.25  0.00 1.595600e+02
+## factor(stratum)16  0.54  0.00 1.688710e+03
+## factor(stratum)17  0.02  0.00 1.246280e+08
+## factor(stratum)18  0.65  0.00 3.592900e+02
+## factor(stratum)19  0.04  0.00 4.431601e+04
+## factor(stratum)20  0.67  0.00 1.156571e+05
+## factor(stratum)21  1.98  0.00 4.558173e+04
+## factor(stratum)22  1.73  0.00 5.980500e+02
+## factor(stratum)23  0.07  0.00 1.507000e+02
+## factor(stratum)24  0.41  0.00 1.298030e+03
+## factor(stratum)25  0.04  0.00 1.076300e+02
+## factor(stratum)26  0.65  0.00 5.228600e+02
+## factor(stratum)27  0.69  0.00 4.854300e+02
+## factor(stratum)28  0.84  0.00 3.027264e+04
+## factor(stratum)29  0.01  0.00 4.663537e+05
+## factor(stratum)30  0.17  0.00 2.926188e+06
+## factor(stratum)31  1.50  0.00 1.361930e+03
+## factor(stratum)32  1.51  0.01 3.386000e+02
+## factor(stratum)33  1.34  0.00 7.768243e+04
+## factor(stratum)34  0.08  0.00 3.608000e+01
+## factor(stratum)35  2.73  0.00 3.473224e+04
+## factor(stratum)36  0.65  0.00 4.936600e+02
+## factor(stratum)37  1.52  0.00 5.921090e+03
+## factor(stratum)38  0.03  0.00 4.498500e+02
+## factor(stratum)39  0.28  0.00 2.722836e+04
+## factor(stratum)40  0.57  0.00 2.834800e+02
+## factor(stratum)41  0.37  0.00 1.137510e+03
+## factor(stratum)42  6.01  0.00 1.190460e+04
+## factor(stratum)43  6.01  0.00 1.970593e+05
+## factor(stratum)44    NA    NA           NA
+## factor(stratum)45 12.49  0.19 9.694600e+02
+## factor(stratum)46  3.78  0.00 1.234119e+04
+## factor(stratum)47  0.74  0.00 3.752100e+02
+## factor(stratum)48  0.41  0.00 2.451224e+07
+## factor(stratum)49  2.38  0.00 1.950920e+03
+## factor(stratum)50  1.92  0.00 7.404680e+03
+## factor(stratum)51  0.05  0.00 3.252917e+04
+## factor(stratum)52  0.12  0.00 5.388147e+07
+## factor(stratum)53  0.37  0.00 5.206120e+04
+## factor(stratum)54  1.16  0.03 3.418000e+01
+## factor(stratum)55  0.23  0.00 5.629000e+01
+## factor(stratum)56  0.61  0.01 6.172000e+01
+## factor(stratum)57  0.58  0.00 1.803200e+02
+## factor(stratum)58  0.30  0.00 1.100500e+02
+## factor(stratum)59  3.00  0.07 1.125900e+02
+## factor(stratum)60  0.80  0.00 6.767100e+02
+## factor(stratum)61  0.40  0.00 3.005000e+01
+## factor(stratum)62  1.99  0.06 4.541000e+01
+## factor(stratum)63  8.65  0.03 5.773860e+03
+## factor(stratum)64  1.20  0.00 2.553700e+02
+## factor(stratum)65  0.50  0.00 5.597900e+02
+## factor(stratum)66  3.43  0.03 6.933800e+02
+## factor(stratum)67  1.71  0.02 2.114600e+02
+## factor(stratum)68  0.14  0.00 1.602878e+04
+## factor(stratum)69  0.21  0.00 7.498400e+02
+## factor(stratum)70  5.19  0.15 1.351900e+02
+## factor(stratum)71  5.12  0.05 9.909100e+02
+## factor(stratum)72  2.96  0.08 8.797000e+01
+## factor(stratum)73  2.11  0.03 2.634600e+02
+## factor(stratum)74  2.05  0.00 2.325049e+11
+## factor(stratum)75  0.10  0.00 7.566000e+01
+## factor(stratum)76  3.35  0.04 4.135100e+02
+## factor(stratum)77  1.32  0.01 1.280500e+02
+## factor(stratum)78  3.50  0.09 1.061200e+02
+## factor(stratum)79  2.52  0.03 3.200200e+02
+## factor(stratum)80  9.64  0.03 6.856680e+03
+## factor(stratum)81    NA    NA           NA
+## factor(stratum)82    NA    NA           NA
+## factor(stratum)83    NA    NA           NA
+```
+]
+
+---
+
+class: middle
+**Standard Logistic Regression** .red[Example using the `infert` data set] **Adding the stratum variable (n=83)**
+
+- Then the OR formula is just the usual logistic regression formula for exposure E, confounder C, but adding in 82 indicator variables for the 83 strata of matched pairs.
+
+
+--
+
+
+### &lt;span style="color:red"&gt; This doesn't seem _Efficient_...&lt;/span&gt;
+
+
+
+
+---
+class: middle
+### Conditional Logistic Regression is the righ type for matched data
+- We can make use of a **conditional** maximum likelihood method to estimate the exposure effect in this design, rather than the usual unconditional model. 
+  - The “conditional” part refers to "conditioned on the strata of matched pairs". 
+  
+- The _k_ stratum-specific conditional likelihood is obtained as the probability of the observed data conditioned on the number of observations in stratum `\(k\)` and the number of these that are cases.
+
+- The probability of the observed data relative to the probability of the data under all other possible assignments of the `\(n_{1k}\)` cases and `\(n_{0k}\)` controls to `\(nk (= n_{1k} + n_{0k})\)` subjects.
+
+
+---
+class: middle
+### Considerations for the Conditional Logistic Regression
+- This conditional likelihood is complex (see Hosmer &amp; Lemeshow 2000, pp. 225-226)
+- For 1-to-1 matching there are only 2 subjects per stratum, and the conditional likelihood for stratum k is:
+`\(l_k (\beta) = \left(\frac{e^{\beta^{x_{1k}}}}{e^{\beta^{x_{1k}}}+ e^{\beta^{x_{0k}}}}\right)\)`, 
+
+where `\(x_{1k}\)` is the data vector for the case and `\(x_{0k}\)` is the data vector for the control.
+
+--
+- Given values for `\(\beta,\ x_{1k} \ and \ x_{0k}\)`, the expression above is interpreted as the modeled probability that an exposed subject is a case, assuming the 1-to-1 matched design (so one of the two observations in the stratum must be a case). 
+- For any stratum in which `\(x_{1k} = x_{0k}\)` the prob. of each observation being a case is 0.5, regardless the value of `\(\beta\)`, and therefore the stratum is uninformative. 
+- Checking on the frequency of the 2 types of discordant pairs, recognizing that if one or the other doesn’t occur that the conditional estimator is undefined.
+
+
+---
+class: middle
+**Conditional Logistic Regression for matched data**, Example using the `infert` data
+
+
+``` r
+modelclogit &lt;- clogit(case ~ treat + spontaneous + induced + strata(stratum), data = infert)
+cbind(Coeff=round(coef(modelclogit), 2), round(confint(modelclogit), 2)) #summary(modelclogit)
+```
+
+```
+##             Coeff 2.5 % 97.5 %
+## treat       -0.26 -0.89   0.37
+## spontaneous  2.00  1.30   2.70
+## induced      1.45  0.73   2.17
+```
+--
+
+.red[This shows that only contributing parameters are used in the estimation]
+
+``` r
+clogit(case ~ treat + spontaneous + induced +
+*      age + parity+ education +
+         strata(stratum), data = infert)
+```
+
+```
+## Call:
+## clogit(case ~ treat + spontaneous + induced + age + parity + 
+##     education + strata(stratum), data = infert)
+## 
+##                     coef exp(coef) se(coef)      z        p
+## treat            -0.2580    0.7726   0.3210 -0.804    0.422
+## spontaneous       1.9992    7.3834   0.3575  5.592 2.24e-08
+## induced           1.4499    4.2626   0.3659  3.962 7.43e-05
+## age                   NA        NA   0.0000     NA       NA
+## parity                NA        NA   0.0000     NA       NA
+## education6-11yrs      NA        NA   0.0000     NA       NA
+## education12+ yrs      NA        NA   0.0000     NA       NA
+## 
+## Likelihood ratio test=53.8  on 3 df, p=1.239e-11
+## n= 248, number of events= 83
+```
+
+---
+class: middle
+**Conditional Logistic Regression for matched data**, Example using the `infert` data
+.pull-left[
+**Using Standard (Unconditional) Logistic Regression**
+
+```
+##                    OR 2.5 % 97.5 %
+## (Intercept)      0.36  0.02   6.27
+## treat            0.91  0.49   1.70
+## age              1.04  0.98   1.11
+## parity           0.43  0.29   0.63
+## education6-11yrs 0.35  0.07   1.72
+## education12+ yrs 0.24  0.04   1.28
+## spontaneous      7.70  4.31  14.64
+## induced          3.65  2.05   6.75
+```
+
+]
+
+.pull-right[
+**Using Conditional Logistic Regression**
+
+```
+##               OR 2.5 % 97.5 %
+## treat       0.77  0.41   1.45
+## spontaneous 7.38  3.66  14.88
+## induced     4.26  2.08   8.73
+```
+
+]
+
+---
+class: middle
+**Matching and Conditional Logistic Regression: ** Example using the `infert` data and red[using the `matchIt` package]. 
+
+
+``` r
+m.out2 &lt;- matchit(treat  ~ age+ parity + spontaneous + induced + education, 
+                 data = infert, method ="cem", cutpoints = list(parity=3),
+*                grouping = list( education= list(c("0-5yrs","6-11yrs"), "12+ yrs")),
+*                k2k = TRUE, k2k.method = "mahalanobis")
+```
+.pull-left[
+
+```
+## A matchit object
+##  - method: Coarsened exact matching
+##  - number of obs.: 248 (original), 96 (matched)
+##  - target estimand: ATT
+##  - covariates: age, parity, spontaneous, induced, education
+```
+]
+
+--
+&lt;br&gt;
+.pull-right[
+
+|Sample Sizes:|        |        |
+|:------------|:------:|:------:|
+|             | Control| Treated|
+|All           | 99   |     149|
+|Matched       | 52   |     52|
+|Unmatched     |  47    |    97|
+|Discarded      |  0    |     0|
+]
+
+.red[For illustration ONLY, here we changed the matching structure but the dataset was already matched]
+
+---
+class: middle
+**Matching and Conditional Logistic Regression: ** Example using the `infert` data and the `matchIt` package to plot of balance 
+
+&lt;img src="L17_EPIB704_Matching_and_conditional_LR_files/figure-html/unnamed-chunk-32-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+.red[This plot illustrates the balance before (unadjusted) and after (adjusted) matching]
+
+---
+class: middle
+**Matching and Conditional Logistic Regression: ** Example using the `infert` data and the `matchIt` package to provide a **Summary of Balance Before-Matching**
+
+```
+##                  Means Treated Means Control Std. Mean Diff. Var. Ratio
+## age                     31.313        31.796          -0.090      1.118
+## parity                   2.027         2.194          -0.132      1.051
+## spontaneous              0.493         0.704          -0.313      0.704
+## induced                  0.587         0.551           0.048      1.026
+## education0-5yrs          0.060         0.031           0.124         NA
+## education6-11yrs         0.507         0.449           0.115         NA
+## education12+ yrs         0.433         0.520          -0.176         NA
+```
+--
+**.red[Summary of Balance After-Matching]**
+
+```
+##                  Means Treated Means Control Std. Mean Diff. Var. Ratio
+## age                     32.521        32.458           0.012      0.966
+## parity                   1.625         1.708          -0.066      1.029
+## spontaneous              0.417         0.417           0.000      1.000
+## induced                  0.375         0.375           0.000      1.000
+## education0-5yrs          0.083         0.042           0.175         NA
+## education6-11yrs         0.354         0.396          -0.083         NA
+## education12+ yrs         0.562         0.562           0.000         NA
+```
+
+---
+class: middle
+**Matching and Conditional Logistic Regression: ** Example using the `infert` data and the `matchIt` package
+.pull-left[
+**With weights**
+
+``` r
+*match.data1 &lt;- match.data(m.out2)
+#;head(match.data1)
+mod.logistic2 &lt;- glm(case ~ treat + age + parity+ education + spontaneous +induced, 
+                     family = binomial(), 
+*                    data = match.data1, weights = weights)
+#summary(mod.logistic2); coeftest(mod.logistic2, vcov. = vcovCL, cluster = ~subclass, digits=2) #robust variance
+cbind(Coeff= round(coefficients(mod.logistic2), 2), round(confint(mod.logistic2),2))
+```
+
+```
+##                  Coeff 2.5 % 97.5 %
+## (Intercept)       0.58 -4.44   5.56
+## treat             1.02  0.03   2.07
+## age              -0.05 -0.16   0.06
+## parity           -0.65 -1.44   0.05
+## education6-11yrs -0.08 -2.45   2.54
+## education12+ yrs -1.06 -3.64   1.62
+## spontaneous       2.16  1.13   3.35
+## induced           1.47  0.28   2.75
+```
+]
+
+--
+
+.pull-right[
+**Without weights**
+
+``` r
+mod.logistic2a &lt;- glm(case ~ treat + age + parity+ education + spontaneous+induced, family = binomial(), 
+*                    data = match.data1)
+cbind(round(coefficients(mod.logistic2a), 2), round(confint(mod.logistic2a),2))
+```
+
+```
+##                        2.5 % 97.5 %
+## (Intercept)       0.58 -4.44   5.56
+## treat             1.02  0.03   2.07
+## age              -0.05 -0.16   0.06
+## parity           -0.65 -1.44   0.05
+## education6-11yrs -0.08 -2.45   2.54
+## education12+ yrs -1.06 -3.64   1.62
+## spontaneous       2.16  1.13   3.35
+## induced           1.47  0.28   2.75
+```
+
+
+``` r
+summary(match.data1$weights)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       1       1       1       1       1       1
+```
+]
+
+.red[Coefficients are identical because all have same weight=1]
+---
+class: middle 
+**Using `clogit` function**
+
+``` r
+mod.clog3 &lt;- clogit(case ~ treat + age + parity+ education + spontaneous + induced,
+*                    data = match.data1)
+cbind(Coeff=round(coefficients(mod.clog3), 2), round(confint(mod.clog3),2))
+```
+
+```
+##                  Coeff 2.5 % 97.5 %
+## treat             1.00  0.00   2.01
+## age              -0.05 -0.16   0.06
+## parity           -0.65 -1.37   0.08
+## education6-11yrs -0.07 -2.49   2.35
+## education12+ yrs -1.05 -3.60   1.50
+## spontaneous       2.13  1.04   3.23
+## induced           1.45  0.24   2.67
+```
+
+--
+
+**GLM using weights and the `strata` **
+
+``` r
+cbind(Coeff=round(coefficients(mod.logistic2), 2), round(confint(mod.logistic2),2))
+```
+
+```
+##                  Coeff 2.5 % 97.5 %
+## (Intercept)       0.58 -4.44   5.56
+## treat             1.02  0.03   2.07
+## age              -0.05 -0.16   0.06
+## parity           -0.65 -1.44   0.05
+## education6-11yrs -0.08 -2.45   2.54
+## education12+ yrs -1.06 -3.64   1.62
+## spontaneous       2.16  1.13   3.35
+## induced           1.47  0.28   2.75
+```
+
+
+---
+class: middle  
+### What is the quantity estimated in presence of Matching?
+- The estimand matching is most often used for is the average exposure effect among those who were exposed, also known as the average treatment effect on the treated **.red[(ATT)]**,   
+   - I.e., the average difference between the observed outcomes for those exposed and their counterfactual outcomes had they not been exposed. 
+   - This is the same quantity estimated using weighting by the odds (if such). 
+--
+&lt;br&gt;
+
+- Some matching methods allow estimation of the average exposure effect in the population, e.g., estimated with inverse probability weights. `\(^1\)` 
+   - The choice of estimand depends on the desired target population of interest, which should be specified before the analysis, and matching methods appropriate for that estimand should be used.
+
+`\(^1\)` More on this on the propensity score lecture!
+
+
+---
+class: middle
+###The Bayesian way???
+
+``` r
+infert1 &lt;- infert[order(infert$stratum), ]
+post &lt;- stan_clogit(case ~ spontaneous + induced + (1 | parity),
+                  strata = stratum,
+                  data = infert1, # order necessary subset = parity &lt;= 2,
+                     QR = TRUE, cores = 2, seed = 7042023)
+post
+PPD &lt;- posterior_predict(post) #; summary(PPD)
+post1 &lt;- stan_clogit(case ~  treat + spontaneous + induced + (1 |education),
+                    data = infert[order(infert$stratum), ],
+                    strata = stratum, QR = TRUE, cores = 4, seed = 7042023)
+post1
+```
+
+.pull-left[
+&lt;img src="images/L12bayesclogitpost.png" width="110%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="images/L12bayesclogitpost1.png" width="110%" style="display: block; margin: auto;" /&gt;
+]
+
+[Conditional logistic (clogit) regression models via Stan](http://mc-stan.org/rstanarm/reference/stan_clogit.html)
+
+---
+class: middle
+
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+
+---
+class: middle
+### Details of the McNemar Test
+
+
+``` r
+summary(mn_test)
+```
+
+```
+## 
+## Matched Pairs Analysis: McNemar's Statistic and Odds Ratio (Detailed Summary):
+##  
+##                                 Exposed Person: Disease Present
+## Control Person: Disease Present                              30
+## Control Person: Disease Absent                               10
+##                                 Exposed Person: Disease Absent
+## Control Person: Disease Present                             30
+## Control Person: Disease Absent                              30
+## 
+## Entries in above matrix correspond to number of pairs. 
+##  
+## McNemar's Chi^2 Statistic (corrected for continuity) = 9.025 which has a p-value of: 0.003
+## Note: The p.value for McNemar's Test corresponds to the hypothesis test: H0: OR = 1 vs. HA: OR != 1
+## McNemar's Odds Ratio (b/c): 3
+## 95% Confidence Limits for the OR are: [1.521, 8.68]
+## The risk difference is: 0.2
+## 95% Confidence Limits for the rd are: [0.072, 0.328]
+```
+
+---
+class: middle
+
+**Code for the Plot of “standardized difference in means” (SDM)**
+
+``` r
+#plot(summary(m.out)) #this provides a series of Q-Q plots
+cobalt::love.plot(m.out, thresholds = c(m = .1), abs= T)+ #this provide the line at 0.1
+ labs(title = 'Standardized Difference in Means', subtitle = "`infert` dataset", 
+      x="Absolute Standardized\ Mean Difference", y=" ") +
+  geom_vline(xintercept = 0.25, color= "blue", linetype =2)+ #this provide the line at 0.25
+   theme_light() +
+    theme( panel.spacing = unit(0.5, "lines"),
+          strip.text.x = element_text(size = 14),
+           strip.text.y = element_text(size = 16))
+```
+
+&lt;img src="L17_EPIB704_Matching_and_conditional_LR_files/figure-html/unnamed-chunk-44-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+##Additonal worked example
+
+---
+class: middle
+## Matching and Conditional Logistic Regression
+Using the `simualted` example and the `matchIt` package.
+
+
+``` r
+m.out.sim &lt;- matchit(treat ~ numeric1 + binary1 + numeric2 + binary2,  
+*                    data = data,  method = NULL, distance = "glm")
+m.out.sim
+```
+
+```
+## A matchit object
+##  - method: None (no matching)
+##  - distance: Propensity score
+##              - estimated with logistic regression
+##  - number of obs.: 100 (original)
+##  - target estimand: ATT
+##  - covariates: numeric1, binary1, numeric2, binary2
+```
+--
+
+```
+## 
+## Call:
+## matchit(formula = treat ~ numeric1 + binary1 + numeric2 + binary2, 
+##     data = data, method = NULL, distance = "glm")
+## 
+## Summary of Balance for All Data:
+##          Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+## distance        0.4720        0.4320          0.4484     0.7164    0.1157
+## numeric1       11.7556       10.7455          0.1516     0.6876    0.0699
+## binary1         0.5333        0.4727          0.1215          .    0.0606
+## numeric2       11.1111       11.1455         -0.0037     1.3567    0.0683
+## binary2         0.1111        0.2364         -0.3986          .    0.1253
+##          eCDF Max
+## distance   0.2263
+## numeric1   0.2061
+## binary1    0.0606
+## numeric2   0.1455
+## binary2    0.1253
+## 
+## Sample Sizes:
+##           Control Treated
+## All            55      45
+## Matched        55      45
+## Unmatched       0       0
+## Discarded       0       0
+```
+
+---
+class: middle
+## Matching and Conditional Logistic Regression
+Using the `simualted` example
+
+``` r
+m.out.sim1 &lt;- matchit(treat ~ numeric1 + binary1 + numeric2 + binary2,  data = data, 
+*                distance = "mahalanobis", replace = TRUE)
+m.out.sim1
+```
+
+```
+## A matchit object
+##  - method: 1:1 nearest neighbor matching with replacement
+##  - distance: Mahalanobis
+##  - number of obs.: 100 (original), 74 (matched)
+##  - target estimand: ATT
+##  - covariates: numeric1, binary1, numeric2, binary2
+```
+
+---
+class: middle
+## Matching and Conditional Logistic Regression
+Using the `simualted` example, Plot of balance `simualted` Example
+&lt;img src="L17_EPIB704_Matching_and_conditional_LR_files/figure-html/unnamed-chunk-48-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: middle
+## Matching and Conditional Logistic Regression
+**Summary of Balance for All Data (Pre-Matching)** Using the `simualted` example
+
+```
+## 
+## Call:
+## matchit(formula = treat ~ numeric1 + binary1 + numeric2 + binary2, 
+##     data = data, distance = "mahalanobis", replace = TRUE)
+## 
+## Summary of Balance for All Data:
+##          Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+## numeric1       11.7556       10.7455          0.1516     0.6876    0.0699
+## binary1         0.5333        0.4727          0.1215          .    0.0606
+## numeric2       11.1111       11.1455         -0.0037     1.3567    0.0683
+## binary2         0.1111        0.2364         -0.3986          .    0.1253
+##          eCDF Max
+## numeric1   0.2061
+## binary1    0.0606
+## numeric2   0.1455
+## binary2    0.1253
+## 
+## Summary of Balance for Matched Data:
+##          Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+## numeric1       11.7556       11.3778          0.0567     0.8437    0.0521
+## binary1         0.5333        0.5333          0.0000          .    0.0000
+## numeric2       11.1111       11.2889         -0.0193     1.0977    0.0529
+## binary2         0.1111        0.1111          0.0000          .    0.0000
+##          eCDF Max Std. Pair Dist.
+## numeric1   0.1556          0.3169
+## binary1    0.0000          0.0000
+## numeric2   0.1333          0.3236
+## binary2    0.0000          0.0000
+## 
+## Sample Sizes:
+##               Control Treated
+## All             55.        45
+## Matched (ESS)   22.75      45
+## Matched         29.        45
+## Unmatched       26.         0
+## Discarded        0.         0
+```
+
+---
+class: middle
+## Matching and Conditional Logistic Regression
+**Summary of Balance for Matched Data** Using the `simualted` example
+
+```
+## 
+## Call:
+## matchit(formula = treat ~ numeric1 + binary1 + numeric2 + binary2, 
+##     data = data, distance = "mahalanobis", replace = TRUE)
+## 
+## Summary of Balance for Matched Data:
+##          Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+## numeric1       11.7556       11.3778          0.0567     0.8437    0.0521
+## binary1         0.5333        0.5333          0.0000          .    0.0000
+## numeric2       11.1111       11.2889         -0.0193     1.0977    0.0529
+## binary2         0.1111        0.1111          0.0000          .    0.0000
+##          eCDF Max Std. Pair Dist.
+## numeric1   0.1556          0.3169
+## binary1    0.0000          0.0000
+## numeric2   0.1333          0.3236
+## binary2    0.0000          0.0000
+## 
+## Sample Sizes:
+##               Control Treated
+## All             55.        45
+## Matched (ESS)   22.75      45
+## Matched         29.        45
+## Unmatched       26.         0
+## Discarded        0.         0
+```
+
+
+---
+class: middle
+#### Matching and Conditional Logistic Regression 
+Using the `simualted` example
+.pull-left[
+**Estimation without weights**
+
+``` r
+*sim.match.data1 &lt;- match.data(m.out.sim1)
+mod.sim1 &lt;- glm(outc ~ treat + numeric1 + binary1 + numeric2 + binary2, 
+                     family = binomial(), data = sim.match.data1)
+#summary(mod.sim1)
+cbind(Coeff=round(mod.sim1$coefficients, 2), round(confint(mod.sim1), 2))
+```
+
+```
+##             Coeff 2.5 % 97.5 %
+## (Intercept) -1.12 -2.65   0.30
+## treat       -0.33 -1.40   0.74
+## numeric1    -0.04 -0.12   0.04
+## binary1      0.48 -0.59   1.59
+## numeric2     0.06  0.00   0.12
+## binary2     -0.66 -2.67   0.92
+```
+
+``` r
+summary(sim.match.data1 $weights)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.6444  1.0000  1.0000  1.0000  1.0000  2.5778
+```
+]
+.pull-right[
+**Estimation using matching weights**
+
+``` r
+mod.sim2 &lt;- glm(outc ~ treat + numeric1 + binary1 + numeric2 + binary2, 
+*                    family = binomial(), data = sim.match.data1, weights = weights)
+#summary(mod.sim2)
+round(coeftest(mod.sim2, vcov. = vcovCL), 2)
+```
+
+```
+## 
+## z test of coefficients:
+## 
+##             Estimate Std. Error z value Pr(&gt;|z|)  
+## (Intercept)    -1.30       0.78   -1.65     0.10 .
+## treat          -0.55       0.56   -0.97     0.33  
+## numeric1       -0.01       0.04   -0.35     0.73  
+## binary1         0.64       0.59    1.10     0.27  
+## numeric2        0.06       0.03    1.91     0.06 .
+## binary2        -0.47       0.86   -0.55     0.58  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+]
+
+
+---
+class: middle
+#### Matching and Conditional Logistic Regression 
+
+**Estimation using Conditional Logistic Regression**
+
+`clogit` Regression using the `simualted` example
+
+.pull-left[
+
+``` r
+modelclogit2 &lt;- clogit(outc ~ treat + numeric1 + binary1 + numeric2 + binary2, 
+*                      weights = weights, data = sim.match.data1)
+cbind(Coeff= round(coef(modelclogit2), 2), round(confint(modelclogit2), 2))
+```
+
+```
+##          Coeff 2.5 % 97.5 %
+## treat    -0.33 -1.38   0.72
+## numeric1 -0.04 -0.12   0.04
+## binary1   0.47 -0.60   1.54
+## numeric2  0.05  0.00   0.11
+## binary2  -0.65 -2.36   1.05
+```
+]
+.pull-right[
+
+|Sample Sizes:|        |        |
+|:------------|:------:|:------:|
+|             | Control| Treated|
+|All           |  55.   |     45|
+|Matched (ESS) |  18.58  |    45|
+|Matched       |  28.   |     45|
+|Unmatched     |  27.    |     0|
+|Discarded      |  0.    |     0|
+
+]
+
+---
+class: middle
+#### Matching and Conditional Logistic Regression 
+Modification of the matching using the `simualted` example
+
+``` r
+m.out.sim2&lt;- matchit(treat ~ numeric1 + binary1 + numeric2 + binary2, data = data,
+*                 method = "cem", cutpoints = list(numeric1 = 5),
+                  grouping = list(binary1 = list(c(0, 1)) ))
+summary(m.out.sim2, un=F)
+```
+
+```
+## 
+## Call:
+## matchit(formula = treat ~ numeric1 + binary1 + numeric2 + binary2, 
+##     data = data, method = "cem", cutpoints = list(numeric1 = 5), 
+##     grouping = list(binary1 = list(c(0, 1))))
+## 
+## Summary of Balance for Matched Data:
+##          Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+## numeric1       10.5882       10.1314          0.0686     1.0238    0.0384
+## binary1         0.5882        0.4539          0.2692          .    0.1343
+## numeric2        8.0294        7.9127          0.0127     0.9265    0.0231
+## binary2         0.0882        0.0882          0.0000          .    0.0000
+##          eCDF Max Std. Pair Dist.
+## numeric1   0.1314          0.3284
+## binary1    0.1343          1.0857
+## numeric2   0.1216          0.2049
+## binary2    0.0000          0.0000
+## 
+## Sample Sizes:
+##               Control Treated
+## All             55.        45
+## Matched (ESS)   24.18      34
+## Matched         27.        34
+## Unmatched       28.        11
+## Discarded        0.         0
+```
+
+---
+class: middle
+#### Matching and Conditional Logistic Regression 
+Modification of the matching using the `simualted` example
+
+``` r
+match.data2 &lt;- match.data(m.out.sim2)
+```
+.pull-left[
+
+```
+##   outc treat numeric1 binary1 numeric2 binary2   weights subclass
+## 1    1     1       15       1       12       0 1.0000000        9
+## 2    0     1       10       1       17       1 1.0000000       11
+## 3    0     0       28       0        8       0 0.3970588        1
+## 4    0     1        8       0        7       0 1.0000000        6
+## 6    0     1        6       1        9       0 1.0000000        6
+## 8    1     0       13       0       14       1 0.7941176        2
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.3971  1.0000  1.0000  1.0000  1.0588  1.5882
+```
+
+```
+##  1  2  3  4  5  6  7  8  9 10 11 12 13 
+##  3  4  5  7 13  7  2  6  5  2  2  3  2
+```
+]
+
+--
+
+.pull-right[
+&lt;img src="images/L12subclass.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class: middle
+### The Bayesian Way  
+
+``` r
+dat2 &lt;- match.data2[order(match.data2$subclass), ] # order by strata
+post3 &lt;- stan_clogit(outc ~  treat +   numeric1 +  numeric2 +binary1+ (1 | binary2), #
+                    strata = subclass,
+                    data = dat2,
+                    chains = 2, iter = 100)
+post3
+post4 &lt;- stan_clogit(outc ~  treat +  numeric1 +  numeric2 + binary1+ (1 | binary2),
+                    data = dat2[order(dat2$subclass), ], # order necessary
+                    strata = subclass, QR = TRUE,
+                    cores = 2, seed = 704)
+
+post4
+```
+                                                                                      
+                                                                                      
+---
+class: middle
+### Regression equation
+Consider the 1:1 matched design (simplest case) with `\(k = 1\)`, ..., _K_ strata and _p_ covariates
+`\(logit(π_k(X))=α_k +β′X\)`
+
+
+Where `\(π_k(X) = Pr(D_{ik} = 1|X)\)`, `\(α_k\)` is log-odds in the `\(k_{th}\)` stratum; `\(X_{0k}\)` be the data vector for the control and `\(X_{1k}\)` be the data vector for the case. `\(S_k = D_{0k} + D_{1k}\)` .
+
+
+`$$L_k(β) = Pr(D_{1k} = 1, D_{0k} = 0|X_{1k}, X_{0k}, S_k = 1, n_k = 2)$$`
+                              
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "3:2",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
