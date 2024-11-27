@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>SELECTION BIAS - Core concepts</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mabel Carabali" />
+    <script src="libs/header-attrs-2.28/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# SELECTION BIAS - Core concepts
+]
+.author[
+### Mabel Carabali
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### Updated: 2024-11-19
+]
+
+---
+
+
+
+
+
+
+
+
+class:middle
+**Expected Competencies**
+- Knowledge about design mechanisms for Selection Bias.
+- Knows what would be the impact of selection bias on study designs
+
+## Objectives
+- Identify sources and structure of selection bias.
+- Differentiate between selection bias and other biases or statistical artifacts. 
+- Identify alternative to address selection bias.
+
+---
+class:middle
+### Selection Bias
+- Can arise in both randomized experiments and observational studies, and in both prospective and retrospective studies.
+
+&gt; _"…the common consequence of selection bias is that the association between exposure and outcome among those selected for analysis differs from the association among those eligible."_ 
+
+- &lt;span style="color:blue"&gt;**Type 1:**&lt;/span&gt; people are selected or not-selected into analysis
+- &lt;span style="color:magenta"&gt;**Type 2:**&lt;/span&gt; bias introduced by conditioning on a collider, but no one is left out of analysis.
+
+[Hernán MA, Hernández-Díaz S, Robins JM. A structural approach to selection bias. Epidemiology. 2004 Sep;15(5):615-25.](https://pubmed.ncbi.nlm.nih.gov/15308962/)
+
+--
+
+- Selection bias as used by [H&amp;R What If?](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/) does NOT refer to failure to generalize externally.
+
+  - It refers to non-causal (spurious) association that occurs in the data set under analysis.
+
+---
+
+class:middle
+### A Nice Resource
+
+- Directed Acyclic Graphs
+- A Taxonomy of Selection Bias
+- Failure to Generalize
+- Conditioning on a Collider
+- Design Considerations
+- Analytic Strategies for Addressing Selection Bias
+- Sensitivity Analysis
+
+[Selection Mechanisms and Their Consequences: Understanding and Addressing Selection Bias](https://link.springer.com/article/10.1007/s40471-020-00241-6)
+
+
+
+Smith, L.H. Selection Mechanisms and Their Consequences: Understanding and Addressing Selection Bias. Curr Epidemiol Rep 7, 179–189 (2020). https://doi.org/10.1007/s40471-020-00241-6
+
+---
+class:middle
+### A Nice Resource for causal inference
+
+&gt; _"Selection bias can be further categorized into two broad types:_ 
+- _type 1 selection bias owing to restricting to one or more level(s) of a collider (or a descendant of a collider) and,_
+- _type 2 selection bias owing to restricting to one or more level(s) of an effect measure modifier."_
+
+[Toward a Clearer Definition of Selection Bias When Estimating Causal Effects](https://oce.ovid.com/article/00001648-202209000-00013/HTML)
+
+Lu, H. , Cole, S. , Howe, C. &amp; Westreich, D. (2022). Toward a Clearer Definition of Selection Bias When Estimating Causal Effects. Epidemiology, 33 (5), 699-706. doi: 10.1097/EDE.0000000000001516.
+
+
+---
+class:middle
+###[Chapter 8: H&amp;R What if?](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/)
+
+&gt; _“We will use the term selection bias to refer to all biases that arise from conditioning on a common effect of two variables, one of which is either the treatment or a cause of treatment, and the other is either the outcome or a cause of the outcome.”_
+
+**8.2: H&amp;R What if?** Practical examples of such structures:
+
+&gt; 
+- Differential loss to follow-up (a.k.a informative censoring) - Missing data bias, nonresponse bias
+- Healthy worker bias
+- Self-selection bias, volunteer bias
+- Selection affected by treatment received before study entry
+
+
+---
+class:middle
+###Berkson bias
+Berkson (1946, 1955) noted that two diseases (`A` and `B`) that are not associated in the population could be associated among hospitalized patients when both diseases affect the probability of hospital admission (`H`).
+
+Berkson’s bias can be seen to arise from conditioning on the common effect `H` of diseases `A` and `B`:
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-1-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+class:middle
+###Berkson bias
+In a case-control study where cases were hospitalized patients with disease `B` and controls were hospitalized patients with disease `A`, an exposure `F` that causes disease `A` would appear to be a risk factor for disease `B`. 
+
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-2-1.png" width="50%" height="75%" style="display: block; margin: auto;" /&gt;
+
+That is, `\(OR_{FB|H =1}\)` would differ from 1.0 even if `F` does not cause `B`.
+
+---
+class:middle
+###Berkson bias
+
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-3-1.png" width="50%" height="75%" style="display: block; margin: auto;" /&gt;
+
+
+This bias occurs because conditioning on `H` induces a correlation between `A` and `B`, even if these are independent in the population.
+
+`Hernán MA, Hernández-Díaz S, Robins JM. A structural approach to selection bias. Epidemiology 2004 Sep;15(5):615-25.`
+
+
+---
+class:middle
+### 8.5. H&amp;R What if? How to adjust for selection bias
+- Inverse probability of censoring weights (IPCW) work exactly the same way as inverse of probability of treatment weights (IPTW). In fact, a typical study will have both weights.
+- Note that positivity is NOT required for the C=1 stratum, since it is not our target population. Only for the C=0 stratum.
+  
+**Important point:** 
+
+For confounding, one had the choice of adjusting for the confounder by stratification or conditioning (conditional effect) or by standardization or g-methods (marginal effect). 
+
+- For collapsible effect measures, these are equivalent.
+
+
+---
+class:middle
+### IPCW vs "Adjusting/Conditioning"
+Let's consider this DAG (reproduced from H&amp;R What If? Figure 8.6).
+.pull-left[
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-4-1.png" width="80%" height="110%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+The other c-word, **Censoring**
+- Bias due to informative censoring.
+- Restricting the analysis to individuals with complete data (C = 0) may result in bias.
+- Healthy worker bias
+- Self-selection bias, volunteer bias
+]
+
+
+---
+class:middle
+### IPCW vs "Adjusting/Conditioning"
+
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-5-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+IPCW can be used to appropriately adjust for selection bias and conditioning will not work here and similar circumstances. 
+
+---
+class:middle
+### IPCW vs "Adjusting/Conditioning"
+
+- Because IPCW is not based on estimating effect measures conditional on the measured covariates `L`, but rather on estimating unconditional effect measures after reweighting the subjects according to their treatment `A` and their values of `L`.
+
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-6-1.png" width="30%" style="display: block; margin: auto;" /&gt;
+&gt;This is the first time `H&amp;R` discuss a situation in which stratification cannot be used to validly compute the causal effect of treatment, even if the three conditions of exchangeability, positivity, and consistency hold. `Modified from Jay Kaufman EPIB-704-2021`
+
+
+
+---
+class:middle
+###Hazard of the Hazards .red[(Recall?)]
+[Technical Point 8.1: H&amp;R What if?](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/) The built-in selection bias of hazard ratios.
+.pull-left[
+- In discrete time, the hazard of death at time 1 is the probability of dying at time 1 and thus the associational hazard ratio is the same as `\(aRR_{AY_1}\)`. 
+- However, the hazard at time 2 is the probability of dying at time 2 among those who survived
+past time 1.
+- Thus, the associational hazard ratio at time 2 is then `\(aRR_{AY_2|Y_1=0} = \left(\frac{Pr[Y_2 = 1|A=1, Y_1=0]}{Pr[Y_2 = 1|A=0, Y_1=0]}\right)\)`
+]
+.pull-right[
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-7-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class:middle
+### Hazard of the Hazards .red[(Recall?)]
+Survival Produces an Unavoidable Selection Bias.
+- Start out with a randomized trial so that all covariates are balanced at time 0.
+- Once events occur, if you condition your estimate on having survived to the next time point, every other cause of disease must now be correlated with exposure.
+
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-8-1.png" width="35%" height="30%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class:middle
+###Hazard of the Hazards .red[(Recall?)]
+This is exactly why the HAZARD RATIO (the parameter estimated by a Cox Proportional Hazards Model) should not be used (unless the outcome is rare):
+
+- The hazard of death at `\(t_1\)` is the probability of dying at `\(t_1\)`. 
+- But the hazard at `\(t_2\)` is the probability of dying at `\(t_2\)` **among those who survived past `\(t_1\)` .**
+
+Treated survivors of `\(t_1\)` differ in their distribution of `U` compared to untreated survivors of `\(t_1\)`, making this conditional measure confounded by `U` in a way that a marginal measure is not. 
+
+**This concern applies to both observational studies and randomized experiments.**
+
+[Hernán MA, The hazards of hazard ratios. Epidemiology 2010;21(1):13-5.])(https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3653612/)
+
+---
+class:middle
+###Hazard of the Hazards .red[(Recall?)]
+.pull-left[
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-9-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+--
+.pull-right[
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-10-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class:middle
+###Selection bias and Confounding
+To the extent that confounding and selection bias are due to measured covariates `C`, these can be handled by inverse weighting (IPTW, IPCW)
+- This is especially convenient for longitudinal data in which the confounder `C` may be effected by previous treatment `\(X_t\)` and may in turn influence the next dose of treatment `\(X_{t+1}\)`.
+- It is also helpful in the longitudinal setting where the remaining cohort at each time `\(t\)` becomes increasingly selected. 
+- Reweighting the cohort by measured characteristics allows remaining subjects to proxy for the ones that are missing.
+
+---
+class:middle
+###IPTW vs IPCW
+
+| IPTW                           | IPCW                            |
+|:------------------------------:|:-------------------------------:|  
+|Pr(Treatment=1) | Pr(Censoring=1) |
+|Weights balance out covars distribution by Exposure (a.k.a Treatment)| Weights "make-up"for the losses in the remaining sample|
+| Exchangeability/ deals with confounding |Selection bias /Censoring|
+|Could be used alone to estimate ATE | Needs other covars and potentially other weights (e.g.,IPTW) to estimate ATE|
+
+- &lt;span style="color:darkred"&gt;Unstable or extreme weights could be problematic in both cases!&lt;/span&gt;
+
+
+---
+class:middle
+###The strength and direction of selection bias.
+
+Regardless of the direction of selection bias, another key issue is its magnitude. 
+- Biases that are not large enough to affect the conclusions of the study may be safely ignored in practice, whether the bias is upwards or downwards. 
+- Generally speaking, a large selection bias requires strong associations between the collider and both treatment and outcome. 
+- Greenland (2003) studied the magnitude of selection bias under the null, which he referred to as collider-stratification bias, in several scenarios.
+
+---
+class:middle
+### Avoid Selection Bias
+- Know your topic
+- Know your population(s)
+- Use the "best" design you can (remember "built-in" selection bias, e.g., case-control) `\(^1\)`
+  - Case control: Exposure is missing based on outcome: RD is biased
+  - Case control: Outcome missing, based on outcome: RD &amp; RR are biased -OR unbiased
+- High participation and response rates
+- Complete and objective ascertainment
+- Complete follow-up
+
+`\(^1\)` [Ch. 7. Case-Control Studies. Epidemiology by Design by Daniel Westreich](https://academic.oup.com/book/32358/chapter/268624216) or
+https://www.epidemiologybydesign.com/about
+
+.pull-right[ &lt;span style="color:darkred"&gt;If none of these works... try analytic solutions BUT nothing could completely save a poor design&lt;/span&gt;]
+
+
+---
+class:middle
+### How else we can adjust for selection bias?
+**.blue[(selection) Relative Odds Ratio]**
+
+If the marginal distribution is known, the estimation of the ratio between the Odds among participants (sub-sample) and the corresponding odds in the source population:  
+ `$$ROR = \frac{OR_{SubPop}}{OR_{TotPop}}$$`
+
+
+- `\(ROR=1\)`, no bias; `\(ROR&gt;1\)`, overestimation bias; `\(ROR&lt;1\)`, underestimation bias. Equivalently: $$OR_{Tot} = OR{Sub}\times ROR $$  
+
+- Nohr EA, Liew Z. How to investigate and adjust for selection bias in cohort studies. Acta Obstet Gynecol Scand 2018; 97: 407–416. https://doi.org/10.1111/aogs.13319
+
+---
+class:middle
+### How else we can adjust for selection bias?
+**.blue[(selection) Relative Odds Ratio]**
+
+&lt;img src="images/or_select.jpg" width="70%" style="display: block; margin: auto;" /&gt;
+
+The relative odds ratio (ROR) computed as the cross product ratio of the participation rates in the four exposure by outcome categories.
+
+.small[Nohr EA, Liew Z. How to investigate and adjust for selection bias in cohort studies. Acta Obstet Gynecol Scand 2018; 97: 407–416. https://doi.org/10.1111/aogs.13319]
+---
+class:middle
+### How else we can to adjust for selection bias?
+
+**.blue[Correction by Projecting the Exposed Proportion Among Nonparticipants]**
+- Use contingency table
+- Depict/Classify participants and non participants by exposure groups
+- Obtain the odds of participation by exposure status
+- Estimate the OR among non-participants
+
+.red[
++ Ignore some non-participants characteristics
++ Assumes same prevalence of exposure
+]
+
+---
+class:middle
+### How else we can to adjust for selection bias?
+**.blue[Correction Using Selection Proportions]**
+
+|Selection probabilities| Exposure = 1  |  Exposure = 0 |
+|----------------------:|:-------------:|:-------------:|
+|Cases| `\(S_{case, 1}\)` | `\(S_{case, 0}\)` |
+|Control| `\(S_{control, 1}\)` | `\(S_{control, 0}\)` |
+
+&lt;br&gt;
+--
+&lt;br&gt;
+
+`$$OR_{adj} = OR_{obs}\times \frac{S_{case}, S_{control,1}}{S_{case, 1}, S_{control,0}}$$`
+
+
+.small[Applying Quantitative Bias Analysis to Epidemiologic Data: [Chapter  4 - Selection Bias Spreadsheet](https://sites.google.com/site/biasanalysis/Home)]
+
+---
+class: middle
+
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+
+---
+
+class:middle
+**Example from a vector-borne disease** n=839 individuals followed for 3 months
+
+.pull-left[
+<div id="pzveloiefp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#pzveloiefp table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#pzveloiefp thead, #pzveloiefp tbody, #pzveloiefp tfoot, #pzveloiefp tr, #pzveloiefp td, #pzveloiefp th {
+  border-style: none;
+}
+
+#pzveloiefp p {
+  margin: 0;
+  padding: 0;
+}
+
+#pzveloiefp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#pzveloiefp .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#pzveloiefp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#pzveloiefp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#pzveloiefp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#pzveloiefp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#pzveloiefp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#pzveloiefp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#pzveloiefp .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#pzveloiefp .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#pzveloiefp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#pzveloiefp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#pzveloiefp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#pzveloiefp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#pzveloiefp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pzveloiefp .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#pzveloiefp .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#pzveloiefp .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#pzveloiefp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pzveloiefp .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#pzveloiefp .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pzveloiefp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#pzveloiefp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pzveloiefp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pzveloiefp .gt_left {
+  text-align: left;
+}
+
+#pzveloiefp .gt_center {
+  text-align: center;
+}
+
+#pzveloiefp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#pzveloiefp .gt_font_normal {
+  font-weight: normal;
+}
+
+#pzveloiefp .gt_font_bold {
+  font-weight: bold;
+}
+
+#pzveloiefp .gt_font_italic {
+  font-style: italic;
+}
+
+#pzveloiefp .gt_super {
+  font-size: 65%;
+}
+
+#pzveloiefp .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#pzveloiefp .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#pzveloiefp .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#pzveloiefp .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#pzveloiefp .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#pzveloiefp .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#pzveloiefp .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#pzveloiefp .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#pzveloiefp div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  &lt;caption class='gt_caption'&gt;&lt;span class='gt_from_md'&gt;&lt;strong&gt;Summary of covars distribution&lt;/strong&gt;&lt;/span&gt;&lt;/caption&gt;
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="label"><span class='gt_from_md'><strong>Characteristic</strong></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="stat_0"><span class='gt_from_md'><strong>N = 839</strong></span><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">agecat_c</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    0</td>
+<td headers="stat_0" class="gt_row gt_center">76 / 839 (9.1%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    1</td>
+<td headers="stat_0" class="gt_row gt_center">81 / 839 (9.7%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    2</td>
+<td headers="stat_0" class="gt_row gt_center">215 / 839 (26%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    3</td>
+<td headers="stat_0" class="gt_row gt_center">343 / 839 (41%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    4</td>
+<td headers="stat_0" class="gt_row gt_center">124 / 839 (15%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">sex</td>
+<td headers="stat_0" class="gt_row gt_center">422 / 839 (50%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">ipd</td>
+<td headers="stat_0" class="gt_row gt_center">72 / 839 (8.6%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">insurance2</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    0</td>
+<td headers="stat_0" class="gt_row gt_center">465 / 839 (55%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    1</td>
+<td headers="stat_0" class="gt_row gt_center">344 / 839 (41%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    2</td>
+<td headers="stat_0" class="gt_row gt_center">30 / 839 (3.6%)</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="2"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> <span class='gt_from_md'>n / N (%)</span></td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+]
+.pull-right[
+<div id="wisvdhjkbu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#wisvdhjkbu table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#wisvdhjkbu thead, #wisvdhjkbu tbody, #wisvdhjkbu tfoot, #wisvdhjkbu tr, #wisvdhjkbu td, #wisvdhjkbu th {
+  border-style: none;
+}
+
+#wisvdhjkbu p {
+  margin: 0;
+  padding: 0;
+}
+
+#wisvdhjkbu .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#wisvdhjkbu .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#wisvdhjkbu .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#wisvdhjkbu .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#wisvdhjkbu .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wisvdhjkbu .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wisvdhjkbu .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wisvdhjkbu .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#wisvdhjkbu .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#wisvdhjkbu .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#wisvdhjkbu .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#wisvdhjkbu .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#wisvdhjkbu .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#wisvdhjkbu .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#wisvdhjkbu .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#wisvdhjkbu .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#wisvdhjkbu .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#wisvdhjkbu .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#wisvdhjkbu .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wisvdhjkbu .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#wisvdhjkbu .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#wisvdhjkbu .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#wisvdhjkbu .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wisvdhjkbu .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#wisvdhjkbu .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#wisvdhjkbu .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wisvdhjkbu .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wisvdhjkbu .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#wisvdhjkbu .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wisvdhjkbu .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#wisvdhjkbu .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wisvdhjkbu .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wisvdhjkbu .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wisvdhjkbu .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wisvdhjkbu .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wisvdhjkbu .gt_left {
+  text-align: left;
+}
+
+#wisvdhjkbu .gt_center {
+  text-align: center;
+}
+
+#wisvdhjkbu .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#wisvdhjkbu .gt_font_normal {
+  font-weight: normal;
+}
+
+#wisvdhjkbu .gt_font_bold {
+  font-weight: bold;
+}
+
+#wisvdhjkbu .gt_font_italic {
+  font-style: italic;
+}
+
+#wisvdhjkbu .gt_super {
+  font-size: 65%;
+}
+
+#wisvdhjkbu .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#wisvdhjkbu .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#wisvdhjkbu .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#wisvdhjkbu .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#wisvdhjkbu .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#wisvdhjkbu .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#wisvdhjkbu .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#wisvdhjkbu .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#wisvdhjkbu div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="label"><span class='gt_from_md'><strong>Characteristic</strong></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="stat_0"><span class='gt_from_md'><strong>N = 839</strong></span><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">comorb</td>
+<td headers="stat_0" class="gt_row gt_center">109 / 784 (14%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
+<td headers="stat_0" class="gt_row gt_center">55</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">overfever</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Median (Q1, Q3)</td>
+<td headers="stat_0" class="gt_row gt_center">7.0 (5.0, 9.0)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">myalgiadef</td>
+<td headers="stat_0" class="gt_row gt_center">771 / 832 (93%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
+<td headers="stat_0" class="gt_row gt_center">7</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">arthralgiadef</td>
+<td headers="stat_0" class="gt_row gt_center">722 / 831 (87%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
+<td headers="stat_0" class="gt_row gt_center">8</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">abdominalpain</td>
+<td headers="stat_0" class="gt_row gt_center">326 / 834 (39%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
+<td headers="stat_0" class="gt_row gt_center">5</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">a_leucopenia</td>
+<td headers="stat_0" class="gt_row gt_center">179 / 710 (25%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
+<td headers="stat_0" class="gt_row gt_center">129</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">outc</td>
+<td headers="stat_0" class="gt_row gt_center">230 / 686 (34%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Unknown</td>
+<td headers="stat_0" class="gt_row gt_center">153</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="2"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> <span class='gt_from_md'>n / N (%)</span></td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+
+]
+
+---
+class:middle
+**Example from a vector-borne disease:** A descriptive exercise, no "treatment" or "intervention", just modeling the outcome as function of covariates (n=520 complete cases (`na.rm=T`), vs n=634 where some vars are imputed), `dataset without missingness, n=839`
+
+
+``` r
+mod0or&lt;- glm(outc ~  factor(agecat_c) + sex +  ipd+ insurance2 + comorb + overfever + 
+               myalgiadef+ arthralgiadef + abdominalpain + leucopenia + lowplatel, 
+             data=sb.data1a, family= binomial)
+```
+
+
+--
+.pull-left[
+**Complete Case Analysis**
+
+```
+##                     OR 2.5 % 97.5 %
+## (Intercept)       0.10 -3.64  -1.05
+## factor(agecat_c)1 2.54  0.01   1.89
+## factor(agecat_c)2 1.35 -0.51   1.15
+## factor(agecat_c)3 0.72 -1.13   0.51
+## factor(agecat_c)4 0.44 -1.86   0.18
+## sex               0.89 -0.56   0.32
+## ipd               3.99  0.53   2.33
+## insurance2        0.67 -0.87   0.07
+## comorb            1.12 -0.48   0.69
+## overfever         1.21  0.10   0.28
+## myalgiadef        1.74 -0.35   1.53
+## arthralgiadef     0.38 -1.69  -0.26
+## abdominalpain     1.56 -0.02   0.91
+## leucopenia        2.15  0.26   1.27
+## lowplatel         3.59  0.74   1.82
+```
+
+]
+--
+.pull-right[
+**Analysis with Imputed data**
+
+```
+##                     OR 2.5 % 97.5 %
+## (Intercept)       0.12 -3.33  -1.03
+## factor(agecat_c)1 2.41  0.02   1.78
+## factor(agecat_c)2 1.66 -0.26   1.32
+## factor(agecat_c)3 0.83 -0.94   0.61
+## factor(agecat_c)4 0.81 -1.12   0.70
+## sex               0.90 -0.50   0.29
+## ipd               4.01  0.55   2.32
+## insurance2        0.77 -0.65   0.12
+## comorb            1.06 -0.50   0.60
+## overfever         1.16  0.07   0.23
+## myalgiadef        1.34 -0.53   1.17
+## arthralgiadef     0.44 -1.49  -0.18
+## abdominalpain     1.74  0.14   0.97
+## leucopenia        2.25  0.33   1.29
+## lowplatel         3.45  0.71   1.77
+```
+
+]
+
+---
+class:middle
+**Example from a vector-borne disease** Comparative plots
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-18-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class:middle
+**Example from a vector-borne disease, Using (IPCW) to correct for the missingness**
+
+Using the  [weightIt package](https://ngreifer.github.io/WeightIt/articles/WeightIt.html) we can upweigth the population to make up for the entire sample: (n=634 + IPCW), `dataset without missingness, n=839`
+
+
+``` r
+*censor.form= "censor ~  factor(agecat_c) + sex + ipd+ insurance2 + comorb + overfever +
+myalgiadef+  arthralgiadef + abdominalpain + leucopenia + lowplatel"
+ 
+ CW1 &lt;- weightit(as.formula(censor.form), data = sb.data2, method = "ps",# PScore weighting
+               estimand = "ATE")  # ATE estimand (not ATT)
+ #summary(CW1)
+```
+
+--
+
+as in PSTW and IPTW, we check the balance:
+
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-20-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class:middle
+**Example from a vector-borne disease (IPCW)** 
+
+Here we use the weights of the censoring in the regression model:
+
+``` r
+ mod2or&lt;- glm(outc ~  factor(agecat_c) + sex + ipd+ insurance2 + comorb + overfever +
+                myalgiadef+  arthralgiadef + abdominalpain + leucopenia + lowplatel, 
+*             weights = CW1$weights, data=sb.data1, family= binomial)
+round(jtools::summ(mod2or, digits=2)$"coeftable", 2)  #;summary(mod2or); 
+```
+
+```
+##                    Est. S.E. z val.    p
+## (Intercept)       -2.68 0.53  -5.07 0.00
+## factor(agecat_c)1  0.88 0.43   2.05 0.04
+## factor(agecat_c)2  0.56 0.38   1.45 0.15
+## factor(agecat_c)3 -0.15 0.37  -0.41 0.68
+## factor(agecat_c)4 -0.13 0.44  -0.29 0.77
+## sex               -0.05 0.19  -0.27 0.79
+## ipd                1.64 0.43   3.80 0.00
+## insurance2        -0.35 0.18  -1.91 0.06
+## comorb             0.19 0.27   0.72 0.47
+## overfever          0.17 0.04   4.91 0.00
+## myalgiadef         0.30 0.39   0.77 0.44
+## arthralgiadef     -0.53 0.30  -1.79 0.07
+## abdominalpain      0.62 0.20   3.08 0.00
+## leucopenia         0.62 0.23   2.67 0.01
+## lowplatel          1.05 0.25   4.16 0.00
+```
+
+
+
+---
+class:middle
+###Example from a vector-borne disease  (IPCW)
+
+``` r
+ plot_summs(mod0or, mod1or, mod2or, robust = list(FALSE,FALSE, FALSE),
+           model.names = c("C.Case", "Some Imputed", "IPCW"))
+```
+
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-22-1.png" width="85%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+class:middle
+**Example from a vector-borne disease (IPCW)**
+Estimating the PS of censoring (n=634 + IPCW), `dataset without missingness, n=839`
+**.red[There are several ways to obtain weights as well]**
+
+``` r
+modwt&lt;- glm(censor ~ factor(agecat_c) + sex + ipd+ insurance2 + comorb + overfever +
+              myalgiadef+  arthralgiadef + abdominalpain + leucopenia + lowplatel,  
+            data=sb.data2, family= binomial)
+sb.data2$prob_wt &lt;- predict(modwt, type = "response")
+#summary(sb.data2$prob_wt)
+*sb.data2$cen_wt0&lt;- 1/sb.data2$prob_wt
+#summary(sb.data2$cen_wt0) #unstable weight
+sb.data2$cen_wt1&lt;- (mean(sb.data2$prob_wt))/ mean(1-sb.data2$prob_wt)/(1-sb.data2$prob_wt)
+#summary(sb.data2$cen_wt1) #stabilize weight opt1
+sb.data2$cen_wt2&lt;- ifelse(sb.data2$censor==1, sb.data2$cen_wt0, 1/(1-sb.data2$prob_wt))
+summary(sb.data2$cen_wt2)#stabilize weight opt2
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.002   1.030   1.618   1.227  44.950
+```
+
+---
+class:middle
+### Example from a vector-borne disease (IPCW)
+Estimating the PS of censoring (n=634 + IPCW), `dataset without missingness, n=839`
+
+
+``` r
+mod4or&lt;- glm(outc ~  factor(agecat_c) + sex + ipd + insurance2 + comorb + overfever +
+               myalgiadef+  arthralgiadef + abdominalpain + leucopenia + lowplatel, 
+*            weights = sb.data2$cen_wt1, data=sb.data1, family= binomial)
+mod4ort&lt;-jtools::summ(mod4or)
+round(mod4ort$coeftable,2) #;summary(mod4or); 
+```
+
+```
+##                    Est. S.E. z val.    p
+## (Intercept)       -2.68 1.12  -2.39 0.02
+## factor(agecat_c)1  0.88 0.91   0.97 0.33
+## factor(agecat_c)2  0.56 0.81   0.69 0.49
+## factor(agecat_c)3 -0.15 0.79  -0.19 0.85
+## factor(agecat_c)4 -0.13 0.94  -0.14 0.89
+## sex               -0.05 0.40  -0.13 0.90
+## ipd                1.64 0.91   1.79 0.07
+## insurance2        -0.35 0.39  -0.90 0.37
+## comorb             0.19 0.56   0.34 0.73
+## overfever          0.17 0.08   2.32 0.02
+## myalgiadef         0.30 0.83   0.36 0.72
+## arthralgiadef     -0.53 0.63  -0.85 0.40
+## abdominalpain      0.62 0.42   1.46 0.15
+## leucopenia         0.62 0.49   1.26 0.21
+## lowplatel          1.05 0.53   1.96 0.05
+```
+
+---
+class:middle
+###Example from a vector-borne disease (IPCW)
+.pull-left[
+
+```
+##                    Est. S.E. z val.    p
+## (Intercept)       -2.68 0.53  -5.07 0.00
+## factor(agecat_c)1  0.88 0.43   2.05 0.04
+## factor(agecat_c)2  0.56 0.38   1.45 0.15
+## factor(agecat_c)3 -0.15 0.37  -0.41 0.68
+## factor(agecat_c)4 -0.13 0.44  -0.29 0.77
+## sex               -0.05 0.19  -0.27 0.79
+## ipd                1.64 0.43   3.80 0.00
+## insurance2        -0.35 0.18  -1.91 0.06
+## comorb             0.19 0.27   0.72 0.47
+## overfever          0.17 0.04   4.91 0.00
+## myalgiadef         0.30 0.39   0.77 0.44
+## arthralgiadef     -0.53 0.30  -1.79 0.07
+## abdominalpain      0.62 0.20   3.08 0.00
+## leucopenia         0.62 0.23   2.67 0.01
+## lowplatel          1.05 0.25   4.16 0.00
+```
+]
+.pull-right[
+**Comparison Plots** 
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-26-1.png" width="160%" height="200%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class:middle
+###Example from a vector-borne disease (IPCW)
+**Data set without missing data**, `complete dataset without missingness, n=839`
+
+```
+##                    Est. S.E. z val.    p
+## (Intercept)       -2.65 0.51  -5.22 0.00
+## factor(agecat_c)1  0.90 0.40   2.28 0.02
+## factor(agecat_c)2  0.80 0.35   2.27 0.02
+## factor(agecat_c)3  0.23 0.34   0.68 0.49
+## factor(agecat_c)4 -0.21 0.40  -0.53 0.59
+## sex               -0.11 0.17  -0.63 0.53
+## ipd                0.85 0.33   2.56 0.01
+## insurance2        -0.24 0.17  -1.44 0.15
+## comorb             0.16 0.25   0.67 0.51
+## overfever          0.14 0.03   4.59 0.00
+## myalgiadef         0.13 0.36   0.35 0.73
+## arthralgiadef     -0.26 0.27  -0.97 0.33
+## abdominalpain      0.56 0.18   3.14 0.00
+## leucopenia         0.78 0.21   3.82 0.00
+## lowplatel          0.94 0.23   4.03 0.00
+```
+
+---
+class:middle
+###Example from a vector-borne disease (IPCW)
+**Comparison Plots**
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-28-1.png" width="85%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+###Example from a vector-borne disease (IPCW)
+**Comparison Plots**
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-29-1.png" width="85%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class:middle
+###The Bayesian way
+.pull-left[
+
+``` r
+mod0&lt;- stan_glm(outc ~factor(agecat_c) + 
+                sex + sgss + comorb + overfever + 
+                myalgiadef+  arthralgiadef + 
+                abdominalpain + a_leucopenia + 
+                a_lowplatel, data=sb.data1, 
+                family= binomial(link = "log"), 
+                refresh=0)
+#print(mod0, digits=2)#;summary(mod0)
+mod1&lt;- stan_glm(outc ~ factor(agecat_c) + sex + 
+              ipd + insurance2 + comorb + overfever + 
+              myalgiadef+ arthralgiadef + 
+              abdominalpain + leucopenia + 
+*             lowplatel, weights = cen_wt2,
+              data=sb.data2,  
+              family= binomial(link = "log"),
+              refresh=0) 
+```
+]
+--
+.pull-right[
+
+``` r
+print(mod1, digits=2, detail = F)#;summary(mod1)
+```
+
+```
+##                   Median MAD_SD
+## (Intercept)       -1.85   0.28 
+## factor(agecat_c)1  0.37   0.21 
+## factor(agecat_c)2  0.16   0.20 
+## factor(agecat_c)3 -0.01   0.21 
+## factor(agecat_c)4 -0.12   0.24 
+## sex               -0.02   0.08 
+## ipd                0.17   0.11 
+## insurance2        -0.11   0.07 
+## comorb             0.15   0.10 
+## overfever          0.03   0.01 
+## myalgiadef         0.08   0.20 
+## arthralgiadef     -0.14   0.09 
+## abdominalpain      0.26   0.11 
+## leucopenia         0.13   0.08 
+## lowplatel          0.65   0.13
+```
+
+]
+---
+class:middle
+###The Bayesian way
+
+
+``` r
+mod3RR&lt;- stan_glm(DENV_DICHOT ~  factor(agecat_c) + sex + ipd +insurance2 + comorb + 
+                    overfever + myalgiadef+  arthralgiadef + abdominalpain + leucopenia +
+                    lowplatel,  data=sb.data2, family= binomial(link = "log"), refresh=0)
+print(mod3RR, digits=2, detail = F)
+```
+
+```
+##                   Median MAD_SD
+## (Intercept)       -1.89   0.30 
+## factor(agecat_c)1  0.49   0.25 
+## factor(agecat_c)2  0.39   0.23 
+## factor(agecat_c)3  0.20   0.22 
+## factor(agecat_c)4 -0.11   0.27 
+## sex               -0.05   0.08 
+## ipd                0.07   0.10 
+## insurance2        -0.11   0.08 
+## comorb             0.14   0.10 
+## overfever          0.03   0.01 
+## myalgiadef         0.05   0.19 
+## arthralgiadef     -0.14   0.10 
+## abdominalpain      0.18   0.10 
+## leucopenia         0.23   0.10 
+## lowplatel          0.55   0.13
+```
+
+---
+class: middle
+#### Extra DAGs
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-33-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+#### Extra DAGs
+&lt;img src="L19_EPIB704_Selection_Bias_files/figure-html/unnamed-chunk-34-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "3:2",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
