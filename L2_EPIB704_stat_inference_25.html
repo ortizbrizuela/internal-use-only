@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Statistical inference</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mabel Carabali" />
+    <script src="libs/header-attrs-2.29/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Statistical inference
+]
+.author[
+### Mabel Carabali
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### Updated: 2025-09-04
+]
+
+---
+
+
+
+
+
+
+
+
+## Objectives
+- &lt;span style="color:darkblue"&gt;Review the concept of statistical inference.&lt;/span&gt;
+
+- &lt;span style="color:darkblue"&gt;Appreciate the value, limitations &amp; misconceptions of frequentist paradigm.&lt;/span&gt;
+
+- &lt;span style="color:darkblue"&gt;Understand the general philosophy, basic mechanism, advantages and limitations of Bayesian inference&lt;/span&gt;
+
+--
+
+**References**
+.small[1. The ASA's Statement on p-Values: Context, Process, and Purpose. T The American Statistician, 2016,70, (2), 129–133        
+2. Greenland, S et. al.“Statistical Tests, P-values, Confidence Intervals, and Power: A Guide to Misinterpretations.” The American Statistician, Online Supplement 2016.      
+]
+- Some notes from J. Brophy
+
+---
+class: middle
+
+## Expected competencies
++ Basic knowledge about probabilities
+
++ Basic knowledge about distributions
+
++ Understand the difference between population and sampling
+
++ Understand the rationale for statistical analysis
+
++ Knows how to correctly interpret confidence interval and p-values
+
+---
+class: inverse, middle, center
+
+## Statistical Inference
+
+---
+class: middle
+## Inference
+
+&lt;img src="images/inference.png" width="95%" style="display: block; margin: auto;" /&gt;
+
+.small[Goodman SN. Toward evidence-based medical statistics. 1: The P value fallacy. Ann Intern Med. 1999 Jun 15;130(12):995-1004. doi: 10.7326/0003-4819-130-12-199906150-00008. PMID: 10383371.]
+
+---
+class: middle
+##Statistical inference
+- Statistical inference is the process of generating associations about a population from a **&lt;span style="color:darkgreen"&gt;sample&lt;/span&gt;**, without it we’re left simply with our data.
+
+--
+
+- **&lt;span style="color:darkblue"&gt;Probability&lt;/span&gt;** models connect noisy sample data and populations and represent the most effective way to obtain inference.
+ + Statistical models are insufficient for causality.  
+ + Paradox: models that are causally incorrect can make better predictions than those that are causally correct.    
+ 
+--
+
+- Inference is about belief **&lt;span style="color:darkmagenta"&gt;revision&lt;/span&gt;**:
+ + Frequentist by _deduction_ and Bayesians by _induction_
+ 
+
+---
+class: middle
+
+## &lt;span style="color:darkgreen"&gt;Sampling&lt;/span&gt;
+
+&lt;img src="images/L1sample1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+**&lt;span style="color:darkmagenta"&gt;INFERENCE IN THE REAL WORLD...&lt;/span&gt; &lt;span style="color:blue"&gt;Actual Measurements !!!&lt;/span&gt;**
+
+
+.small[Hulley SB, Cummings SR, Browner WS, Grady DG, Newman TB.Designing Clinical Research. Lippincott Williams &amp; Wilkins; 2013]
+
+---
+class: middle
+
+## Implications of &lt;span style="color:darkgreen"&gt;_Sampling_ &lt;/span&gt;?
+
+&lt;img src="images/L1sample2.jpg" width="75%" style="display: block; margin: auto;" /&gt;
+
+--
+
+Enough for what? Finding a **null** effect? a **small** effect? a clinically **meaningful** effect?
+
+.small[Sakpal, Tushar Vijay. “Sample size estimation in clinical trial.” Perspectives in clinical research. vol. 1,2 (2010): 67-9.]
+
+---
+class: middle
+
+## &lt;span style="color:darkblue"&gt;Probabilities&lt;/span&gt;
+
+&gt; - _"A probability describes the possibility of an event to occur given a series of circumstances (or under a series of pre-event factors)."_ 
+&gt; - _"It is a form of **inference**, a way to predict what may happen, based on what happened before under the same (never exactly the same) circumstances."_  
+&gt; - _"Probability can vary from 0 to 1."_  
+&gt;- _"Probability could be described by a formula, a graph, in which each event is linked to its probability."_ 
+
+.small[See: [Viti A., et al. A practical overview on probability distributions](https://pmc.ncbi.nlm.nih.gov/articles/PMC4387424/)]
+
+---
+class: middle
+### Inference depends on the assumed statistical model
+- The &lt;span style="color:darkblue"&gt;_probability_&lt;/span&gt; of sudden infant death syndrome (SIDS) =  `$$\dfrac{1}{8500}$$`      
+
+- A UK mother, a lawyer, was on trial for infanticide as she had 2 children die of SIDS   
+
+- An expert testified that the probability of 2 deaths in 1 family was `$$(\dfrac{1}{8500})^2$$`  or 1 in 72 million   
+
+--
+
+- **&lt;span style="color:red"&gt;The mother was convicted. Do you agree with the conviction?&lt;/span&gt;**   
+
+---
+class: middle
+### Inference depends on the assumed statistical model
+
+- There are 700,000 annual UK births and therefore about 82 first SIDS deaths       
+
+- SIDS deaths are **not** independent as assumed -&gt; strong family occurrence &amp; the risk of a 2nd death is `\(\neq\)` 1 in 8500 but = 1 in 300      
+
+- If SIDS families have a 2nd child, E(2nd death) `\(\approx\)` 4 years, &gt;&gt; 1 in 72 million    
+--
+
+- &lt;span style="color:red"&gt;Don't know about her guilt but **statistical model and hence inference** was wrong!&lt;/span&gt;  
+
+---
+class: middle
+
+## Distributions
+
+To make inferences we need to either refer to some common statistical distributions (e.g., normal) or do simulations.
+
+--
+&lt;img src="L2_EPIB704_stat_inference_25_files/figure-html/unnamed-chunk-4-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: middle
+### But... normal is boring!?
+--
+
+&lt;img src="images/L1_distributions_all.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+.small[[Probability Distribution Functions](https://medium.com/@pankajkumardeora/probability-distribution-functions-pdf-pmf-cdf-ed49e7f5c7f2)]
+
+---
+class: middle
+
+## &lt;span style="color:darkmagenta"&gt;Distributions&lt;/span&gt;
+.pull-left[
+- A &lt;span style="color:darkblue"&gt;probability density function (pdf)&lt;/span&gt;, is a function associated with a continuous random variable    
+- This leads us to the central dogma of pdfs, namely the areas under the curve corresponds to probabilities for that random variable. To be a valid pdf, a function must:      
+1. be larger than or equal to zero everywhere       
+2. the total area under it must be one    
+]
+--
+.pull-right[
+**Some R code**
+
+``` r
+x &lt;- seq(-2, 2, length.out =1000); 
+plot(x, dnorm(x, 0, 1), col ="red")
+```
+
+&lt;img src="L2_EPIB704_stat_inference_25_files/figure-html/unnamed-chunk-6-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+**&lt;span style="color:darkmagenta"&gt; Is it borning?&lt;/span&gt;**
+]
+
+---
+class: middle
+**Some probability distributions in R:** 
+
+"A probability distribution displays on a graph the statistical _**likelihood**_ of every possible outcome that could occur within a specific time period."
+
+--
+.pull-left[
+- dnorm: density function of the normal distribution
+- pnorm: cumulative density function of the normal distribution
+- qnorm: quantile function of the normal distribution
+- rnorm: random sampling from the normal distribution
+]
+.pull-right[
+
+``` r
+dnorm(0); dnorm(2); pnorm(0); qnorm(.975); 
+```
+
+```
+## [1] 0.3989423
+```
+
+```
+## [1] 0.05399097
+```
+
+```
+## [1] 0.5
+```
+
+```
+## [1] 1.959964
+```
+
+``` r
+mean(rnorm(10000,0,1))
+```
+
+```
+## [1] 0.006115893
+```
+]
+
+--
+.small[ Check this resources
+- [Statistical Inference for Everyone](https://github.com/bblais/Statistical-Inference-for-Everyone)
+- [Distribution functions in R](https://www.datascienceblog.net/post/basic-statistics/distributions/)
+- [A Guide to dnorm, pnorm, rnorm, and qnorm in R](https://www.geeksforgeeks.org/a-guide-to-dnorm-pnorm-rnorm-and-qnorm-in-r/)]
+
+
+---
+class: middle
+
+## Likelihood Principle
+
+The likelihood of a set of data is the probability of obtaining that particular set of data given the chosen probability model. 
+
+- The likelihood function is not a probability density function.
+
+- This expression contains the unknown parameters. 
+
+- It's constructed by taking the joint probability distribution of your data and treating it as a function of the model's unknown parameters. 
+
+- Those values of the parameter that maximize the sample likelihood are known as the maximum likelihood estimates.
+
+- It measures the support provided by the data for each possible value of the parameter.
+
+---
+class: middle
+
+## Likelihood Principle
+
+- The likelihood principle implies that likelihood function can be used to compare the plausibility of various parameter values. For a random sample where `\(x =(x_1, x_2,... x_n)\)` the likelihood function is defined as:
+
+`$$L(\theta \vert x) = \prod^N_{n=1} f(x_i; \theta)$$`
+**Properties of the Likelihood Function**
+1. Invariance under Reparameterization: 
+2. Not a Probability: Likelihoods do not integrate to 1. It’s a function of parameters, not a probability distribution.
+3. Relative Scale Matters: The absolute value of the likelihood is often less important than relative likelihoods across different parameter values. 
+
+
+---
+class: middle
+
+## Before Inference
+
+Before statistical inference, there **should be** a proper **study design ** and **data collection**      
+ - &lt;span style="color:darkred"&gt;Plenty of places to go wrong before statistical inference&lt;/span&gt;    
+
+--
+
+&lt;img src="images/L1sampleinference1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+.small[Hulley SB, Cummings SR, Browner WS, Grady DG, Newman TB.Designing Clinical Research. Lippincott Williams &amp; Wilkins; 2013]
+
+---
+class: middle
+## Before statistical inference
+  
+### &lt;span style="color:darkred"&gt;Questions to be asked:&lt;/span&gt;
+- Is the sample representative of the population that we’d like to draw inferences about?      
+- Are there systematic bias created by selection, misclassification or missing data at the design or during conduct of the study?     
+
+- Are there known and observed, known and unobserved or unknown and unobserved variables that contaminate our conclusions?      
+
+- What are the criteria for choosing a model (statistical vs causal)?     
+
+- What analytical choices are made for the chosen model?
+
+---
+class: middle
+## What else can go wrong?
+
+**Metascience:** The scientific study of science itself: **&lt;span style="color:darkred"&gt;Hypothetico-deductive model of the scientific method &lt;/span&gt;** 
+
+&lt;img src="images/01_metascience.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+.small[[Munafò, M., Nosek, B., Bishop, D. et al. A manifesto for reproducible science. Nat Hum Behav 1, 0021 (2017).](https://doi.org/10.1038/s41562-016-0021)]
+
+
+---
+class: middle
+## Metascience 
+**&lt;span style="color:darkred"&gt;Plenty of places to go wrong&lt;/span&gt;**
+&lt;img src="images/01_metascience1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+.small[Rubin M. [The cost of HARKing](https://doi.org/10.1093/bjps/axz050) and Munafò, M., Nosek, B., Bishop, D. et al. [A manifesto for reproducible science. Nat Hum Behav 1, 0021 (2017).](https://doi.org/10.1038/s41562-016-0021)]
+
+---
+class: middle
+
+### Inference and Validity
+
+&lt;img src="images/L1sampleinference2.png" width="65%" style="display: block; margin: auto;" /&gt;
+.small[Hulley SB, Cummings SR, Browner WS, Grady DG, Newman TB.Designing Clinical Research. Lippincott Williams &amp; Wilkins; 2013]
+
+---
+class: middle
+
+### Significance?
+&lt;img src="images/L1significance.jpg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+### Significance?
+
+- First, how can I know if the observation (a.k.a) "effect" is "likely" or possible? 
+- How can I express certainty about an effect or its size?
+--
+
+ + &lt;span style="color:blue"&gt;_Using probabilities, which are quantities that are hypothetical frequencies of data patterns under an assumed statistical model._&lt;/span&gt;
+ 
+ + Ideally, "_the probability of the observed data given the parameter value; it does not refer to a probability of the parameter taking on the given value_"
+
+--
+- How can I measure the distance between the data and the model prediction?
+ + **Using a test statistic (e.g., location,  t-statistic or a Chi squared statistic)**
+
+
+.pull-right[&lt;span style="color:red"&gt;Do you know what are those statistical tests?&lt;/span&gt;]
+
+---
+class: middle
+### Statistical Tests
+
+|     Distribution                 | Statistical Test              |
+|---------------------------------:|:-----------------------------:|
+|Standard normal (z distribution)  | One-sample location test      |
+|Student’s _t_ distribution | _t_ test (all forms); Linear Regression; Pearson correlation|
+|F distribution| ANOVA; Comparison of nested linear models; Equality of two variances|
+|Chi-square| 	Chi-square goodness of fit test; Chi-square test of independence; McNemar’s test; Test of a single variance|
+
+.pull-right[&lt;span style="color:red"&gt;For you to review! including critical values and degrees of freedom&lt;/span&gt;]
+
+---
+class: middle
+
+... OK, this means that with a statistical test and a probability (or probabilities) I can decide on the **"significance"** of my result?
+
+&lt;img src="images/L1_rejection.jpg" width="75%" style="display: block; margin: auto;" /&gt;
+
+--
+.pull-right[&lt;span style="color:red"&gt;Not really! But (mostly) frequentists call it significance level &lt;/span&gt;]
+
+.small[Source: [significant level](https://365datascience.com/tutorials/statistics-tutorials/significance-level-reject-region/)]
+
+---
+class: middle
+
+## Level of Significance &amp; _p-values_ ...
+- Probability of Type I error is called the level of significance and denoted as `\(α\)`  (typically 5% or less); but the p-value is not the `\(\alpha\)` error 
+- Type I error = (Reject `\(H_0\)` WHEN `\(H_0\)` is true).
+- Type I error opportunity is inversely proportional to **sample size**.
+
+--
+
+**&lt;span style="color:blue"&gt;Sample Size and Precision&lt;/span&gt;**
+- Small effect `\(\to\)` LARGE SAMPLE
+- LARGE EFFECT `\(\to\)` small (decent) sample
+
+
+---
+class: middle
+### The p-value is not the `\(\alpha\)` error
+
+&lt;img src="images/alpha.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+## Level of Significance &amp; _p-values_
+So, if _p-value_ is the probability under a specified statistical model that a statistical summary of the data would be equal to or more extreme than its observed value... what else can I say about this "metric"?
+&gt;- &lt;span style="color:blue"&gt; P-values can indicate how incompatible the data are with a specified statistical model.&lt;/span&gt;
+&gt;- &lt;span style="color:darkred"&gt;P-values do not measure the probability that the studied hypothesis is true, or the probability that the data were produced by random chance alone.&lt;/span&gt;
+&gt;- &lt;span style="color:darkred"&gt;Scientific conclusions or policy decisions should not be based only on whether a p-value passes a specific threshold &lt;/span&gt;
+&gt;- &lt;span style="color:darkred"&gt; A p-value, or statistical significance, does not measure the size of an effect or the importance of a result&lt;/span&gt;
+&gt;- &lt;span style="color:blue"&gt; Proper inference requires full reporting and transparency&lt;/span&gt;
+
+---
+class: middle
+
+## _p-values_ ...
+
+&gt; _"Not only does a P value not tell us whether the hypothesis targeted for testing is true or not; it says nothing specifically related to that hypothesis unless we can be completely assured that every other assumption used for its computation is correct—an assurance that is lacking in far too many studies."_
+
+.small[Greenland S., et al. (2026). Eur J Epidemiol (2016) 31:337–350]
+
+---
+class: middle
+
+## _p-values_ ...
+
+&gt; _"P value is the [conditional] probability that the **chosen test statistic** would have been at least as large as its observed value if **every model assumption were correct**, including the test hypothesis."_
+
+&lt;img src="images/L1_rejection2.png" width="70%" style="display: block; margin: auto;" /&gt;
+.small[Greenland S., et al. (2026). Eur J Epidemiol (2016) 31:337–350]
+
+---
+class: middle
+
+### Recall the Likelihood principle?
+Imagine an experiment where you are testing 2 drugs in 6 patients; 5 prefer A and one prefers B.  What is the p value?             
+
+--
+Well it depends...
+&lt;img src="images/lr1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+##Likelihood principle
+
+.pull-left[
+&lt;img src="images/lr2.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="images/lr3.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+---
+class: middle
+
+## Confidence Intervals
+What does it refers to?
+
+&gt; _"refers only to how often 95% confidence intervals computed from very many studies would contain the true size if all the assumptions used to compute the intervals were correct."_ 
+
+... This speaking Frequentist :)
+
+--
+- &lt;span style="color:darkmagenta"&gt;What would it be the interpretation of Bayesian "Credible Intervals"?&lt;/span&gt;
+
+--
+
+- &lt;span style="color:darkgreen"&gt; How does precision and sampling relate to the Confidence intervals?&lt;/span&gt;
+
+---
+class: middle
+## Example
+
+data on years of PhD training, scientific manuscripts, Sex assigned at birth, marital status, whether the individual has children, and a variable about mentoring.
+
+```
+##       art             fem                mar                 kid5       
+##  Min.   : 0.000   Length:915         Length:915         Min.   :0.0000  
+##  1st Qu.: 0.000   Class :character   Class :character   1st Qu.:0.0000  
+##  Median : 1.000   Mode  :character   Mode  :character   Median :0.0000  
+##  Mean   : 1.693                                         Mean   :0.4951  
+##  3rd Qu.: 2.000                                         3rd Qu.:1.0000  
+##  Max.   :19.000                                         Max.   :3.0000  
+##       phd             ment       
+##  Min.   :0.755   Min.   : 0.000  
+##  1st Qu.:2.260   1st Qu.: 3.000  
+##  Median :3.150   Median : 6.000  
+##  Mean   :3.103   Mean   : 8.767  
+##  3rd Qu.:3.920   3rd Qu.:12.000  
+##  Max.   :4.620   Max.   :77.000
+```
+
+
+---
+class: middle
+### &lt;span style="color:red"&gt;How should I interpret this?&lt;/span&gt;
+
+
+``` r
+L1mod&lt;- lm(phd ~ mar + fem +kid5, data=articlesdata)
+jtools::summ(L1mod, digits=2, confint = TRUE)
+```
+
+&lt;table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Observations &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 915 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Dependent variable &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; phd &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Type &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; OLS linear regression &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt; &lt;table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; F(3,911) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.78 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; R² &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; Adj. R² &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt; &lt;table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 2.5% &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 97.5% &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; t val. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.08 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.95 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 48.81 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; marSingle &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.35 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.56 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; femWomen &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.23 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.40 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.16 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;"&gt; kid5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.09 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.09 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.93 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; Standard errors: OLS&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
+
+
+---
+class: middle
+### _p_ - value functions (confidence curves)
+
+&lt;img src="L2_EPIB704_stat_inference_25_files/figure-html/unnamed-chunk-21-1.svg" width="80%" height="60%" style="display: block; margin: auto;" /&gt;
+
+
+
+---
+class: middle
+## Mean test; _t_ test
+
+``` r
+with(articlesdata, mean(phd[fem == "Men"])) - with(articlesdata, mean(phd[fem == "Women"]))
+```
+
+```
+## [1] 0.05098688
+```
+
+``` r
+# 0.05098688 #&lt;
+t.test(phd ~ fem, data = articlesdata, var.equal = FALSE)
+```
+
+```
+## 
+## 	Welch Two Sample t-test
+## 
+## data:  phd by fem
+## t = 0.78265, df = 897.58, p-value = 0.434
+## alternative hypothesis: true difference in means between group Men and group Women is not equal to 0
+## 95 percent confidence interval:
+##  -0.07687023  0.17884399
+## sample estimates:
+##   mean in group Men mean in group Women 
+##            3.126569            3.075582
+```
+
+
+---
+class: middle
+### Mean test; _t_ test; p-value function 
+&lt;img src="L2_EPIB704_stat_inference_25_files/figure-html/unnamed-chunk-23-1.svg" width="80%" height="60%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+class: middle
+## Avoid dichotomania 
+- Selection of the level of significance or confidence is arbitrary     
+- Better to interpret the totality of the **&lt;span style="color:red"&gt;p-value function graph&lt;/span&gt;**    
+- NEJM study ["Coronary-Artery Bypass Surgery in Patients with Left Ventricular Dysfunction"](https://www.nejm.org/doi/full/10.1056/NEJMoa1100356) 
+ - Reported: HR with CABG, 0.86; 95% CI, 0.72-1.04; P = 0.12) `\(\to\)` “_no significant difference between treatments_”.
+ 
+--
+
+&lt;img src="images/01_gg.png" width="55%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+class: middle
+### Avoid dichotomania 
+
+- CIs interpreted dichotomized if HR = 1 `\(\to\)` _Not Significant_ **BUT** Results support opposite conclusion
+- `\(\Delta\)` exist between the 2 treatments, and it favors CABG!
+
+&lt;img src="images/01_gg.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+### P-value function graph (R-code)
+
+``` r
+library(tidyverse)
+se &lt;- (log(1.04)-log(0.72))/(2*1.65); x &lt;- seq(0.01, 0.50,by = .005)
+p1 &lt;- log(0.86) - (qnorm(x) * se); p2 &lt;- log(0.86) + (qnorm(x) * se)
+p1 &lt;- exp(p1); p2 &lt;- exp(p2); p &lt;- data.frame(x, p2, p1)
+gg &lt;- ggplot(p, aes( p2, x)) +
+  geom_line() +
+  geom_line(aes(p1, x)) +
+  xlim(0.65,1.1) +
+  ylab("p value \n one sided") +
+  xlab("Odds ratio \n Log scale") +
+  ggtitle("P value function for OR = 0.86, 95% CI (0.72 - 1.04)" ) +
+  geom_hline(yintercept=c(.005,.025,0.05,0.10), color = "red") +
+  annotate("text", x=0.75,y=.01, label="99% CI") +
+  annotate("text", x=0.85,y=.04, label="95% CI") +
+  annotate("text", x=0.95,y=.06, label="90% CI") +
+  annotate("text", x=1.05,y=.11, label="80% CI") +
+  geom_vline(xintercept=1.0, color = "green") +
+  annotate("text", x=1.03,y=.4, label="null hypothesis \n(green line)") + theme_bw()
+gg &lt;- ggsave("images/01_gg2.png") #To save the figute
+```
+
+.small[Reference: Infanger D, Schmidt-Trucksäss A. P value functions: An underused method to present research results and to promote quantitative reasoning. Statistics in Medicine. 2019;38:4189–4197.[Original paper here](https://doi.org/10.1002/sim.8293) and Tutorial [here](https://cran.r-project.org/web/packages/pvaluefunctions/vignettes/pvaluefun.html)]
+
+---
+class: middle
+## Avoiding nullism
+Evidence **against** not only `\(H_o\)` , but against any specific `\(H_a\)` can be better appreciated by considering the binary _Shannon_ information, surprisal or **S value**. 
+
+- `\(s = log_2(\dfrac{1}{P})\)` or  `\(P = (1/2)^s\)`, i.e = P(successive tosses of an unbiased coin showing only heads) 
+
+- `\(S\)` _"as measuring our evidence against acceptability_"
+
+- _"The S-value is designed to reduce incorrect probabilistic interpretations of statistics by providing a nonprobability measure of information supplied by the test statistic against the test hypothesis H"_
+
+Rafi, Z., Greenland, S. Semantic and cognitive tools to aid statistical science: replace confidence and significance by compatibility and surprise. [BMC Med Res Methodol 20, 244 (2020).](https://doi.org/10.1186/s12874-020-01105-9)
+
+
+---
+class: middle
+### Avoiding nullism
+- Evidence against (i.e. **S** value), is minimized at point estimate   
+- `\(\downarrow\)` evidence against `\(H_a\)` of a 25% `\(\downarrow\)` (reduction or decrease) with CABG, than there is evidence against `\(H_0\)`, which we have been told to accept!
+
+&lt;img src="L2_EPIB704_stat_inference_25_files/figure-html/unnamed-chunk-27-1.svg" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+## If inference is about belief **revision**... How do I _**&lt;span style="color:darkmagenta"&gt;Revise&lt;/span&gt;**_ my beliefs?
+
+ + Frequentist Paradigm (deductive)  
+ 
+ + Bayesian Paradigm by (inductive)
+ 
+---
+class: middle
+##Consider two claims 
+1. John claims that they can predict dice rolls/throws. To test John's claim, you roll a fair dice 10 times and John correctly predicts all 10.    
+
+2. Jane claims that they can distinguish between natural and artificial sweeteners. To test Jane's claim, you give her 10 sweetener samples and Jane correctly identifies all 10      
+
+--
+Given this evidence, which of the 2 statements below do you most agree with?   
+
+- **A.** John’s claim is just as strong as Jane’s claim    
+
+- **B.** Jane’s claim is stronger than John’s claim       
+
+--
+
+**Choose A:** - &lt;span style="color:red"&gt;Hardcore frequentist  &lt;/span&gt;  
+&lt;br&gt;
+**Choose B:** - &lt;span style="color:red"&gt;Latent Bayesian&lt;/span&gt;
+
+ 
+
+---
+class: middle
+## Deductive vs Inductive Inference (I)
+
+.pull-left[
+&lt;img src="images/L2medinference.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+**Deduction** appears objective; predictions  true **only if** H are true             
+- Can't expand knowledge beyond H    
+- Analogous to "frequentist" with Fisherian p values, &amp; Neyman-Pearson hypothesis testing, long term errors rates      
+- 2 schools presented as unified theory, but actually separate (?irreconcilable)
+- &lt;span style="color:red"&gt;Pr(Observed data | Hypothesis)&lt;/span&gt;  (p value definition) 
+]
+
+
+---
+class: middle
+## Deductive vs Inductive Inference (II)
+
+.pull-left[
+**Induction** is harder but provides a broader, more useful, view of nature           
+- Drawback can’t be sure that what we conclude about nature is actually true - [problem of induction](https://en.wikipedia.org/wiki/David_Hume#Induction_and_causation)     
+- Analogous to "Bayesian" approach to statistical inference
+- &lt;span style="color:red"&gt;Pr(Hypothesis | Observed data)&lt;/span&gt;   
+]
+
+.pull-right[
+&lt;img src="images/L2statinference.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class: middle
+## Frequentist and Bayesian views of probability
+
+**&lt;span style="color:darkred"&gt;Frequency viewpoint:&lt;/span&gt;** probability parameters considered as **fixed** but unknown quantities, can’t make probability statements about them. Probability limited to sampling variability, i..e. in the long run proportion of times an event occurs in independent, identically distributed (iid) repetitions.     
+&lt;br&gt;
+**&lt;span style="color:darkred"&gt;Frequency style inference:&lt;/span&gt;** uses frequency interpretations of probabilities to control error rates. Answers questions like _“What should I decide given my data controlling the long run proportion of mistakes I make at a tolerable level.”_   
+&lt;br&gt;
+**&lt;span style="color:darkred"&gt;Bayesian viewpoint:&lt;/span&gt;** probability is the calculus of beliefs, with parameters that are considered **random** variables with probability distributions that follow the rules of probability         
+&lt;br&gt;
+**&lt;span style="color:darkred"&gt;Bayesian style inference:&lt;/span&gt;**  uses of  probability representation of beliefs to perform inference. Answers questions like _“Given my subjective beliefs and the objective information from the data, what should I believe now?”_    
+
+---
+class: middle
+##Frequentist vs Bayesian (summary)
+
+| Frequentist   | Bayesian  |
+|---------------|-----------|
+| Probability is "long-run frequency" | Probability is "degree of certainty" |
+| `\(Pr(X \mid \theta)\)` is a sampling distribution&lt;br/&gt;(function of `\(X\)` with `\(\theta\)` fixed) | `\(Pr(X \mid \theta)\)` is a likelihood&lt;br/&gt;(function of `\(\theta\)` with `\(X\)` fixed) |
+| No prior  | Prior |
+| P-values (NHST) | Full probability model available for summary/decisions  |
+| Confidence intervals  | Credible intervals    |
+| Violates the "likelihood principle":&lt;br/&gt;&amp;emsp;Sampling intention matters&lt;br/&gt;&amp;emsp;Corrections for multiple testing&lt;br/&gt;&amp;emsp;Adjustment for planned/post hoc testing | Respects the "likelihood principle":&lt;br/&gt;&amp;emsp;Sampling intention is  irrelevant&lt;br/&gt;&amp;emsp;No corrections for multiple testing&lt;br/&gt;&amp;emsp;No adjustment for planned/post hoc testing |
+| Objective?    | Subjective?   |
+
+---
+class: inverse, middle, center
+
+## Frequentists Inference
+
+---
+class: middle
+### Frequentist statistical inference (known falsehoods)
+
+- Statistical methods alone can provide a number that by itself reflects a probability of reaching true / erroneous  conclusions
+
+- Biological understanding and previous  research have little formal role in the interpretation of quantitative results     
+
+- Standard statistical approach implies that conclusions can be produced with certain “random error rates,” without consideration of internal biases and external information  
+
+- p values and hypothesis tests, are a mathematically coherent approach to inference   
+
+---
+class: inverse, middle, center
+
+## Bayesian Inference
+
+
+---
+class: middle
+##Bayesian Inference - What is it? 
+- "Bayesian inference is **reallocation** of **credibility** across **possibilities**." (Kruschke, p. 15)
+- "Bayesian data analysis takes a **question** in the form of a **model** and uses **logic** to produce an **answer** in the form of **probability distributions**." (McElreath, p. 10)
+- "Bayesian inference is the **process** of **fitting** a **probability** **model** to a set of **data** and summarizing the result by a **probability distribution on the parameters** of the model and on **unobserved quantities** such as predictions for new observations." (Gelman, p. 1)
+
+
+**References**  
+.small[
+- Gelman, Andrew, John B. Carlin, Hal S. Stern, David B. Dunson, Aki Vehtari, and Donald B. Rubin. 2013. Bayesian Data Analysis, Third Edition. Boca Raton: Chapman; Hall/CRC.    
+- Kruschke, John K. 2014. Doing Bayesian Data Analysis: A Tutorial Introduction with R. 2nd Edition. Burlington, MA: Academic Press.    
+- McElreath, Richard. 2020. Statistical Rethinking: A Bayesian Course with Examples in R and Stan. 2nd ed. CRC Texts in Statistical Science. Boca Raton: Taylor; Francis, CRC Press.]
+
+---
+class: middle
+##Bayesian Inference
+&lt;span style="color:red"&gt;Bayes’ Theorem &lt;/span&gt; `\(\to\)` probability statements about hypotheses, model parameters or anything else that has associated uncertainty     
+
+**&lt;span style="color:red"&gt;Advantages&lt;/span&gt;**     
+Treats unknown parameters as random variables -&gt; direct and meaningful answers (estimates)     
+&lt;br&gt;
+- Allows integration of all available information -&gt; mirrors sequential human learning with constant updating   
+- Allows consideration of complex questions / models where all sources of uncertainty can be simultaneously and coherently considered    
+
+**&lt;span style="color:red"&gt;Disadvantages&lt;/span&gt;**         
+Subjectivity (?)
+Problem of induction (Hume / Popper - difficulty generalizing about future)
+
+
+---
+class: middle
+##Bayes rule (conceptual)
+
+
+&lt;img src="images/bayes_concept.png" width="35%" style="display: block; margin: auto;" /&gt;
+`$$posterior = \dfrac{likelihood * prior}{normalizing \, constant}$$`
+---
+class: middle
+##Bayes rule
+.pull-left[
+&lt;img src="images/eq_def.png" width="200%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="images/lr_prob.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+&lt;img src="images/eq_graph.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+### Calculations
+
+`$$p(\theta \vert Y) \propto p(Y \vert \theta) p(\theta)$$`   
+How the likelihood of each data point contributes 
+
+`$$p(\theta \vert Y) \propto p(\theta) \prod^N_{n=1} p(y_n \vert \theta)$$`
+
+For programming, add individual log probabilities
+
+`$$\text{log}\ p(\theta \vert Y) \propto \text{log}\ p(\theta) + \sum^N_{n=1} \text{log}\ p(y_n \vert \theta)$$`
+
+---
+class: middle
+
+### Calculations
+- Stan and other Markov Chain Monte Carlo (MCMC) techniques approximate high dimensional probability distributions 
+- Stan uses [Hamiltonian MCMC](https://observablehq.com/@herbps10/hamiltonian-monte-carlo) to approximate `\(p(\theta \vert Y)\)`   
+
+- We can write out (almost) any probabilistic model and get full probability distributions to express our uncertainty about model parameters     
+- Higher-level interfaces allow us to avoid writing raw Stan code
+
+``` r
+library(rstan)
+library(brms)
+library(rstanarm)
+```
+
+- Converts R modelling syntax to Stan language *and extends it in interesting ways*
+
+---
+class: middle
+##Bayesian workflow
+
+To get started with Bayesian data analysis (BDA), it is useful to first informally define what a "Bayesian workflow" might look like.      
+&lt;br&gt;
+Five key data analysis steps follow;   
+
+1.  Identify data relevant to the research question     
+2.  Define a descriptive model, whose parameters capture the research question      
+3.  Specify prior probability distributions on parameters in the model    
+4.  Update the prior to a posterior distribution using Bayesian inference    
+5.  Check your model against data, and identify possible problems    
+
+---
+##Defining the model
+Usually model written as
+
+`$$y_n = \mu + \epsilon_n$$`
+
+where
+
+`$$\epsilon_n \sim N(0, \sigma^2)$$`
+
+Bayesian usually prefer the following equivalent form
+
+`$$y_n \sim N(\mu, \sigma^2)$$`
+Need to define prior beliefs, before the data are observed. Requires care, and often a vague or non-informative priors are useful starting points.
+`$$\mu \sim N(250, 200) \\
+\sigma \sim N^+(0, 200)$$`
+
+---
+##Defining the priors
+`$$\mu \sim N(250, 200) \\
+\sigma \sim N^+(0, 200)$$`
+
+&lt;img src="L2_EPIB704_stat_inference_25_files/figure-html/unnamed-chunk-35-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+### Bayesian example - non-informative prior
+The NEJM 2011 [Coronary-Artery Bypass Surgery in Patients with Left Ventricular Dysfunction study](https://www.nejm.org/doi/full/10.1056/NEJMoa1100356), cited &gt; 1200 times, concluded &lt;span style="color:red"&gt;no significant difference between medical therapy alone and medical therapy plus CABG&lt;/span&gt;.
+.pull-left[
+&lt;img src="images/stitch_data.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="images/eq_def.png" width="50%" style="display: block; margin: auto;" /&gt;
+]
+--
+&lt;img src="images/stitch_pdf.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+###Bayesian example - informative prior
+
+&lt;img src="images/cass_data.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+&lt;br&gt;
+&lt;img src="images/cass_graph.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+### Bayesian example - updated
+&lt;img src="images/stitch_updated.png" width="80%" style="display: block; margin: auto;" /&gt;
+NEJM (2011) conclusion - **no significant changes in mortality**      
+Bayesian conclusion - **99% probability of decreased mortality with CABG**     
+[NEJM (2016)](https://www.nejm.org/doi/full/10.1056/NEJMoa1602001) conclusion - **mortality significantly lower with CABG**
+
+---
+class: middle
+###Fighting for truth, justice and subjective probability
+
+.pull-left[
+&lt;img src="images/homo_bayesianis.png" width="1000px" style="display: block; margin: auto;" /&gt;
+- Possibilities consistent with the data `\(\to\)` more credibility,     
+- Possibilities not consistent `\(\to\)` lose credibility. 
+- Bayesian analysis `\(\to\)` mathematics of re-allocating credibility in a logically coherent and precise way.
+]
+.pull-right[
+
+&lt;img src="images/knight.jpg" width="250px" style="display: block; margin: auto;" /&gt;
+]
+
+- Street cred (&lt;https://twitter.com/d_spiegel/status/550677361205977088&gt;)
+
+
+---
+class: inverse, middle, center
+
+## Ready to make &lt;span style="color:yellow"&gt;"Inferences"&lt;/span&gt;?
+
+
+---
+class: middle
+
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+
+---
+class: middle
+### Other resources
+- Goodman S. Toward evidence-based medical statistics. 1: The P value fallacy. Ann Intern Med. 1999;130:995-1004.     
+- Goodman S. Toward Evidence-Based Medical Statistics. 2: The Bayes Factor. Annals Int Med 1999;130:1005-13.
+
+---
+class: middle
+##Statistical inference - Example 3
+A case-control [study](https://pubmed.ncbi.nlm.nih.gov/27041698/) of statins and risk of glioma, reported OR = 0.75; 95 % CI 0.48–1.17 when comparing users (&gt;90 Rx) to non-users.     
+
+The authors then made the following statements      
+1) "As compared with non-use of statins, use of statins was not associated with risk of glioma"        
+2) "This matched case-control study revealed a null association between statin use and risk of glioma"           
+Do you agree?    
+
+--
+
+**Both statements are flat-out wrong**     
+- Misinterpreting that their CI included the null as meaning no association   
+- Tests of significance, by comparing p to `\(\alpha\)` or by looking for null values within CI, are worse than useless, they are misleading and inhibit critical discussion    
+- Values just beyond the CI are only slightly less likely to have given rise to the observed data than are some of the values included in the CI
+
+---
+class: middle
+**S-value graph (R - code)**
+
+``` r
+s_graph &lt;- function(hr, uci, lci){
+  se &lt;- (log(uci)-log(lci))/(2*1.96); x &lt;- seq(0.01, 0.50,by = .005)
+  lci &lt;- exp(log(hr) - (qnorm(x) * se));uci &lt;- exp(log(hr) + (qnorm(x) * se))
+  lci &lt;- rev(lci); hr &lt;- rev(c(uci, lci))
+  yy &lt;- 2*x; yy &lt;- c(yy,rev(yy)); ss &lt;- -log(yy, base=2); df1 &lt;- data.frame(hr,ss); 
+  df1 &lt;- df1[-297,]
+  s &lt;- ggplot(df1, aes( hr,ss)) +  geom_line() + xlim(0.01,1.2) +
+    scale_x_continuous(trans='log10') +
+    ylab("Bits of information against HR (binary S value)") +
+    xlab("Hazard ratio (Log scale)") +
+    labs (subtitle = "S-Values (surprisals) for a range of hazard ratios (HR)") +
+    geom_vline(xintercept=1.0, color = "green") + 
+    annotate("text", x=1,y=.4, label="null \nhypothesis") + theme_bw()
+  return(s) }
+gg &lt;- s_graph(0.86, 1.04, 0.72) + labs(title="Stich trial results 2011") +
+  annotate("text", x=.8,y=1, label="Maximum likelihood estimate (HR=0.86)\n 
+           has the least refutational evidence \n against it (0 bits)") +
+  geom_segment(aes(x = .86, y = 0.8, xend = .86, yend = 0.015),
+               arrow = arrow(length = unit(0.5, "cm")),color="red")
+```
+
+- Rafi, Z., Greenland, S. Semantic and cognitive tools to aid statistical science: replace confidence and significance by compatibility and surprise. [BMC Med Res Methodol 20, 244 (2020).](https://doi.org/10.1186/s12874-020-01105-9)
+- Greenland, S. (2019). [Valid P-Values Behave Exactly as They Should: Some Misleading Criticisms of P-Values and Their Resolution With S-Values.](https://doi.org/10.1080/00031305.2018.1529625)
+
+---
+class: middle
+## Statistical inference - Example 1
+- A [study](https://www.bmj.com/content/343/bmj.d3450) reported that selective COX-2 inhibitors (NSAIDs) **were associated** with atrial fibrillation (RR 1.20, 95% CI 1.09 - 1.33, p&lt;0.01)   
+- A [2nd study](https://pubmed.ncbi.nlm.nih.gov/23046591/) concluded “use of selective COX-2 inhibitors **was not significantly related** to atrial fibrillation occurrence”  (RR 1.20, 95% CI 0.97 - 1.47, p=.23)
+- Authors elaborated why the results were different -  different populations, etc      
+**Are the 2 results are really different?**
+--
+
+&lt;img src="images/forest.png" width="40%" style="display: block; margin: auto;" /&gt;
+Only difference is better precision in 1st study, the 2nd study actually supports the 1st    
+Data visualization helps again!   
+
+&lt;span style="color:darkred"&gt;Message:  Don’t rely on statistical significance testing for inferences &lt;/span&gt; 
+---
+class: middle
+##Statistical inference - Example 2
+A recent 2022 [study](https://jamanetwork.com/journals/jamaoncology/article-abstract/2794879) reported _"annual screening (vs some screening) was associated with a **significant reduction in risk of prostate cancer–specific mortality (PCSM) among Black men (sHR, 0.65; 95% CI, 0.46-0.92; P = .02)**_ 
+- _but not among White men (sHR, 0.91; 95%CI, 0.74-1.11; P = .35)"_ and then concluded:     
+- _&lt;span style="color:darkred"&gt;Annual screening was associated with reduced risk of PCSM among Black men but not among White men, suggesting that annual screening may be particularly important for Black men.&lt;/span&gt;_     
+
+**Are the 2 results are really different?**     
+--
+
+### &lt;span style="color:darkred"&gt;Probably NOT!&lt;/span&gt; 
+- **Reference #1** [The Difference Between “Significant” and “Not Significant” is not Itself Statistically Significant](http://www.stat.columbia.edu/~gelman/research/published/signif4.pdf)       
+- **Reference #2** [Interaction revisited: the difference between two estimates](https://www.bmj.com/content/326/7382/219)
+
+
+
+---
+class: middle
+##Simple R function 
+
+
+``` r
+inter_test &lt;- function(rr1, rr1LL, rr1UL, rr2, rr2LL, rr2UL, sig=0.975) {
+  #se of log(rr1), default 95%CI, sig = 1 sided value
+  logSE1 &lt;- abs(log(rr1UL) - log(rr1LL))/(2 * qnorm(sig)) 
+  logSE2 &lt;- abs(log(rr2UL) - log(rr2LL))/(2 * qnorm(sig)) #se of log(rr1)
+  diffLogRR &lt;- log(rr1) - log(rr2) #diff of log rr
+  logRR_SE &lt;- sqrt(logSE1^2 + logSE2^2) #log (se) of differences
+  logRR_UCI &lt;- diffLogRR + qnorm(sig) * logRR_SE
+  logRR_LCI &lt;- diffLogRR - qnorm(sig) * logRR_SE
+  RR &lt;- exp(diffLogRR) # RR point estimate
+  RR_UCI &lt;- exp(logRR_UCI) # RR upper CI
+  RR_LCI &lt;- exp(logRR_LCI) # RR lower CI
+  RR_SE &lt;- (RR_UCI - RR_LCI) / (2*1.96)
+  pvalue &lt;- round(2*(1 - pnorm(sig,RR,RR_SE)),2) #p value for the interaction term
+  state1 &lt;- cat("The relative risk for the interaction is ", 
+                round(RR, 2),", 95% CI ", round(RR_LCI, 2), "-", 
+                round(RR_UCI,2), " and p value =" , round(pvalue, 3))
+}
+
+inter_test(0.65,0.46,0.92,0.91,0.74,1.11)
+```
+
+```
+## The relative risk for the interaction is  0.71 , 95% CI  0.48 - 1.07  and p value = 0.08
+```
+---
+class: middle
+
+### How different are these two results?
+
+
+``` r
+inter_test(0.65,0.46,0.92,0.91,0.74,1.11)
+```
+
+```
+## The relative risk for the interaction is  0.71 , 95% CI  0.48 - 1.07  and p value = 0.08
+```
+
+**&lt;span style="color:darkred"&gt; Author's Conclusion:&lt;/span&gt;** 
+
+_Annual screening was associated with reduced risk of PCSM among Black men but not among White men, suggesting that annual screening may be particularly important for Black men._        
+
+&lt;span style="color:darkred"&gt;More than 20 years on, and still making the same errors and drawing incorrect conclusions!&lt;/span&gt;       
+    
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "3:2",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "navigation": {
+    "scroll": false
+  }
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
