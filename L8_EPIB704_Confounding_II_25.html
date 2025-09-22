@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Confounding II</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mabel Carabali" />
+    <script src="libs/header-attrs-2.29/header-attrs.js"></script>
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link href="libs/table1-1.0/table1_defaults.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Confounding II
+]
+.author[
+### Mabel Carabali
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### Updated: 2025-09-19
+]
+
+---
+
+
+
+
+
+
+
+
+
+
+class: middle
+# The Structure of Confounding
+## and worked examples !
+
+
+---
+class: middle
+###Conditions that allow a variable to be a confounder:
+📣 **Modern Epidemiology 4th, page 268** 💡
+
+&gt; &lt;span style="color:darkblue"&gt; _The developments in causal inference over the past decades, summarized in Chapter 3, have made clear that this definition [ ...the traditional criteria described from ME3... ] of a “confounder” is inadequate. It is inadequate because there can be a pre-exposure variable associated with the exposure and the outcome, the control of which introduces, rather than eliminates, bias_ [ME4;p268] &lt;/span&gt;
+
+---
+class: middle
+### .red[The Structure of Confounding??]
+&lt;img src="images/dogmath.png" width="60%" style="display: block; margin: auto 0 auto auto;" /&gt;
+---
+class: middle
+
+### The Structure of Confounding
+
+`$$A \leftarrow  L \to Y$$`
+
+This diagram shows two sources of association between treatment and outcome: 
+
+1. The path `\(A → Y\)` that represents the causal effect of A on Y , and 
+
+2. The path `\(A ← L → Y\)` between A and Y that includes the common cause `\(L\)`
+
+  - The path `\(A ← L → Y\)` links A and Y through the common cause `\(L\)`, is the **_"backdoor path"_**
+
+
+---
+class: middle
+
+### The structure of Confounding
+
+- In a causal DAG, a backdoor path is a non-causal path between treatment and outcome that remains even if all arrows pointing from treatment to other variables (i.e., the descendants of treatment) are removed. 
+- That is, the path has an arrow pointing into treatment.
+
+&lt;img src="images/L6_HRfig71.png" width="60%" /&gt;
+
+---
+class: middle
+### Confounding and exchangeability
+- The backdoor criterion, **does not** answer questions regarding the magnitude or direction of confounding.
+
+- It is possible that some unblocked backdoor paths are weak and thus induce little bias, or that several strong backdoor paths induce bias in opposite directions and thus result in a weak net bias.
+
+- Because unmeasured confounding is not an “all or nothing” issue, in practice, it is important to consider the expected direction and magnitude of the bias.
+
+---
+class: middle
+## Confounders ( `\(Y\)` &amp;larr; `\(L\)` &amp;rarr; `\(A\)` )
+.pull-left[
+&lt;img src="L8_EPIB704_Confounding_II_25_files/figure-html/unnamed-chunk-3-1.png" width="80%" /&gt;
+]
+.pull-right[
+**Simulated Example**
+
+``` r
+set.seed(704); N &lt;- 100; 
+L &lt;- rbinom(N,1,0.5)
+A &lt;- ifelse(L==0,rbinom(N,1,0.25),
+            rbinom(N,1,0.75))
+Y &lt;- ifelse(L==0,rbinom(N,1,0.20),
+            rbinom(N,1,0.8))
+#summary(L)
+data &lt;- data.frame(N, A, L, Y)
+tab &lt;- table(data$A, data$Y)
+#tab; tab/margin.table(tab)
+l6conf1&lt;-epi.2by2(tab, 
+                  method = "cohort.count")
+```
+]
+
+--
+
+
+```
+##              Outcome+    Outcome-      Total                 Inc risk *
+## Exposure+          39          13         52     75.00 (61.05 to 85.97)
+## Exposure-          14          34         48     29.17 (16.95 to 44.06)
+## Total              53          47        100     53.00 (42.76 to 63.06)
+```
+*Outcomes per 100 population units 
+
+---
+
+class: middle
+## Confounders
+.pull-left[
+**Crude**
+
+``` r
+tabl6conf1 &lt;- data.table::as.data.table(l6conf1$massoc.summary)
+kable(tabl6conf1, digits = 2) %&gt;% 
+  kable_paper()
+```
+
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; var &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; est &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; lower &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; upper &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.57 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.11 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 17.63 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 45.83 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 28.40 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 63.26 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib fraction in exposed (%) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 61.11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 39.98 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 76.19 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk in population * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 23.83 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.68 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 39.99 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib fraction in population (%) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 44.97 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 30.12 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 60.35 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+--
+.pull-right[
+
+
+<div class="Rtable1"><table class="Rtable1">
+<thead>
+<tr>
+<th class='rowlabel firstrow lastrow'></th>
+<th class='firstrow lastrow'><span class='stratlabel'>0<br/><span class='stratn'>(N=51)</span></span></th>
+<th class='firstrow lastrow'><span class='stratlabel'>1<br/><span class='stratn'>(N=49)</span></span></th>
+<th class='firstrow lastrow'><span class='stratlabel'>Overall<br/><span class='stratn'>(N=100)</span></span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>as.factor(Y)</span></td>
+<td class='firstrow'></td>
+<td class='firstrow'></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>0</td>
+<td>42 (82.4%)</td>
+<td>11 (22.4%)</td>
+<td>53 (53.0%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>1</td>
+<td class='lastrow'>9 (17.6%)</td>
+<td class='lastrow'>38 (77.6%)</td>
+<td class='lastrow'>47 (47.0%)</td>
+</tr>
+<tr>
+<td class='rowlabel firstrow'><span class='varlabel'>as.factor(A)</span></td>
+<td class='firstrow'></td>
+<td class='firstrow'></td>
+<td class='firstrow'></td>
+</tr>
+<tr>
+<td class='rowlabel'>0</td>
+<td>41 (80.4%)</td>
+<td>11 (22.4%)</td>
+<td>52 (52.0%)</td>
+</tr>
+<tr>
+<td class='rowlabel lastrow'>1</td>
+<td class='lastrow'>10 (19.6%)</td>
+<td class='lastrow'>38 (77.6%)</td>
+<td class='lastrow'>48 (48.0%)</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+]
+
+---
+class: middle
+## Confounders
+.pull-left[
+**L=0**
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Exposure&lt;/div&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Outcome; L=0&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 0 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 1 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 36 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+.pull-right[
+**L=1**
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Exposure&lt;/div&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Outcome; L=1&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 0 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 1 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 30 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+
+``` r
+tab1 &lt;- table(data$A, data$Y, data$L)
+#tab1
+l6conf2&lt;-epi.2by2(tab1, method = "cohort.count")
+tabl6conf2 &lt;- data.table::as.data.table(l6conf2$massoc.summary)
+```
+
+
+---
+class: middle
+## Confounders
+
+**Adjusted**
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Measure&lt;/div&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Estimate 95%CIs&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measure &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; LB &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; UB &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.57 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.11 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.42 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.87 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.30 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.81 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 17.63 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.84 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.96 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 45.83 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 28.40 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 63.26 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (M-H) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16.69 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -16.33 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 49.71 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.75 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+.small[*Outcomes per 100 population units] 
+
+---
+
+
+class: middle
+## Confounders?
+Consider this  DAG: `$$C \to  E \to  Y$$`
+- In this case, C is not a confounder because it does not have an independent effect on Y. 
+  - But there will be an observed association between C and Y, by virtue of their common association with E.
+  - But it is not an independent association.
+
+**That’s why we should assess this criterion within levels of exposure.**
+  - Stratified by E, the association between C and Y is null if there is no direct effect (as shown in the DAG).
+  
+---
+class: middle
+## Confounders ?
+.pull-left[
+`\(C \to  E \to  Y\)`
+
+``` r
+set.seed(704)
+N &lt;- 100
+C &lt;- rbinom(N,1,0.5)
+E &lt;- ifelse(C==0,rbinom(N,1,0.8),
+            rbinom(N,1,0.5))
+Y &lt;- ifelse(E==0,rbinom(N,1,0.2),
+            rbinom(N,1,0.5))
+#summary(C)
+data1 &lt;- data.frame(N, C, E,Y)
+tab1C &lt;- table(data1$E, data1$Y, data1$C)
+```
+]
+.pull-right[
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Measure&lt;/div&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Estimate 95%CIs&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measure &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; LB &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; UB &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.91 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.36 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.70 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.75 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.14 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.69 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.09 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.12 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 12.97 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.83 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10.09 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.34 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 37.15 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 19.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 55.30 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (M-H) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 31.20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6.71 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 69.12 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.19 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+
+---
+class: middle
+## Confounders ?
+Figure 7.4 A version of the famous M-diagram again. No confounding, despite backdoor paths.
+
+&lt;img src="images/L6fig4HR.png" width="30%" /&gt;
+
+Here there are no common causes of treatment A and outcome Y, and therefore there is no confounding. 
+
+The back door path between A &amp;larr; U2 &amp;rarr; L &amp;larr; U1 &amp;rarr; Y is locked because `\(L\)` is a collider on that path.
+
+
+---
+
+class: middle
+## Confounders
+
+.pull-left[
+No common causes but L is a collider `\(U1 \to L \leftarrow U2\)`
+
+
+``` r
+set.seed(704)
+N &lt;- 100
+U1 &lt;- rbinom(N,1,0.5)
+U2 &lt;- rbinom(N,1,0.5)
+L &lt;- ifelse(U1==1, rbinom(N,1,0.6),
+     ifelse(U2==1, rbinom(N,1,0.6), 
+     rbinom(N,1,0.5))) #L is affected by U1 and U2
+A &lt;- ifelse(U2==1, rbinom(N,1,0.5), 
+     rbinom(N,1,0.5)) #A is affected by U2
+Y &lt;- ifelse(A==1, rbinom(N,1,0.6), 
+     ifelse( U1==1,  rbinom(N,1,0.6),  
+     rbinom(N,1,0.5))) # Y is affected by A and U1
+
+#summary(C)
+datanoconf2 &lt;- data.frame(N, U1, U2, L, A,Y)
+tab.noconf2&lt;- table(datanoconf2$A, 
+              datanoconf2$Y, 
+              datanoconf2$L)
+```
+]
+
+.pull-right[
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Measure&lt;/div&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Estimate 95%CIs&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measure &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; LB &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; UB &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.73 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.05 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.86 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.70 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.78 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.53 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.74 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.08 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.61 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.03 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 22.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.21 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 40.79 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (M-H) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21.33 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 41.92 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.03 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+
+---
+class: middle
+## Confounders
+&lt;img src="images/L6fig5HR.png" width="30%" /&gt;
+
+&lt;span style="color:purple"&gt; There is an arrow `\(L \to A\)`. &lt;/span&gt; The presence of this arrow creates an open backdoor path:
+
+- A &amp;larr;  L &amp;larr; U1 &amp;rarr; Y, because U1 is a common cause of A and Y, and so **confounding exists.**
+- Conditioning on L would block that backdoor path but would simultaneously open a backdoor path on which L is a collider (A &amp;larr; U2 &amp;rarr; L &amp;larr; U1 &amp;rarr; Y)
+
+The bias is **intractable:** attempting to block the confounding path opens a selection bias path. 
+
+---
+class: middle
+## Confounding ? Colliders?
+.pull-left[
+
+``` r
+dag &lt;- ggdag::dagify(Y ~ A + U1,
+       A ~ L + U2,
+       L ~ U1 + U2,
+       exposure = "A", outcome = "Y",
+*      latent = c("U1", "U2"),
+       coords = list(x = c(L = 3.2, Y = 3.8, A = 3.5, U1=3, U2=3),
+       y = c(U2 = 1, L = 1.3,  A=1.3, Y=1.3, U1 = 1.5)))
+dag_plot &lt;- dag %&gt;% 
+  ggdag::tidy_dagitty(layout = "manual", 
+  seed = 704) %&gt;% arrange(name) %&gt;% 
+  ggplot(aes(x = x, y = y, xend = xend, 
+  yend = yend)) + geom_dag_point() +
+  geom_dag_edges() +  theme_dag() +
+  geom_dag_node(color="darkmagenta") + 
+  geom_dag_text(color="white") 
+```
+]
+--
+.pull-right[
+&lt;img src="L8_EPIB704_Confounding_II_25_files/figure-html/unnamed-chunk-20-1.png" width="90%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+]
+
+---
+class: middle
+### Confounding ? Colliders?
+
+``` r
+#control_for(dag, var = "L")
+#ggdag_paths(dag) +theme_dag()
+ggdag_adjust(dag, var = "L", stylized = T, collider_lines = T) + theme_dag() 
+```
+
+&lt;img src="L8_EPIB704_Confounding_II_25_files/figure-html/unnamed-chunk-21-1.png" width="90%" style="display: block; margin: auto 0 auto auto;" /&gt;
+
+
+---
+class: middle
+##R can help ... 
+
+
+``` r
+g &lt;- dagitty::paths(dag, "A", "Y")
+a &lt;- paste0("There are ", length(g$paths), 
+            " pathways from A to Y")  
+b &lt;- paste0("Of these backdoor pathways ", 
+            sum(g$open=="TRUE"), " are open")  
+c &lt;- paste0("The adjustment sets are ", 
+            adjustmentSets(dag, "A", "Y", type = "canonical"))
+
+print(c(a,b,c))
+```
+
+```
+## [1] "There are 3 pathways from A to Y"     
+## [2] "Of these backdoor pathways 2 are open"
+## [3] "The adjustment sets are "
+```
+
+The bias is **.red[intractable:]** attempting to block the confounding path opens a selection bias path. 
+
+---
+
+class: middle
+## Confounders
+
+.pull-left[
+
+``` r
+set.seed(704)
+N &lt;- 100
+U1 &lt;- rbinom(N,1,0.5)
+U2 &lt;- rbinom(N,1,0.5)
+L &lt;- ifelse(U1==1, rbinom(N,1,0.65), 
+     ifelse(U2==1,  rbinom(N,1,0.65), 
+     rbinom(N,1,0.15))) #L is affected by U1 and U2
+A &lt;- ifelse(L==1, rbinom(N,1,0.65), 
+     ifelse(U2==1, rbinom(N,1,0.65), 
+     rbinom(N,1,0.45))) #A is affected by L and U2
+Y &lt;- ifelse(A==1,  rbinom(N,1,0.65), 
+      ifelse(U1==1, rbinom(N,1,0.6), 
+      rbinom(N,1,0.3))) # Y is affected by A and U1
+
+#summary(C)
+data2 &lt;- data.frame(N, U1, U2, L, A,Y)
+tabL.intract &lt;- table(data2$A, data2$Y, 
+                data2$L)
+```
+]
+.pull-right[
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Measure&lt;/div&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Estimate 95%CIs&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measure &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; LB &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; UB &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.91 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.13 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.12 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.80 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.90 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.31 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.88 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.13 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.35 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.28 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.96 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 25.97 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.09 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 44.85 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (M-H) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 28.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.35 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 50.67 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.93 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+
+---
+
+class: middle
+## Confounders
+Figure 7.7 is another non confounding example in which the traditional criteria lead to selection bias due to adjustment for L. 
+
+&lt;img src="images/L6fig7HR.png" width="30%" /&gt;
+
+- The traditional criteria would not have resulted in bias had condition (3) been replaced by the condition that L is not caused by treatment.
+ - .red[ _(3) it does not lie on a causal pathway between treatment and outcome._]
+ 
+&gt; Replace condition (3) by the condition that “there exist variables A and Y such that there is conditional exchangeability within their joint levels `\(Y^a \perp A| L, U\)`". .blue[H&amp;R, Technical Point 7.2]
+
+---
+
+class: middle
+## Confounders
+
+.pull-left[
+** L is not on the "pathway" `\(A \to Y\)` **
+
+``` r
+set.seed(704)
+N &lt;- 100
+U &lt;- rbinom(N,1,0.5)
+A &lt;-rbinom(N,1,0.55) #A affects L 
+L &lt;- ifelse(U==1, rbinom(N,1,0.65), 
+     ifelse(A==1, rbinom(N,1,0.65), 
+     rbinom(N,1,0.25))) #L is affected by U and A
+Y &lt;- ifelse(U==1, rbinom(N,1,0.6), 
+     rbinom(N,1,0.25)) # Y is affected by U
+
+datanoconf3 &lt;- data.frame(N, U, L, A,Y)
+tabL.noconf3 &lt;- table(datanoconf3$A,
+               datanoconf3$Y,
+               datanoconf3$L)
+```
+]
+.pull-right[
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Measure&lt;/div&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Estimate 95%CIs&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measure &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; LB &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; UB &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.98 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.67 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.42 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.98 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.57 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.96 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.42 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.18 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.97 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.42 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.23 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.99 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -21.55 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 19.36 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (M-H) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.85 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -25.69 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 23.99 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.30 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+
+---
+class: middle
+###Surrogate confounders (Is L a confounder?)
+In Figure 7.8, confounding of A on Y via unmeasured common cause U . 
+
+&lt;img src="images/L6fig8HR.png" width="50%" /&gt;
+
+- Measured variable L is a proxy or surrogate for U . Adjust for the variable L? 
+- On the one hand, L is not a confounder because it does not lie on a backdoor path between A and Y . 
+
+---
+
+class: middle
+## Confounders
+
+.pull-left[
+**Surrogates when L is not highly correlated with U**
+
+``` r
+set.seed(704)
+N &lt;- 100
+U &lt;- rbinom(N,1,0.8)
+A &lt;- ifelse(U==1, rbinom(N,1,0.65), 
+     rbinom(N,1,0.5)) #A is affected by  U
+L &lt;- ifelse(U==1, rbinom(N,1,0.65), 
+     rbinom(N,1,0.5)) #L is affected by U 
+Y &lt;- ifelse(A==1,  rbinom(N,1,0.65),
+     ifelse(U==1, rbinom(N,1,0.65), 
+     rbinom(N,1,0.15))) # Y is affected by U and A
+dataconf4 &lt;- data.frame(N, U, L, A,Y)
+tabL.conf4 &lt;- table(dataconf4$A, 
+                    dataconf4$Y,
+                    dataconf4$L)
+```
+]
+.pull-right[
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Measure&lt;/div&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Estimate 95%CIs&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measure &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; LB &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; UB &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.94 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.22 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.23 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.30 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.97 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.39 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.78 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.41 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.50 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.95 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 28.52 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 48.44 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (M-H) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 29.58 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 64.92 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.96 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+---
+class: middle
+###Surrogate confounders (Is L a confounder?)
+- On the other hand, adjusting for L, which is associated with U , will indirectly adjust for some of the confounding caused by U .
+
+&lt;img src="images/L6fig8HR.png" width="30%" /&gt;
+
+- In the extreme case that L were perfectly correlated with U then adjusting for L = adjusting for U.
+- Therefore we will typically prefer to adjust, rather than not to adjust, for L.
+
+---
+
+class: middle
+## Confounders
+**Surrogates when L and U correlated**
+.pull-left[
+
+``` r
+set.seed(704)
+N &lt;- 100
+U &lt;- rbinom(N,1,0.8)
+A &lt;- ifelse(U==1, rbinom(N,1,0.65), 
+rbinom(N,1,0.5)) #A is affected by U
+L &lt;- ifelse(U==1, rbinom(N,1,0.95), 
+rbinom(N,1,0.5)) #L is affected by U 
+Y &lt;- ifelse(A==1,  rbinom(N,1, 0.65),
+ifelse(U==1, rbinom(N,1,0.65), 
+rbinom(N,1,0.15))) # Y is affected by U and A
+
+dataconf5 &lt;- data.frame(N, U, L, A,Y)
+tabL.conf5 &lt;- table(dataconf5$A, 
+              dataconf5$Y, 
+              dataconf5$L)
+```
+]
+.pull-right[
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Measure&lt;/div&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Estimate 95%CIs&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measure &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; LB &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; UB &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.94 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.22 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.06 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.88 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.29 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.39 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7.78 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.69 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.53 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.22 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 28.52 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.61 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 48.44 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (M-H) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 23.16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -8.90 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 55.21 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.23 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+---
+class: middle
+###Confounders cannot be descendants of treatment, but can be in the future of treatment
+In Figure 7.11. L is a descendant of treatment A that blocks all backdoor paths from A to Y. 
+&lt;img src="images/L6fig11HR.png" width="30%" style="display: block; margin: auto;" /&gt;
+
+--
+
+- Conditioning on L does not cause selection bias because no collider path is opened. 
+- Since the causal effect of A on Y is only through L, conditioning on L completely blocks this pathway. 
+- This shows that adjusting for a variable L that blocks all backdoor paths does not eliminate bias when L is a descendant of A. 
+- Since `\(Y^a \perp \!\!\! \perp A|L\)` implies adjustment for L eliminates all bias, there must not be conditional exchangeability, 
+- **and thus `\(E[Ya=1] − E[Ya=0]\)` is not identified.**
+
+
+---
+class: middle
+## Confounders as descendants?
+.pull-left[
+
+``` r
+dag1 &lt;- ggdag::dagify(Y ~ L,
+       A ~ U,
+       L ~ U + A,
+       exposure = "A", outcome = "Y",
+*      latent = "U",
+       coords = list(x = c(L = 2, Y = 2.5, A = 1.5, U=1.2),
+       y = c(U = 1.3, L = 1.5,  A=1.5, Y=1.5)))
+dag_plot1 &lt;- dag1 %&gt;% 
+  ggdag::tidy_dagitty(layout = "manual", 
+                    seed = 704) %&gt;%
+  arrange(name) %&gt;% 
+  ggplot(aes(x = x, y = y, xend = xend, 
+   yend = yend)) + geom_dag_point() + 
+  geom_dag_edges() + theme_dag() +
+  geom_dag_node(color="darkmagenta") +
+  geom_dag_text(color="white") 
+```
+]
+--
+.pull-right[
+&lt;img src="L8_EPIB704_Confounding_II_25_files/figure-html/unnamed-chunk-36-1.png" width="90%" style="display: block; margin: auto auto auto 0;" /&gt;
+
+]
+
+---
+class: middle
+### Confounders as descendants ? Colliders?
+
+``` r
+#control_for(dag1, var = "L")
+#ggdag_paths(dag1) +theme_dag()
+ggdag_adjust(dag1, var = "L", stylized = T, collider_lines = T) +  theme_dag() 
+```
+
+&lt;img src="L8_EPIB704_Confounding_II_25_files/figure-html/unnamed-chunk-37-1.png" width="90%" style="display: block; margin: auto 0 auto auto;" /&gt;
+
+
+---
+class: middle
+##R can help ... 
+
+
+``` r
+g1 &lt;- dagitty::paths(dag1, "A", "Y")
+a1 &lt;- paste0("There are ", length(g1$paths), 
+            " pathways from A to Y")  
+b1 &lt;- paste0("Of these backdoor pathways ", 
+            sum(g1$open=="TRUE"), " are open")  
+c1 &lt;- paste0("The adjustment sets are ", 
+            adjustmentSets(dag1, "A", "Y", type = "canonical"))
+
+print(c(a1,b1,c1))
+```
+
+```
+## [1] "There are 2 pathways from A to Y"     
+## [2] "Of these backdoor pathways 2 are open"
+## [3] "The adjustment sets are "
+```
+
+The bias is **.red[ and thus `\(E[Ya=1] − E[Ya=0]\)` is not identified.]** attempting to block the confounding path opens a selection bias path.
+
+---
+class: middle
+
+### Do we know what a confounder is?
+
+&lt;img src="images/L6confoundingvariable.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+[Confounding Variable Joke](http://www.bazinganomics.com/bazinganomics//confounding-variable-joke)
+
+
+---
+class: middle
+## How to adjust for confounding
+
+- **Randomization is the best method.**
+ - In conditionally randomized experiments given covariates `\(L\)`, the common causes (i.e., the covariates L) are measured and thus the adjusted (standardization or IP weighting) association measure is expected to equal the effect measure.
+
+- Subject-matter knowledge to identify adjustment variables is **_discretionary_ in "ideal" randomized experiments**.
+
+- On the other hand, **subject-matter knowledge is key (a must!) in observational studies** in order to identify and measure adjustment variables (e.g., for regression adjustment).
+
+
+---
+class: middle
+## How to adjust for confounding
+
+- Causal inference from observational data relies on the **uncheckable assumption** that we have used our knowledge to identify and measure a set of variables `\(L\)` that is a sufficient set for confounding adjustment: 
+
+ - The set of non-descendants of treatment that includes enough variables to block all backdoor paths.
+ 
+- Under this assumption of no unmeasured confounding or of conditional exchangeability given `\(L\)`, standardization and Inverse Probability (IP) weighting can be used to compute the average causal effect in the population.
+
+---
+class: middle
+### Standardization 
+**Why standardize?**
+ - To control for confounding
+ - To summarize many estimates into one
+
+- Is a weighted average of measures of occurrence across a distribution (say, age). 
+- Can be applied to any measure of occurrence or measure of effect
+- Weights are chosen based on the population of interest
+
+(ME3, pg. 49)
+---
+### Standardized measures of association and effect 
+
+- Let `\(I_k\)` represent strata specific incidence rates and 
+- let `\(I_k^*\)` represent another schedule of such rates (perhaps based on a different exposure distribution)
+- Let `\(Tk\)` represent person-time at risk in each strata 
+
+`\(I_s = \left(\frac{\sum_{k=1}^K T_k I_k}{\sum_{k=1}^K T_k }\right)\)`
+
+`\(I_s^* = \left(\frac{\sum_{k=1}^K T_k I_k^*}{\sum_{k=1}^K T_k }\right)\)`
+
+
+- Then the standardized rate ratio is: `\(IR_s = I_s/I_s^*\)`
+- The standardized rate difference is: `\(IR_s = I_s - I_s^* = \sum T_k(I_k - I_k^*)\)`
+
+(ME3, pg. 67)
+
+---
+class: middle
+## Standardized measures of association and effect
+- Note that the standardized rate difference is a weighted average of stratum-specific rate differences
+
+**Interpretation of both measures:** 
+- Effects of exposure on this population. 
+  - For the standardized rate ratio we need to assume that the relative distribution of person-time would be unaffected by exposure.
+  
+  – Standardized &lt;span style="color:purple"&gt; risk ratios &lt;/span&gt; do not require this assumption because the denominators do not use person-time.
+
+---
+### Example: [COVID-19 vaccine effectiveness in the UK](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1025358/Vaccine-surveillance-report-week-41.pdf) 
+UK Health Security Agency "COVID-19 vaccine surveillance report", Week 41
+
+&lt;img src="images/L6casesUK.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+**Rates (per 100,000) by vaccination status from week 37 to week 40 2021**
+
+---
+
+#### Example: COVID-19 vaccine effectiveness in the UK (2)
+[Numbers by variant are reported by Public Health England](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1018547/Technical_Briefing_23_21_09_16.pdf).
+
+&lt;img src="images/L6reportUKage.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+From: Table 5. Attendance to emergency care and deaths of sequenced and genotyped Delta cases in England by vaccination status
+(1 February 2021 to 12 September 2021) [here]((https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1018547/Technical_Briefing_23_21_09_16.pdf).)
+
+---
+
+#### Example: COVID-19 vaccine effectiveness in the UK 
+**Let's play with the numbers (1):** &lt;span style="color:blue"&gt; check the risk difference (RD) &lt;/span&gt;
+
+``` r
+#157400 - 2361 #exposed without outcome
+#257357 - 30801 #unexposed without outcome
+l6UKdata&lt;-c(2361,155039, 3080, 254277)
+l6UKest&lt;- epi.2by2(l6UKdata, method = "cohort.count")
+l6UKest
+```
+
+```
+##              Outcome+    Outcome-      Total                 Inc risk *
+## Exposure+        2361      155039     157400        1.50 (1.44 to 1.56)
+## Exposure-        3080      254277     257357        1.20 (1.16 to 1.24)
+## Total            5441      409316     414757        1.31 (1.28 to 1.35)
+## 
+## Point estimates and 95% CIs:
+## -------------------------------------------------------------------
+## Inc risk ratio                                 1.25 (1.19, 1.32)
+## Inc odds ratio                                 1.26 (1.19, 1.33)
+## Attrib risk in the exposed *                   0.30 (0.23, 0.38)
+## Attrib fraction in the exposed (%)            20.21 (15.85, 24.35)
+## Attrib risk in the population *                0.12 (0.06, 0.17)
+## Attrib fraction in the population (%)         8.77 (7.97, 9.58)
+## -------------------------------------------------------------------
+## Uncorrected chi2 test that OR = 1: chi2(1) = 69.360 Pr&gt;chi2 = &lt;0.001
+## Fisher exact test that OR = 1: Pr&gt;chi2 = &lt;0.001
+##  Wald confidence limits
+##  CI: confidence interval
+##  * Outcomes per 100 population units
+```
+
+** what would we conclude?**
+
+---
+### Example: COVID-19 vaccine effectiveness in the UK 
+ - **&lt;span style="color:blue"&gt; Missing something? &lt;/span&gt;**
+ 
+&lt;img src="images/L6reportUKage1.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+From: Table 5. Attendance to emergency care and deaths of sequenced and genotyped Delta cases in England by vaccination status (1 February 2021 to 12 September 2021) [here]((https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1018547/Technical_Briefing_23_21_09_16.pdf).) .small[Note: The totals do not exactly sum up to the previous table, as age was missing in a few cases.]
+
+---
+class: middle
+#### Example: COVID-19 vaccine effectiveness in the UK 
+**Let's play with the numbers (2) - Standardization**
+
+.pull-left-narrow[
+**Outcomes among people under 50 years**
+
+``` r
+l6UKdatu50&lt;-c(453,84954, 2416,  246387)
+l6UKt1u50&lt;- epi.2by2(l6UKdatu50, method = "cohort.count")
+l6UKt1u50$tab
+```
+
+```
+##              Outcome+    Outcome-      Total                 Inc risk *
+## Exposure+         453       84954      85407        0.53 (0.48 to 0.58)
+## Exposure-        2416      246387     248803        0.97 (0.93 to 1.01)
+## Total            2869      331341     334210        0.86 (0.83 to 0.89)
+```
+]
+.pull-right-narrow[
+**Outcomes among people `\(\geq\)` 50 years**
+
+``` r
+l6UKdatm50&lt;-c(1908 , 70083, 664,   7887)
+l6UKt1m50&lt;- epi.2by2(l6UKdatm50, method = "cohort.count")
+l6UKt1m50$tab
+```
+
+```
+##              Outcome+    Outcome-      Total                 Inc risk *
+## Exposure+        1908       70083      71991        2.65 (2.53 to 2.77)
+## Exposure-         664        7887       8551        7.77 (7.21 to 8.35)
+## Total            2572       77970      80542        3.19 (3.07 to 3.32)
+```
+]
+
+---
+
+#### Example: COVID-19 vaccine effectiveness in the UK 
+**Let's play with the numbers (3)** &lt;span style="color:blue"&gt; check the risk differences (RD)&lt;/span&gt;
+
+.pull-left[
+**Outcomes among people under 50 years**
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Measure&lt;/div&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Estimate 95%CIs&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measure &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; LB &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; UB &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.55 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.49 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.60 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.54 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.49 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.60 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.38 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib fraction in exposed (%) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -83.08 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -102.34 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -65.66 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk in population * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.16 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.06 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib fraction in population (%) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13.12 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13.49 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -12.74 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+.pull-right[
+**Outcomes among people `\(\geq\)` 50 years**
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Measure&lt;/div&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Estimate 95%CIs&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measure &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; LB &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; UB &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.34 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.31 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.37 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.32 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.30 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.35 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5.11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5.69 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4.54 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib fraction in exposed (%) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -192.99 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -219.06 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -168.97 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk in population * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4.57 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5.15 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3.99 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib fraction in population (%) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -143.17 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -151.81 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -134.51 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+---
+class: middle
+#### Example: COVID-19 vaccine effectiveness in the UK 
+**.red[Confounding?]**
+
+&lt;img src="L8_EPIB704_Confounding_II_25_files/figure-html/unnamed-chunk-48-1.png" width="45%" style="display: block; margin: auto;" /&gt;
+
+** &lt;span style="color:blue"&gt; We know that IRL the "L" includes a vector / set of potential covariates that could be considered as Confounders... this is an illustration only! &lt;/span&gt;**
+
+---
+class: middle
+### Direct standardization
+Suppose we want to estimate `\(E[Y^a=1] - E[Y^a=0] = RD\)`.
+
+The conditional exchangeability allows us to say `\(Y^a \perp \!\!\! \perp A | L\)`
+
+[According to the law of total expectation](https://en.wikipedia.org/wiki/Law_of_total_expectation):
+
+&lt;span style="color:purple"&gt; `\(E[Y^a =1] = \sum_{x} E[Y^a=1 | X=x]Pr(x)\)` &lt;/span&gt;;
+
+&lt;/span&gt; &lt;span style="color:blue"&gt; `\(E[Y^a =0] = \sum_{x} E[Y^a=0 | X=x]Pr(x)\)` &lt;/span&gt;
+- `\(\sum_{x}\)` means sum over all values x that occur in the study population.
+- `\(Pr(x)\)` refers to the distribution of x in that population.
+
+** `\(RD=\)` ** `\(E[Y^a =1] - E[Y^a =0]  =\)`
+
+&lt;span style="color:purple"&gt; `\(\sum_{x} E[Y^a=1 | X=x]P(x)\)` &lt;/span&gt; `\(-\)` &lt;span style="color:blue"&gt; `\(\sum_{x} E[Y^a=0 | X=x]P(x)\)` &lt;/span&gt;
+  
+  
+---
+class: middle
+#### Example: COVID-19 vaccine effectiveness in the UK 
+**Let's play with the numbers  - Standardization**
+
+.pull-left-narrow[
+**Outcomes among people under 50 years**
+
+```
+##              Outcome+    Outcome-      Total                 Inc risk *
+## Exposure+         453       84954      85407        0.53 (0.48 to 0.58)
+## Exposure-        2416      246387     248803        0.97 (0.93 to 1.01)
+## Total            2869      331341     334210        0.86 (0.83 to 0.89)
+```
+]
+.pull-right-narrow[
+**Outcomes among people `\(\geq\)` 50 years**
+
+```
+##              Outcome+    Outcome-      Total                 Inc risk *
+## Exposure+        1908       70083      71991        2.65 (2.53 to 2.77)
+## Exposure-         664        7887       8551        7.77 (7.21 to 8.35)
+## Total            2572       77970      80542        3.19 (3.07 to 3.32)
+```
+]
+
+---
+#### Example: COVID-19 vaccine effectiveness in the UK 
+**Let's play with the numbers (4) - Standardization**
+
+To compute the PO using observed data, we need the consistency assumption
+
+`\(RD =\)` &lt;span style="color:purple"&gt; `\(\sum_{x} E[Y |A=1, X=x]P(x)\)` &lt;/span&gt; `\(-\)` &lt;span style="color:blue"&gt; `\(\sum_{x} E[Y |A=0, X=x]Pr(x)\)` &lt;/span&gt;
+
+--
+
+&lt;span style="color:purple"&gt; Standardized risk in the vaccinated : &lt;/span&gt;
+`\((453/85,407 × 334,210/414,752 +  1,908/71,991 × 80,542/414,752)≈ 0.94\%\)` 
+
+`\(R_{vax}=\)` 0.94
+
+&lt;span style="color:blue"&gt; Standardized risk in the unvaccinated : &lt;/span&gt;
+`\((2,416/248,803 × 334,210/414,752 +  664/8,551 × 80,542/414,752)≈ 2.29\%\)`
+
+`\(R_{unvax}=\)` 2.29
+
+--
+
+**Standardized RD = -1.35 **
+  from (` 0.94% − 2.29% = −1.35%`) `\(\neq 0.3\)` in the crude estimates.
+
+**Standardized RR = 0.41 **   from (` 0.0094 / 0.0229`) `\(\neq 1.25\)` in the crude estimates.
+
+---
+class: middle
+### Example: [COVID-19 vaccine effectiveness in the UK](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1025358/Vaccine-surveillance-report-week-41.pdf) 
+UK Health Security Agency "COVID-19 vaccine surveillance report", Week 41
+
+.pull-left[
+&lt;img src="images/L6ratesUK.png" width="90%" /&gt;
+]
+
+.pull-right[
+&lt;img src="images/L6casesUK.png" width="90%" /&gt;
+]
+
+Cases presenting to emergency care (within 28 days of a positive test) resulting in overnight inpatient admission.[here](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1025358/Vaccine-surveillance-report-week-41.pdf).
+
+
+---
+class: middle
+## What about the Mantel-Haenzel Methods?
+- _Cochran-Mantel-Haenzel_ methods are useful for associations, when only few covariates are involved in the calculation.
+- Takes the effect in each strata of `\(L\)` or `\(Z\)` (our third variable), 
+- Combines these measures across `\(L\)` using calculated weights `\(^1\)`, for example example:
+
+$$ RD_{M-H} = \left(\frac{\sum_l (RD_l w_l)} {\sum_l w_l}\right) = \left(\frac{RD_0 w_0 + RD_1 w_1}{ w_0 + w_1}\right)$$
+
+- &lt;span style="color:blue"&gt; Are expected to work in closed cohorts and **.red[assumes homogeneity across strata!!]** &lt;/span&gt;
+
+  - Limited use in a set of covariates `\(L\)` and in presence of Effect measure modification and or interaction.
+  
+`\(^1\)` There are specific formulas for RD,  RR and ORs as well
+
+
+---
+
+class: middle
+### Standardized measures of association and effect
+
+- No assumption of homogeneity, "agnostic of the distribution",
+Model-based direct standardization ** `\(^1\)`** are used when `\(L (X, E, A)\)` consists of a large vectors of covariates.
+
+
+Involves two steps: 
+* Fitting a regression model for the outcome given exposure and covariates
+
+* Averaging the exposure effect over the covariate distribution of the standard population.
+
+** `\(^1\)` ** More on "advanced" techniques to address confounding empirically after we deal with regressions.
+
+
+---
+
+class: middle
+## Standardized Morbidity Ratio (SMR) 
+- A generalization to standardization when the standard population is the exposed sub-population.
+- In this case, the standardized rate ratio
+becomes:
+
+`$$I_s = \left(\frac{\sum_{k=1}^K T_k I_k}{\sum_{k=1}^K T_k I_k^* }\right) =  \left(\frac{\sum_{k=1}^K A_k}{\sum_{k=1}^K T_k I_k^*}\right)$$`
+
+
+**&lt;span style="color:purple"&gt; [Numerator] &lt;/span&gt;** cases occurring in exposed (**Observed**)
+
+**&lt;span style="color:blue"&gt;[Denominator] &lt;/span&gt;** cases **expected** to occur in absence of exposure if exposure doesn’t affect person time at risk
+
+(ME3, pg. 68-69)
+
+
+---
+
+class: middle
+### How to adjust for confounding
+Standardization and Inverse Probability (IP) weighting are not the only methods.
+
+`$$IPW_z = \left(\frac{1}{Pr(A=a|L=z)}\right)$$`
+
+Often using regression models, **assuming the model specification is correct!** 😬
+
+--
+
+**&lt;span style="color:purple"&gt; IPW removes the arrow from `\(L \to A\)`: &lt;/span&gt;**
+
+&lt;img src="L8_EPIB704_Confounding_II_25_files/figure-html/unnamed-chunk-53-1.png" width="35%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: middle
+## How to adjust for confounding
+
+Two categories of methods for confounding adjustment:
+
+**&lt;span style="color:blue"&gt; 1) G-methods (including G-formula, IP weighting, and G-estimation).&lt;/span&gt;** These exploit conditional exchangeability in subsets defined by L to estimate the causal effect of A on Y in the entire population or in any subset of the population.
+
+  - Under the assumption of conditional exchangeability given `\(L\)`, g-methods simulate `\(A-Y\)` associations in the population if backdoor paths involving variables `\(L\)` did not exist; simulated `\(A-Y\)` associations can then be attributed to the effect of `\(A\)` on `\(Y\)`.
+  
+  - IP weighting achieves this by creating a pseudo-population in which `\(A\)` is independent of measured confounders `\(L\)`, by “deleting” the arrow from `\(L \to A\)`.
+
+
+---
+class: middle
+# How to adjust for confounding
+
+
+**&lt;span style="color:blue"&gt; 2) Stratification-based methods (including Stratification, Restriction, Matching). &lt;/span&gt;**
+
+Methods that exploit conditional exchangeability in subsets defined by L to estimate the association between A and Y in those subsets only.
+
+Stratification-based methods estimate the association between A and Y in one or more subsets of the population in which the treated and the untreated are assumed to be exchangeable.
+
+ - Hence the `\(A \to Y\)` association in each subset is entirely attributed to the effect of `\(A\)` on `\(Y\)` . 
+ 
+ - Stratification/restriction do not delete the arrow from `\(L \to A\)`, but instead calculate the association within strata of `\(L\)`, since within each level of `\(L\)`, there is no `\(L \to A\)` association to cause confounding.
+
+---
+class: middle
+## How to adjust for confounding
+
+All these methods require conditional exchangeability given the measured covariates `\(L\)` to identify the effect of treatment `\(A\)` on outcome `\(Y\)`. 
+  - When interested in the effect in the entire population, conditional exchangeability is required in all strata defined by `\(L\)`; 
+  
+  - When interested in the effect in a subset of the population, conditional exchangeability is required in that subset only.
+
+- Achieving conditional exchangeability may be an unrealistic goal in many observational studies but expert knowledge can be used to get as close as possible to that goal.
+
+- At the very least, investigators should generally avoid adjustment for variables affected by either the treatment or the outcome.
+
+---
+class: middle
+## How to adjust for confounding
+
+Thoughtful and knowledgeable investigators could believe that various causal structures, possibly leading to different conclusions regarding confounding, are equally plausible. 
+  - DAGs simply allow us to have that discussion.
+
+- Existence of common causes of treatment and outcome does not depend on the adjustment method (although it does depend on the target population).
+- Adjustment for measured confounding will generally imply a change in the estimate, but not necessarily the other way around.
+- Changes in estimates may occur for reasons other than confounding, 
+  - **including selection bias when adjusting for non-confounders and the use of non-collapsible effect measures.**
+  
+**H &amp; R write:** 
+&gt; _"Attempts to define confounding based on change in estimates have been long abandoned because of these problems.” This is overstated. When using a DAG and collapsible measures, the method is a reasonable and practical strategy._"
+
+
+---
+class: middle
+**A note on stratification and non-collapsibility**
+
+Comparing crude to adjusted estimates is reliable for RR and RD, but not for OR unless:
+ a) rare outcome or b) OR ≈ RR due to design (e.g. case-cohort).
+ 
+**Recall the case of `\(C \to E \to Y\)`**
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Measure&lt;/div&gt;&lt;/th&gt;
+&lt;th style="padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"&gt;&lt;div style="border-bottom: 1px solid #00000020; padding-bottom: 5px; "&gt;Estimate 95%CIs&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measure &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Est. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; LB &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; UB &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.91 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.36 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.70 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.75 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.14 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.69 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc risk ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.09 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.12 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 12.97 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.83 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10.09 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Inc odds ratio (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.34 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 37.15 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 19.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 55.30 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (M-H) * &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 31.20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6.71 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 69.12 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Attrib inc risk (crude:M-H) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.19 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+### A note on stratification and non-collapsibility
+-  We can say a measure of the association between A and Y is collapsible across L if the adjusted association, `\(RR_{AY}|L\)`, is equal to the crude association, `\(RR_{AY}\)`, where L is not a confounder
+   — This means that a crude measure of association will not change if we adjust for a variable that is not a confounder `\((L)\)`
+
+-  The odds (OR) and incidence density ratios (IDR) fail this property and are considered non collapsible effect measures
+
+-  For the OR, the crude measure may be closer to the null than the pooled/adjusted OR, particularly with a common outcome
+
+-  Therefore, for some measures, our simple crude vs. adjusted comparison **may suggest confounding when there really isn’t!**
+
+
+---
+class: middle
+### Structural confounding, violation of Positivity
+High correlations between confounder and exposure: violation of the “positivity assumption”.
+When this is “structural” (in the sense of a high correlation that exists because of causal relations in the source population), Oakes calls this “structural confounding”.
+&lt;img src="images/L6strconfounding.png" width="35%" /&gt;
+
+    Oakes JM. Advancing neighbourhood-effects research selection, inferential support,
+    and structural confounding. Int J Epidemiol. 2006 Jun;35(3):643-7.
+    Messer et al. Effects of Socioeconomic and Racial Residential Segregation on Preterm Birth: 
+    A Cautionary Tale of Structural Confounding AJE 2010; Mar 15;171(6):664-73.
+
+---
+class: middle
+### Structural confounding, violation of Positivity
+
+.pull-left[
+**Data Generation Process**
+
+``` r
+set.seed(704); n=500
+ses1 &lt;- sample(1:12, n, replace = TRUE); 
+ses1[ses1&gt;=10]&lt;-0
+ses2 &lt;- cut(ses1, breaks = c(0, 5, 10, 15), 
+        labels = c("0", "1", "2"))
+ses2[is.na(ses2 )]&lt;- "2"
+exposure&lt;- ifelse(ses2=="1", 
+    rbinom(n,1,0.45), 
+    ifelse(ses2=="0", rbinom(n,1,0.5),
+    ifelse(ses2=="2", rbinom(n,1,0.0001),
+    rbinom(n,1,0.2))))
+outcome&lt;- ifelse(ses2=="0", rbinom(n,1,0.75), 
+    ifelse(ses2=="1", rbinom(n,1,0.25),
+    rbinom(n,1,0.25)))
+data.strconf &lt;- data.frame(outcome, exposure, ses2)
+table(exposure, ses2)
+```
+
+```
+##         ses2
+## exposure   0   1   2
+##        0 101 107 123
+##        1 104  65   0
+```
+
+
+``` r
+strconf2 &lt;- glm(outcome ~ exposure, 
+           data= data.strconf, 
+           family = "binomial") 
+strconf2a &lt;- glm(outcome ~ exposure + 
+            as.factor(ses2), data= data.strconf, family = "binomial")     
+```
+]
+--
+
+.pull-right[
+**Regression Results**
+**Crude/Unadjusted**
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; exp(Est.) &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 2.5% &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 97.5% &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; z val. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.663 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.532 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.827 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3.657 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; exposure &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.677 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.154 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.437 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.713 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.007 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+**Adjusted**
+&lt;table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; exp(Est.) &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 2.5% &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; 97.5% &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; z val. &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.461 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.676 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.612 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.598 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; exposure &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.011 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.634 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.613 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.046 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.963 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; as.factor(ses2)1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.119 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.074 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.190 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -8.860 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; as.factor(ses2)2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.168 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.097 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.290 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6.399 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+---
+class: middle
+##Which way will the confounding go?
+&lt;img src="images/L6_dag_conf2.png" width="50%" /&gt;
+
+
+`Vander Stoep A, et al. A didactic device for teaching epidemiology students how to anticipate the effect of a third factor on an exposure-outcome relation. AJE 1999; 15;150(2):221.` 
+
+---
+class: middle
+##Which way will the confounding go?
+
+&lt;img src="images/L6_dag_conf1.png" width="50%" /&gt;
+ 
+ 
+**These schematics are just illustrations, it depends on the strength (degree of correlation) of the covariates!!, &lt;span style="color:blue"&gt; simulations works better than "blanket" type of statements &lt;/span&gt;**
+ 
+---
+
+## Positive, negative, and “qualitative” confounding
+
+- Confounding may lead to an overestimation or an underestimation of the true magnitude of an effect.
+
+- **&lt;span style="color:blue"&gt; Positive confounding:&lt;/span&gt;** the magnitude of the unadjusted vis-à- vis the adjusted association is exaggerated.
+
+- **&lt;span style="color:blue"&gt; Negative confounding:&lt;/span&gt;** the magnitude of the unadjusted vis-à- vis the adjusted association is underestimated.
+
+- **&lt;span style="color:blue"&gt; Qualitative confounding:&lt;/span&gt;** An extreme case when confounding results in an inversion of the direction of the association.
+
+---
+class: middle
+## Magnitude of confounding
+
+- The magnitude of confounding will depend on the strength of the confounder-exposure AND confounder-outcome associations.
+
+- Conversely, if there is no association between the confounder - exposure OR no association between the confounder-outcome then no confounding of the main effect could be present.
+
+- The strength of the confounder-exposure and confounder- outcome associations bounds the confounding effect
+  - e.g., if RRcrude = 2 and the confounder-outcome relation is 2 (a doubling of risk), then the confounder would have to be perfectly correlated with the exposure in order to fully explain the main effect of RR=2
+
+---
+class: middle
+**How strong the the _unmeasured confounding_ should be to explain away my estimated association?**
+
+**&lt;span style="color:blue"&gt; E values:&lt;/span&gt;** respond to this question for ratio ** `\(^1\)`**  measures, how?
+
+$$E-value = RR + \sqrt{RR \times (RR-1)} $$
+--
+- E-value is the minimum value of the association between `\(U \to A\)` and `\(U \to Y\)` that will be capable of attenuating the observed association towards the null.
+
+- Example: RR=1.33; `\(1.33 + \sqrt{1.33 \times (1.33-1)} =\)` 1.99 then, if there was an `\(U\)`, it should:
+
+  1) double the risk among unexposed and/or exposed ( `\(RR_{UY} =2\)` ), AND
+  
+  2) be twice as prevalent among exposed than among unexposed ( `\(RR_{AU} =2\)` )
+  
+To completely explain away the observed association, but a weaker confounder (given the E-value), say 1.5 or 1.3, would not.
+
+** `\(^1\)`**  &lt;span style="color:blue"&gt; E values are debatable for some but still a straightforward calculation and useful information to have. &lt;/span&gt; [Versions of the E-value exists for ORs and HRs. E-value calculator.](https://www.evalue-calculator.com/)
+
+---
+
+###Statistical significance?
+
+##In general, NO! 
+- But if you MUST use p-values, set the criteria on the high side
+  (e.g. p &lt; 0.30). This way you adjust for some non-confounders, but you don’t miss many true confounders.
+ 
+`Mickey RM, Greenland S. The impact of confounder selection criteria on effect estimation. AJE 1989;129(1):125-37.`
+
+- Residual confounding (unmeasured L’s (U1, U2, etc), categorization, measurement error, etc):
+ 
+`Kaufman JS, et al. Socioeconomic status and health in blacks and whites: the problem of residual confounding and the resiliency of race. Epidemiology 1997; 8(6):621-8.`
+`Ogburn EL, Vanderweele TJ. Bias attenuation results for nondifferentially mismeasured ordinal and coarsened confounders. Biometrika. 2013;100(1):241- 248. PMID: 24014285`
+
+---
+
+## Residual confounding
+Residual confounding occurs when adjustment does not completely remove the confounding effect of a given variable(s):
+
+**1) Misclassification of confounding variables**
+- (e.g., the variable is an imperfect proxy for the characteristic we want to adjust for)
+
+**2) Improper modeling of the confounding variable**
+- (e.g., if we are studying air pollution and lung cancer and want to control for smoking, we should measure smoking in a way that best predicts lung cancer—i.e., pack-years not ever-never)
+
+**3) Other important confounders are not included (also known as unmeasured confounding or omitted variable bias)**
+
+---
+class: middle
+
+## Validity and Bias:
+- The epidemiologist’s goal: the most **VALID and PRECISE** estimate possible of the causal effect of exposure on disease.
+
+- Error comes from sampling variability (lack of precision) and bias (lack of validity).
+&lt;img src="images/L6validity.png" width="50%" /&gt;
+ 
+---
+class: middle
+## Confounded `\(^1\)` ?
+
+&lt;img src="images/L6confounded.png" width="50%" /&gt;
+ 
+`\(^1\)` We all are!! We will have more on this and empirical examples after we deal with regressions.
+
+---
+class: middle
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "3:2",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "navigation": {
+    "scroll": false
+  }
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
