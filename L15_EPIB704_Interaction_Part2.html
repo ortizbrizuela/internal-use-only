@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Interaction and Effect Measure Modification - II</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mabel Carabali" />
+    <script src="libs/header-attrs-2.28/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Interaction and Effect Measure Modification - II
+]
+.author[
+### Mabel Carabali
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### (2022-10-01) Updated: 2024-10-29
+]
+
+---
+
+
+
+
+
+
+
+
+class:middle
+####&lt;span style="color:darkcyan"&gt;Incidence of and risk factors for nodding off at scientific sessions &lt;/span&gt;
+
+.pull-left[
+&lt;img src="images/F2.large.jpg" width="90%" style="display: block; margin: auto;" /&gt;
+Kenneth Rockwood, David B. Hogan, Christopher J. Patterson. CMAJ Dec 2004, 171 (12) 1443-1445; DOI: 10.1503/cmaj.1041570
+]
+--
+.pull-right[
+**Apply for 704 lectures** 😴 😬
+&lt;img src="images/T1.large.jpg" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+[Incidence of and risk factors for nodding off at scientific sessions]( https://doi.org/10.1503/cmaj.1041570)
+
+---
+class: middle
+### Key Messages
+1. Interaction term (the tool `X*M` or `X*E`)
+2. EMM or Interaction?
+ - Depends, One exposure or Two exposures of interest
+3. How to obtain them:
+   - EMM: Stratification and **correct interpretation** of joint vs individual effects by the _"interaction term"_
+   - Statistical Interaction measures: RERI (ICR), AP, SI
+   - !Be aware of "preventive" exposures
+4.  Additive vs Multiplicative
+   - Could obtain both, but additive measures provide meaningful PH information
+   - Sub additive (sub/less than multiplicative) or super additive (super/more than multiplicative)
+5. Interpretation? 
+   - Descriptive, statistical, causal (granted the assumptions are met)!
+   
+---
+class:middle
+
+## Notes on Interaction (statisitcal, causal)
+
+####From: [Hernan &amp; Robins book, What if?](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/)
+
+  and some **worked** examples.
+
+---
+class:middle 
+
+###Causal interaction 
+- Present when the combined effect of two factors on an outcome differs from their separate effects when no bias is present.
+- Unlike EMM, **both factors have to be causally related** to an outcome in order for causal interaction to be present.
+  - This distinction is important, especially if an intervention on the secondary factor is of interest.  
+ 
+- **Positive causal interaction:** the effect of two factors together is larger than the two factors considered separately.
+
+- **Negative causal interaction:** the joint effect is smaller than these effects considered separately.
+
+---
+class:middle
+###ASSESSMENT OF STATISTICAL INTERACTION
+
+If we think of a `second` variable of interest, that we aim at intervening, we think about *interaction* not EMM.
+
+- When that second variable or treatment of interest `E` is randomly assigned, then the concepts of interaction and effect modification coincide. 
+
+- The methods described to identify modification of the effect of `X by M` can now be applied to identify interaction of **`X` AND `E`** by simply replacing the effect modifier `M` by the (second) treatment **`E`**.
+
+
+---
+class:middle
+
+###H&amp;R What if? 5.2 Identifying interaction within the counterfactual framework
+Because interaction is concerned with the joint effect of two (or more) treatments `X` and **`E`**, identifying interaction requires exchangeability, positivity, consistency **for both treatments**.
+
+- If these assumptions hold, then we can rewrite the definition of interaction on the additive scale in terms of potential outcomes as:
+
+`$$Pr[Y^{x=1}=1|E=1] - Pr[Y^{x=0}=1|E=1] \neq Pr[Y^{x=1}=1|E=0] - Pr[Y^{x=0}=1|E=0]$$`
+--
+which is exactly the definition of modification of the effect of **`X` by `E`** on the additive scale. 
+
+Again, when treatment **`E`** is randomly assigned, then the concepts of interaction and EMM coincide. 
+
+---
+class:middle
+###H&amp;R What if? 5.2 Identifying interaction within the counterfactual framework
+Now suppose treatment **`E`** was not assigned by investigators.
+- To assess the presence of interaction between **`X`** and **`E`**, one still needs to compute the four marginal risks `\(Pr[Y^{x,e} = 1]\)`. 
+
+In the absence of marginal randomization, these risks can be computed for both treatments **`X`** and **`E`**, under the usual identifying assumptions, by standardization or IP weighting conditional on the measured covariates.
+
+--
+An equivalent way of conceptualizing this problem: 
+- Rather than viewing **`X`** and **`E`** as two distinct treatments with two possible levels (1 or 0) each 
+  - We can view **`XE`** as a combined treatment with four possible levels (11, 01, 10, 00). 
+
+---
+class:middle
+###H&amp;R What if? 5.2 Identifying interaction within the counterfactual framework
+Under **`XE`** as a combined treatment with four possible levels (11, 01, 10, 00), the identification of interaction between two treatments is not different from the identification of the causal effect of one treatment that we have discussed previously.
+
+- The same methods, under the same identifiability conditions, can be used. 
+
+- &lt;span style="color:darkmagenta"&gt;The only difference is that now there is a longer list of values that the treatment of interest can take, and therefore a greater number of counterfactual outcomes.&lt;/span&gt;
+
+
+---
+class:middle
+####H&amp;R What if? 5.2 Identifying interaction within the counterfactual framework
+Sometimes we may be willing to assume (conditional) exchangeability for treatment **`X`** but not for **`E`**, e.g., when estimating the causal effect of **`X`** in subgroups defined by **`E`** in a RCT.
+- In that case, we cannot generally assess the presence of interaction between **`X`** and **`E`**, but can still assess the presence of EMM by **`E`**. `\(^1\)` 
+ - Because one does not need any identifying assumptions involving **`E`** to compute the effect of **`X`** in each of the strata defined by **`E`**. 
+ 
+**Recall:** 
+&lt;img src="L15_EPIB704_Interaction_Part2_files/figure-html/unnamed-chunk-3-1.svg" width="40%" style="display: block; margin: auto;" /&gt;
+
+`\(^1\)` See extra note in appendices for this lecture.
+
+
+---
+class:middle
+###H&amp;R What if? 5.5 Sufficient cause interaction
+- Rothman (1976) described the concepts of synergism and antagonism within the sufficient-component cause framework.
+- The definition of interaction within the counterfactual framework **does not require any knowledge about those mechanisms**.
+  - Sufficient cause interaction is defined as the joint presence of treatments **`X` and `E`** in the same causal mechanism, that is, in the same sufficient cause. `\(^2\)`
+
+- Synergism between treatment `X` and treatment `E` when `X=1` and `E=1` are present in the `same sufficient cause`, 
+- Antagonism between treatment `X` and treatment `E` when `X=1` and `E=0` (or `X=0 and E=1`) are present in the same sufficient cause. 
+  - Alternatively, antagonism between `X` and `E` can be viewed as synergism between treatment `X` and no treatment `E` (or between no treatment `X` and treatment `E`). `\(^3\)`
+
+`\(^{2,3}\)` See extra notes on sufficient causes and synergism in appendices for this lecture.
+
+---
+class:middle
+###Interaction: Scales
+Interaction requires a **joint intervention**.
+- When the causal effect is measured on the risk difference scale, we say that there is interaction between `X` and `E` on the additive scale in the population if:
+
+`\(Pr[Y^{x=1,e=1} = 1] − Pr[Y^{x=0,e=0} = 1] \neq\)` 
+
+`\({Pr[Y^{x=1,e=0} = 1] − Pr[Y^{x=0,e=0} = 1]} + {Pr[Y^{x=0,e=1} = 1] − Pr[Y^{x=0,e=0} = 1]}\)`
+
+--
+
+This equality is another compact way to show that treatments `X` and `E` have equal status in the definition of interaction. 
+- If there is equality, there is no interaction between `X` and `E` on the additive scale, 
+- The interaction is super additive if the `\(\neq\)` symbol can be replaced by a ‘greater than’ (&gt;) symbol. 
+- The interaction is sub additive if the `\(\neq\)` symbol can be replaced by a ‘less than’ (&lt;) symbol.
+
+---
+class:middle
+###Interaction: Scales
+
+Analogously, one can define interaction on the multiplicative scale when the effect measure is the causal risk ratio, rather than the causal risk difference. 
+
+We say that there is interaction between `X` and `E` on the multiplicative scale if
+
+`\(= \left(\frac{Pr[Y^{x=1, e=1} = 1]}{Pr[Y^{x=0,e=0} = 1]}\right) \neq \left(\frac{Pr[Y^{x=1, e=0} = 1]}{Pr[Y^{x=0,e=0} = 1]}\right) \times \left(\frac{Pr[Y^{x=0, e=1} = 1]}{Pr[Y^{x=0,e=0} = 1]}\right)\)`
+
+- The interaction is super multiplicative if the `\(\neq\)` symbol can be replaced by a ‘greater than’ (&gt;) symbol. 
+- The interaction is sub multiplicative if the  `\(\neq\)` symbol can be replaced by a ‘less than’ (&lt;) symbol.
+
+---
+class:middle
+###Forms of statistical/causal interaction
+Statistical interaction can take either quantitative or qualitative form. 
+- The quantitative form (synonym: “non-crossover”) is the most common and is present when an effect of one factor has a different magnitude, but in the same direction, across strata of another factor. 
+
+- **Additive Interaction:**  Positive (super additive), Negative (sub additive)
+
+- **Multiplicative Interaction:** Super multiplicative (Positive), Negative (sub multiplicative)
+
+
+---
+class:middle
+###Additive Interaction: 
+&lt;img src="images/l13_inter2.png" width="110%" style="display: block; margin: auto;" /&gt;
+
+From: _HEART-KIDNEY INTERACTIONS · M. Brankovic_
+
+---
+class:middle
+###Additive Interaction: 
+
+
+
+**Recall?**
+.pull-left[
+
+``` r
+qplot(age, pred, data = nd, 
+      color = factor(lwt), geom = "line") + ylim(2000, 4000)
+```
+
+&lt;img src="L15_EPIB704_Interaction_Part2_files/figure-html/unnamed-chunk-6-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+
+``` r
+qplot(lwt, pred, data = nd, 
+      color = factor(age), geom = "line") + ylim(2000, 4000)
+```
+
+&lt;img src="L15_EPIB704_Interaction_Part2_files/figure-html/unnamed-chunk-7-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+---
+class:middle
+###Multiplicative Interaction: 
+&lt;img src="images/l13_inter1.png" width="110%" style="display: block; margin: auto;" /&gt;
+
+From: _HEART-KIDNEY INTERACTIONS · M. Brankovic_
+---
+class:middle
+###Multiplicative &amp; Additive Interaction: 
+&lt;img src="images/l13_inter3.png" width="90%" style="display: block; margin: auto;" /&gt;
+From: _HEART-KIDNEY INTERACTIONS · M. Brankovic_
+
+---
+class:middle
+###Multiplicative &amp; Additive Interaction: 
+**Recall?**
+
+``` r
+l13.mod4a &lt;- glm(low ~ smoke1 + nonwhite1 +smoke1:nonwhite1, 
+                 data = birthwt, family = binomial)
+interact_plot(l13.mod4a, pred = nonwhite1, modx = smoke1,  plot.points = TRUE)
+```
+
+&lt;img src="L15_EPIB704_Interaction_Part2_files/figure-html/unnamed-chunk-10-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+###Multiplicative &amp; Additive Interaction: 
+&lt;img src="images/l13_inter4.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+From: _HEART-KIDNEY INTERACTIONS · M. Brankovic_
+
+---
+class:middle
+###Assessment of Interaction
+
+1. Stratification (i.e., stratified or subgroup analysis) in which the effect of one factor is assessed within strata of another factor separately, 
+2. Interaction modeling in which both factors are included into a statistical model together with their cross-product term `\((V_1+ V_2+ V_1*V_2)\)` or _four possible levels (11, 01, 10, 00)_.
+
+--
+- &lt;span style="color:blue"&gt;Statistical interaction is scale-dependent&lt;/span&gt;, observed only if there is a departure from an underlying measurement scale on which a statistical model estimates effects. 
+- Different statistical models estimate effects on different measurement scales. 
+- Additive and multiplicative scales do not always provide the same conclusion, whether a statistical interaction is present or in which direction it operates.
+
+
+---
+class:middle
+###Assessment of Interaction
+.pull-left[
+- `\(p_{00}\)` “jointly unexposed”, i.e., exposed to neither X nor E. 
+- `\(p_{01}\)` are those exposed to E but not X.
+- `\(p_{10}\)` are those exposed to X but not E.
+- `\(p_{11}\)` “jointly exposed”, i.e., exposed to both X and E.
+
+
+|           |   E=0  |  E=1   |
+|:---------:|:------:|--------|
+| **X = 0** | Jointly unexposed|  Exposed to E only|
+| **X = 1** | Exposed to A only| Jointly exposed|
+
+]
+
+--
+
+.pull-right[
+
+**Recall?**
+
+
+|**ln(odds)** |M=0      | M=1         |
+|:------------|:--------|:------------|
+|X=0 | `\(\beta_0\)` | `\(\beta_0 + \beta_2\)` |
+|X=1 | `\(\beta_0 + \beta_1\)` | `\(\beta_0 + \beta_1 + \beta_2 + \beta_3\)` |
+|**ln(OR)** | M=0| M=1|
+|X=0 | | |
+|X=1 | `\((\beta_0 + \beta_1 )\)` - `\(\beta_0\)` = `\(\beta_1\)`  | `\((\beta_0 + \beta_1 + \beta_2 + \beta_3)\)` - `\((\beta_0 + \beta_2)\)` = `\((\beta_1 + \beta_3 )\)`  |
+|**OR** |  M=0| M=1|
+|X=0 | | |
+|X=1 | `\(e^{\beta_1}\)` | `\(e^{(\beta_1 + \beta_3 )}\)` | 
+
+
+]
+
+---
+class:middle
+###Additive interaction measures
+A departure on an additive scale would mean that the combined effect of two factors is larger or smaller  than the sum of their individual effects.
+
+- **Example** from [A Tutorial on Interaction by Tyler J. VanderWeele and Mirjam J. Knol](https://doi.org/10.1515/em-2013-0005)
+
+Risk of lung cancer by smoking and asbestos status
+
+|              | No asbestos	    | Asbestos   |
+|:-------------|-----------------:|-----------:|
+|**Non-smoker**	   | 0.0011	          |0.0067 |
+|**Smoker**	       | 0.0095	          |0.0450 |
+
+**D** = binary outcome; **X** = binary exposure 1; **E** = binary exposure 2; `\(P^{xe} = Pr(Y=1|X=x, E=e)\)`
+
+`\((p_{11} – p_{00}) – [(p_{10} – p_{00}) + (p_{01} – p_{00})]\)`
+
+(joint effect) – [(effect of X) + (effect of E)], equivalently= `\((p_{11} – p_{10} – p_{01} + p_{00})\)`
+
+
+---
+class:middle
+###Additive interaction measures
+
+- If this quantity is &gt; 0, then interaction is above exact additivity (super-additive).
+- If this quantity is = 0, there is no interaction on the additive scale (exact additivity of effects)
+- If this quantity is &lt; 0, then interaction is below exact additivity (sub-additive). For the data in the table:
+
+`\((p11 – p10 – p01 + p00) = (0.0450 – 0.0095 – 0.00670 + 0.0011) = 0.0299\)`
+
+--
+
+- The effect of smoking and asbestos is more than would be expected if the risks of these two exposures simply added together &lt;span style="color:blue"&gt;"super-additive"&lt;/span&gt;.
+- There are an additional 3 cases per hundred that occur because of this interaction.
+
+---
+class:middle
+###Multiplicative interaction measures
+A departure on a multiplicative scale would mean that the combined effect of two factors is larger or smaller  than the product of their individual effects.
+- Thus, the multiplicative scale corresponds to the ratios of effects rather than their difference as the additive scale does.
+
+.pull-left[
+
+`\(RR_{10} = (p_{10} / p_{00})\)`
+
+`\(RR_{01} = (p_{01} / p_{00})\)` 
+
+`\(RR_{11} = (p_{11} / p_{00})\)`
+
+]
+
+.pull-right[
+
+**Interaction on the multiplicative scale for ratios**
+
+`\(\left(\frac{RR_{11}}{RR_{10}RR_{01}}\right) = \left(\frac{p_{11}p_{00}}{p_{10}p_{01}}\right)\)`
+
+]
+
+---
+class:middle
+###Multiplicative interaction measures
+This measures the extent to which, on the risk ratio scale, the effect of both exposures together exceeds the product of the effects of the two exposures considered separately.
+- If this quantity is &gt; 1, then interaction is above exact multiplicativity (super- multiplicative).
+- If this quantity is = 1, there is no interaction on the multiplicative scale (exact multiplicativity of effects)
+- If this quantity is &lt; 1, then interaction is below exact multiplicativity (sub-multiplicative)
+
+`$$\left(\frac{0.0450/0.0011}{0.0095/0.0011 \times 0.00670/0.0011}\right) = 0.78$$`
+--
+- The joint effects are &lt;span style="color:blue"&gt; sub-multiplicative&lt;/span&gt; interaction (i.e. less than would be expected by exact multiplicativity).
+
+Illustration that a measurement scale influences the presents and the direction of a statistical interaction.
+
+---
+class:middle
+###Additive versus Multiplicative scale
+
+|      | E=0  | E=1   |
+|:-----|-----:|------:|
+|X=0   | 0.02 |0.05 |
+|X=1	 | 0.07 |0.10 |
+
+
+In this case there is no additive interaction since:
+
+ `\((p11 – p10 –p01 + p00) = (0.10 – 0.07 – 0.05 + 0.02) = 0\)`
+
+- But sub (negative) multiplicative interaction:
+ `\(\left(\frac{0.10/0.02}{0.07/0.02\times 0.05/0.02}\right)\)` = 0.57
+
+
+--
+
+Joint effects can fall anywhere on the continuum from:
+
+ `\(- \infty --------- additivity ------- multiplicativity ------- +\infty\)`
+ 
+---
+class:middle
+###The Interaction Continuum for Two Causative Exposures
+
+&lt;img src="images/L13_tab1continuum.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+[VanderWeele, Tyler J. The Interaction Continuum. Epidemiology: September 2019 - Volume 30 - Issue 5 - p 648-658](https://journals.lww.com/epidem/Fulltext/2019/09000/The_Interaction_Continuum.7.aspx) 
+
+---
+class:middle
+###The Interaction Continuum for Two Causative Exposures
+
+If both of the two exposures have an effect on the outcome, then the absence of interaction on the additive scale implies the presence of multiplicative interaction.
+
+ `$$- \infty -------- additivity ------- multiplicativity ------- +\infty$$`
+
+--
+Likewise, the &lt;span style="color:darkmagenta"&gt;absence of multiplicative interaction&lt;/span&gt; implies the &lt;span style="color:blue"&gt;presence of additive interaction&lt;/span&gt;.
+
+So if both of the exposures have an effect on the outcome, then there must be interaction on some scale.
+
+---
+class:middle
+###Relative Excess Risk due to Interaction (RERI)
+The RERI (synonym: interaction contrast ratio [ICR]) is the difference between joint relative effect of two factors and their relative effects considered separately. Could use RR, OR and HR
+
+- “relative excess risk due to interaction” `\((RERI) = RR_{11}– RR_{10} – RR_{01} + 1\)`
+- RERI is an **additive interaction measure**, but it operates with ratios instead of absolute risks. 
+
+--
+Cannot in general use RERI to make statements about the relative magnitude of the underlying additive interaction for risks unless you also know `\(p_{00}\)`.
+
+- The RERI indicates a super-additive interaction if RERI &gt; 0 and sub-additive if RERI &lt; 0.
+- Interpretation of RERI may be less straightforward if additional covariates are included in the model because it varies across the levels defined by additional covariates.
+
+---
+class:middle
+###Relative Excess Risk due to Interaction (RERI)
+`\(RERI = RR_{11}– RR_{10} – RR_{01} + 1\)`
+
+RERI = (0.0450/0.0011) - (0.0095/0.0011) - (0.00670/0.0011) + 1 = RERI = 27.18
+
+Only the direction, rather than the magnitude, of `\(RERI_{RR}\)` is needed to draw conclusions about the public health relevance of interaction. 
+
+- RERI &gt; 0 if and only if (p11–p10 –p01+p00) &gt; 0
+- RERI=0 if and only if (p11 – p10 –p01 + p00) = 0
+- RERI&lt; 0 if and only if (p11 – p10 –p01 + p00) &lt; 0
+
+---
+class:middle
+###Attributable proportion due to interaction (AP)
+The attributable proportion for the outcome (AP), indicates the proportion of the outcome in double exposed group that is due to the interaction itself. 
+- It is derived from RERI, and varies if additional covariates are included into the model. 
+- AP = RERI / RR11, if AP&gt;0 =More than additivity; if &lt;0 less than additivity
+- AP = ((0.0450/0.0011) - (0.0095/0.0011) - (0.00670/0.0011) +1)/(0.0450/0.0011);
+- AP = 0.66
+
+AP &gt; 0 if and only if RERI &gt; 0, and AP &lt; 0 if and only if RERI &lt; 0.
+
+--
+- **Variation** The proportion of the joint effects of both exposures attributable to interaction:
+- `\(AP^*\)` = RERI / (RR11 –1); 
+- `\(AP^*\)` = ((0.0450/0.0011) - (0.0095/0.0011) - (0.00670/0.0011) +1)/((0.0450/0.0011) -1) 
+- `\(AP^*\)` = 0.68
+  
+---
+class:middle
+###Synergy index (S-index )
+Reflects the extent to which the joint relative effect of two factors together exceed 1 (one). 
+
+`\(S = \left(\frac{RR_{11}-1}{(RR_{10}-1) + (RR_{01}-1)}\right)\)`; &gt;1 more than additivity, &lt;1 less than additivity
+- `\(S\)` = ((0.0450/0.0011) -1)/(((0.0095/0.0011)-1)+((0.00670/0.0011)-1))
+- `\(S\)` = 3.14
+- Whether the joint effect is greater than the sum of relative effects of two factors separately, exceed 1 (one). `\(S=1\)` means no interaction or exactly additivity.
+
+--
+
+- The S-index is independent of covariates adjustment.
+- Interpretation may be difficult if one of the factors are preventive rather than causative, i.e., when denominator of S-index is negative. 
+- (This can’t happen with RERI because the denominator of RERI is never negative.)
+
+&lt;span style="color:darkmagenta"&gt; Assuming the denominator of `\(S\)` is positive, then if `\(S &gt; 1, RERI &gt; 0\)` If `\(S &lt; 1, RERI &lt; 0\)` &lt;/span&gt;
+
+
+
+---
+class:middle
+## Multiple testing
+Multiple testing is common problem when testing statistical interactions because different data, hypotheses, and analyses are assessed simultaneously. 
+- Adjustment for multiple testing are required to reduce the probability of the false positive results, i.e., type 1 error. 
+- A multiple testing represents another reason why forming conclusions solely based on the p-value of an interaction test is unjustified.
+
+
+---
+class:middle
+##Sample size calculation
+
+Always consider the sample size when planning to analyze statistical interaction, and especially if an important subgroup analysis is expected to be performed.
+
+**Recall**
+- You need 4 times the sample size to estimate an interaction that is the same size as the main effect
+- You need 16 times the sample size to estimate an interaction that is half the size as the main effect
+
+---
+class: middle
+**Constructing a Regression Equation .red[Including interactions]**
+From [The Effect](https://theeffectbook.net/ch-StatisticalAdjustment.html#turning-a-causal-diagram-into-a-regression)
+&lt;img src="images/L9Flowchart.png" width="40%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+### How to investigate heterogeneity, EMM or Interaction*: (1)
+1. Research question: What's the relationship (effect) of interest (often `\(Y \to X\)`) ?
+ - Overall effect of X, changing by other covariates (M = modifier)?
+ - Overall effect of two potentially intervenable exposures X and _2nd exposure_ E?
+
+2. Do you think the relationship varies by levels of a 3rd variable ("M"), or _2nd exposure ("E")_?
+ - .red[NO:] Stop, and continue with your "pooled" model.
+ - .blue[YES:] Consider how far do you need/want to go: a) description, b) estimation of interaction effect
+
+--
+- **.purple[Description only:]** Stratification alone may suffice
+- **.purple[Description with estimation of joint effect:]** Stratification and regression with a product term (X*M) `\(\to\)` EMM.
+  - .red[Requires correct interpretation of the product term (a.k.a. interaction term, interaction coefficient)].
+  
+.red[*For causal interaction, recall the need for the assumptions.]
+
+---
+class: middle 
+**.purple[Description only:]** Low birthweight as a function of smoking and modification by race/ethnicity example
+
+**Pooled, "adjusted" regression**
+
+``` r
+l13.lbwsmkpooled&lt;- glm(low ~ smoke +nonwhite , family = binomial(link = "logit"), data = birthwt)
+round(cbind("OR" = exp(coef(l13.lbwsmkpooled)), exp(confint(l13.lbwsmkpooled))),2)
+```
+
+```
+##                    OR 2.5 % 97.5 %
+## (Intercept)      0.16  0.08   0.30
+## smokesmoker      3.04  1.51   6.35
+## nonwhitenonwhite 3.01  1.50   6.30
+```
+
+--
+
+.pull-left[
+**White strata**
+
+``` r
+l13.lbwwhite&lt;- glm(low ~ smoke, family = binomial(link = "logit"), 
+                   data = subset(birthwt, nonwhite=="white"))
+round(cbind("OR" = exp(coef(l13.lbwwhite)), exp(confint(l13.lbwwhite))), 2)
+```
+
+```
+##               OR 2.5 % 97.5 %
+## (Intercept) 0.10  0.03   0.25
+## smokesmoker 5.76  1.94  21.37
+```
+]
+
+--
+
+.pull-right[
+**Non-white strata**
+
+``` r
+l13.lbwnonwhite&lt;- glm(low ~ smoke, family = binomial(link = "logit"), 
+                      data = subset(birthwt, nonwhite=="nonwhite"))
+round(cbind("OR" = exp(coef(l13.lbwnonwhite)), exp(confint(l13.lbwnonwhite))),2)
+```
+
+```
+##               OR 2.5 % 97.5 %
+## (Intercept) 0.54  0.33   0.88
+## smokesmoker 1.84  0.70   4.90
+```
+]
+
+---
+class: middle 
+**.purple[Description with estimation of joint effect:]** Low birthweight as a function of smoking and modification by race/ethnicity example
+
+
+``` r
+l13.mod4 &lt;- glm(low ~ smoke * nonwhite, data = birthwt, family = binomial)
+round(cbind("OR" = exp(coef(l13.mod4)), exp(confint(l13.mod4))),2)
+```
+
+```
+##                                OR 2.5 % 97.5 %
+## (Intercept)                  0.10  0.03   0.25
+## smokesmoker                  5.76  1.94  21.37
+## nonwhitenonwhite             5.43  1.91  19.63
+## smokesmoker:nonwhitenonwhite 0.32  0.06   1.39
+```
+--
+
+**Joint effect for the exposure to Smoking and Non-white**
+
+``` r
+round(exp(coef(l13.mod4)["smokesmoker"] + coef(l13.mod4)["nonwhitenonwhite"] +
+            coef(l13.mod4)["smokesmoker:nonwhitenonwhite"]), 2)
+```
+
+```
+## smokesmoker 
+##          10
+```
+
+``` r
+round(5.76*5.43*0.32, 2)
+```
+
+```
+## [1] 10.01
+```
+
+---
+class: middle 
+**.purple[Description with estimation of joint effect:]** Low birthweight as a function of smoking and modification by race/ethnicity example
+
+```
+##                                OR 2.5 % 97.5 %
+## (Intercept)                  0.10  0.03   0.25
+## smokesmoker                  5.76  1.94  21.37
+## nonwhitenonwhite             5.43  1.91  19.63
+## smokesmoker:nonwhitenonwhite 0.32  0.06   1.39
+```
+--
+**Joint effect for the exposure to Smoking and Non-white + Stratification Results**
+
+``` r
+table_objectlbw = interactionR(l13.mod4, exposure_names = c("smokesmoker", "nonwhitenonwhite"), 
+*                              ci.type = "mover", ci.level = 0.95, em = F, recode = F)
+kable(table_objectlbw$dframe[4:9,], digits = 2) #select stratified analysis
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Measures &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Estimates &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ll &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ul &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OR11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.66 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 37.60 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OR(nonwhitenonwhite on outcome [smokesmoker==0] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.43 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16.95 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OR(nonwhitenonwhite on outcome [smokesmoker==1] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.63 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.29 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OR(smokesmoker on outcome [nonwhitenonwhite==0] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.78 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18.60 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OR(smokesmoker on outcome [nonwhitenonwhite==1] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.84 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.70 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.84 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.22 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Multiplicative scale &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.32 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.07 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.14 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+---
+class: middle  
+### How to investigate heterogeneity, EMM or Interaction*: (2)
+
+**.blue[Estimation of EMM/interaction effect (scales, direction):]** 
+- Regression with product term (X*M), identify the deviation from multiplicativity
+- Regression with product term .red[(X*E)], identify the deviation from multiplicativity .red[but requires a causal model for both X and E, Not Unmeasured Confounders]
+
+--
+
+- Use of probabilities or log-odds (Additive scale)
+- Use of RRs or ORs: 
+ - **RERI:** Relative Excess due to Interaction 
+ - **AP:** Attributable effect of the interaction*
+ - **SI:** Synergy Effect*
+ 
+.red[*For causal interaction, recall the need to meet all the assumptions.]
+
+---
+class: middle
+**.blue[Estimation of EMM/interaction effect (scales, direction):]**
+
+
+```
+##                                OR 2.5 % 97.5 %
+## (Intercept)                  0.10  0.03   0.25
+## smokesmoker                  5.76  1.94  21.37
+## nonwhitenonwhite             5.43  1.91  19.63
+## smokesmoker:nonwhitenonwhite 0.32  0.06   1.39
+```
+--
+**Joint effect for the exposure to Smoking and Non-white + Comparison of effects**
+
+``` r
+kable(table_objectlbw$dframe[1:4,], digits = 2) #select stratified analysis
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measures &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Estimates &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ll &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ul &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.43 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16.95 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.78 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18.60 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.66 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 37.60 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+---
+class: middle 
+**.blue[Estimation of EMM/interaction effect (scales, direction):]** Low birthweight as a function of smoking and modification by race/ethnicity example
+
+.pull-left[
+**Recall?**
+
+|**ln(odds)** |M=0      | M=1         |
+|:------------|:--------|:------------|
+|X=0 | `\(\beta_0\)` | `\(\beta_0 + \beta_2\)` |
+|X=1 | `\(\beta_0 + \beta_1\)` | `\(\beta_0 + \beta_1 + \beta_2 + \beta_3\)` |
+
+]
+
+--
+
+.pull-right[ 
+**Coefficients (log-Odds)**
+
+```
+##                                  Coeff
+## (Intercept)                  -2.302585
+## smokesmoker                   1.750516
+## nonwhitenonwhite              1.692819
+## smokesmoker:nonwhitenonwhite -1.140751
+```
+]
+
+&lt;br&gt;
+--
+
+.pull-left[
+**Probabilities**
+
+|            |White  | Non White|
+|-----------:|:------|:---------:|
+|Non-Smoker|  0.09   |  0.35     |
+|Smoker| 0.38 |   0.51    |
+
+]
+&lt;br&gt;
+.pull-right[
+**Expected:** 0.35  +  0.38 =  0.73
+
+**Observed:**   = 0.51
+
+Less than expected from the sum of each probabilities `\(p_{01} + p_{10}\)`, then **.red[ the joint effect is sub-additive]**
+]
+
+
+---
+class: middle 
+**.blue[Estimation of EMM/interaction effect (scales, direction):]** Low birthweight as a function of smoking and modification by race/ethnicity example
+
+
+**Probabilities**
+
+|            |White  | Non White|
+|-----------:|:------|:---------:|
+|Non-Smoker|  0.09   |  0.35     |
+|Smoker| 0.38 |   0.51    |
+
+--
+&lt;br&gt;
+`\((p11 – p10 – p01 + p00) = (0.51 – 0.35 – 0.38 + 0.09) =\)` -0.13, 
+
+then **.red[&lt;0 means that the effect of the double exposure is sub-additive]**
+
+--
+
+**.blue[Multiplicative scale:]**
+
+`\(\left(\frac{RR_{11}}{RR_{10}RR_{01}}\right) = \left(\frac{p_{11}p_{00}}{p_{10}p_{01}}\right)\)` = `\(\left(\frac{0.52/0.09}{0.35/0.09 \times 0.38/0.09}\right) =\)` 0.35, 
+
+then **.red[&lt;1 means that the effect of the double exposure is sub-multiplicative]**
+
+
+---
+class:middle
+### RERI, AP, and SI .red[using RRs]
+`\(RERI = RR_{11}– RR_{10} – RR_{01} + 1\)`
+
+RERI = (0.51/0.09) - (0.35/0.09) - (0.38/0.09) + 1 = RERI = -1.44 
+
+--
+&lt;br&gt;
+
+`\(AP= RERI/RR_{11}\)`
+
+AP = -1.44 / 5.67 = -0.25
+
+--
+
+&lt;br&gt;
+`\(SI = \left(\frac{RR_{11}-1}{(RR_{10}-1) + (RR_{01}-1)}\right)\)`
+
+S = 5.67 -1 / (3.89 -1) + (4.22 -1) 
+
+S= 0.76
+
+---
+class:middle
+### RERI, AP, and SI .red[using RRs]
+
+
+``` r
+l13.mod5 &lt;- glm(low ~ smoke * nonwhite, data = birthwt, 
+*               family = binomial(link = "log"))
+round(cbind("RR" = exp(coef(l13.mod5)), exp(confint(l13.mod5))),2)
+```
+
+```
+##                                RR 2.5 % 97.5 %
+## (Intercept)                  0.09  0.03   0.20
+## smokesmoker                  4.02  1.66  13.10
+## nonwhitenonwhite             3.87  1.64  12.50
+## smokesmoker:nonwhitenonwhite 0.35  0.10   0.99
+```
+--
+
+**Using the `interactinR` function***
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Measures &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Estimates &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ll &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ul &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Multiplicative scale &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.35 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.09 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.07 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; RERI &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.39 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -11.44 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.59 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; AP &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.25 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.13 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.26 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 12 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; SI &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.41 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.41 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+*Some difference to the second decimal due to rounding.
+
+
+---
+class:middle
+**Example - `low birthweight` .red[using ORs]**
+
+``` r
+table_objectlbw = interactionR(l13.mod4, exposure_names = c("smokesmoker", "nonwhitenonwhite"), 
+*                              ci.type = "mover", ci.level = 0.95, em = F, recode = F)
+#interactionR_table(table_objectlbw)
+```
+
+&lt;img src="images/table_objectlbw.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+**Example -  `low birthweight` .red[using ORs]** Recall this?
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Measures &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Estimates &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ll &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ul &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.43 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16.95 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.78 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18.60 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10.00 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.66 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 37.60 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR(nonwhitenonwhite on outcome [smokesmoker==0] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.43 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16.95 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR(nonwhitenonwhite on outcome [smokesmoker==1] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.63 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.29 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR(smokesmoker on outcome [nonwhitenonwhite==0] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.76 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.78 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18.60 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OR(smokesmoker on outcome [nonwhitenonwhite==1] &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.84 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.70 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.84 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.22 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Multiplicative scale &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.32 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.07 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.46 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.14 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RERI &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.19 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -18.59 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 22.67 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AP &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.73 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.52 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; SI &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.98 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.35 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.77 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+class:middle
+**Example -  `low birthweight` .red[using ORs]**
+
+.pull-left[
+
+**Resources** Using [`epiR`](https://search.r-project.org/CRAN/refmans/epiR/html/epi.interaction.html), [`interactions`](https://cran.r-project.org/web/packages/interactions/vignettes/interactions.html) and [`interactionR`](https://github.com/tunsmart/interactionR) packages
+
+**RERI Estimation**
+
+``` r
+library(epiR)
+#RERI
+epi.interaction(model = l13.mod4a, #to obtain the RERI
+    param = "product", 
+    coef = c(2,3,4), 
+*  conf.level = 0.95)$reri
+```
+
+```
+##          est     lower    upper
+## 1 -0.1923582 -9.621692 9.236976
+```
+]
+
+--
+
+.pull-right[
+&lt;img src="L15_EPIB704_Interaction_Part2_files/figure-html/unnamed-chunk-30-1.svg" width="110%" style="display: block; margin: auto;" /&gt;
+
+**Multiplicative interaction**
+
+``` r
+#Multiplicative Interaction term
+epi.interaction(model = l13.mod4a, #to obtain the interaction term coeff
+                param = "product", coef = c(2,3,4), 
+*  conf.level = 0.95)$multiplicative
+```
+
+```
+##        est      lower    upper
+## 1 0.319579 0.06421315 1.394265
+```
+
+]
+
+[R Function for Additive Interaction Measures. Mathur, Maya B.; VanderWeele, Tyler J](https://journals.lww.com/epidem/Fulltext/2018/01000/R_Function_for_Additive_Interaction_Measures.21.aspx)
+
+
+
+
+---
+class:middle
+### Additional Notes
+- The synergy index is preferred because when the regression models include potential confounders (as in the majority of cases) RERI and AP may be biased measures of additive interaction, while S was unbiased ([Skrondal et al. 2003](https://academic.oup.com/aje/article/158/3/251/70285)).
+- The methods for additive interaction are all derived from the case where `X` and `E`'s effect on `Y` is risk-based. That is the ratio measure &gt;1.0. 
+- In the case where `X` and `E`'s effect on `Y` is protective (ratio measure &lt;1.0), the variables need to be reparameterized to risk factors ([Knol et al. 2012](https://doi.org/10.1093/ije/dyr218)) 
+ - For categorical measures, this means changing the reference group to the one with the lowest risk, thus all other groups convey excess risk. 
+ - This should be done for all variables as warranted in the same model (not one at a time). 
+- In all cases, the preferred method for reporting the precision of the additive measure is bootstrapping.
+ - See variance recovery method by [Zou (2008)](https://doi.org/10.1093/aje/kwn104) and [MOVER-R for Confidence Intervals of Ratios](https://doi.org/10.1002/9781118445112.stat08085).
+
+
+---
+class:middle
+###REPORTING OF STATISTICAL INTERACTION
+For effect-measure modification between two categorical factors, the results should include:
+
+1. Effects per each stratum of both factors using a single reference category that should be a subgroup with the lowest risk, 
+2. Effects of the primary factor in strata of the secondary factor, 
+3. Effect per each multivariable adjusted models; 
+4. Additive and multiplicative interaction measures with 95%CI; 
+5. The set of confounders for the primary factor–outcome relationship 
+
+.red[For causal interaction, the results should also include] 
+6. Effects of the secondary factor in strata of the primary factor; 
+7. The set of confounders for the secondary factor–outcome relationship .
+
+---
+class: middle
+### Key Messages
+1. Interaction term (the tool `X*M` or `X*E`)
+2. EMM or Interaction?
+ - Depends, One exposure or Two exposures of interest
+3. How to obtain them:
+   - EMM: Stratification and **correct interpretation** of joint vs individual effects by the _"interaction term"_
+   - Statistical Interaction measures: RERI (ICR), AP, SI
+   - !Be aware of "preventive" exposures
+4.  Additive vs Multiplicative
+   - Could obtain both, but additive measures provide meaningful PH information
+   - Sub additive (sub/less than multiplicative) or super additive (super/more than multiplicative)
+5. Interpretation? 
+   - Descriptive, statistical, causal (granted the assumptions are met)
+
+---
+class:middle
+###Example - Back to the unsafe wells in Bangladesh
+
+.pull-left[
+
+```
+##                 OR 2.5 % 97.5 %
+## (Intercept)   0.71  0.59   0.86
+## arsenic       1.55  1.40   1.72
+## assoc         1.08  0.82   1.42
+## arsenic:assoc 0.87  0.75   1.02
+```
+
+**Measures of Interaction** using [`epiR`](https://search.r-project.org/CRAN/refmans/epiR/html/epi.interaction.html)
+
+```
+## $reri
+##          est      lower     upper
+## 1 -0.1668265 -0.3164641 -0.017189
+## 
+## $apab
+##          est      lower       upper
+## 1 -0.1141958 -0.2096231 -0.01876857
+## 
+## $s
+##         est     lower     upper
+## 1 0.7342288 0.5776462 0.9332563
+## 
+## $multiplicative
+##         est     lower    upper
+## 1 0.8738788 0.7511418 1.017436
+```
+]
+
+--
+.pull-right[
+
+``` r
+interact_plot(mod04, pred = arsenic, modx =  assoc,  plot.points = TRUE, interval =T)
+```
+
+&lt;img src="L15_EPIB704_Interaction_Part2_files/figure-html/unnamed-chunk-34-1.svg" width="110%" style="display: block; margin: auto;" /&gt;
+
+
+``` r
+epi.interaction(model = mod04, 
+                param = "product", 
+                coef = c(2,3,4), 
+   conf.level = 0.95)
+```
+]
+
+---
+class:middle
+###Example - back to the unsafe wells
+.pull-left[
+&lt;img src="L15_EPIB704_Interaction_Part2_files/figure-html/unnamed-chunk-36-1.svg" width="110%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+.pull-right[
+
+``` r
+interact_plot(mod04, pred = assoc, modx = arsenic, plot.points = TRUE,
+               modx.values = c(0.5, 1, 2, 3, 4, 6))
+```
+
+&lt;img src="L15_EPIB704_Interaction_Part2_files/figure-html/unnamed-chunk-37-1.svg" width="120%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class:middle
+### Example - Back to the unsafe wells in Bangladesh
+
+``` r
+table_object2 = interactionR(mod04, exposure_names = c("assoc", "arsenic"), 
+                             ci.type = "mover", ci.level = 0.95, em = F, recode = F)
+#interactionR_table(table_object2); #table_object2$dframe[9:12,] #to obtain the estimates
+```
+
+&lt;img src="images/table_object2.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### Example - Back to the unsafe wells in Bangladesh
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Measures &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Estimates &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ll &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; CI.ul &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Multiplicative scale &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.87 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.75 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.08 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; RERI &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.17 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.37 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.04 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; AP &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.22 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.02 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 12 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; SI &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.73 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.58 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.93 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+**RERI and AP &lt;0 and SI&lt;1 = Less than additivity**
+- OR for multiplicative interaction (Measure of interaction on the multiplicative scale) = 0.87, less than multiplicative
+
+
+---
+class: middle
+
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+
+---
+class: middle
+###Appendices
+I. Examples
+
+II. Theoretical Information for Causal Interaction from `H&amp;R What if`?
+
+---
+class: middle
+
+&lt;img src="images/L13summary_inter.jpg" width="45%" style="display: block; margin: auto;" /&gt;
+
+[R Function for Additive Interaction Measures. Mathur, Maya B.; VanderWeele, Tyler J](https://journals.lww.com/epidem/Fulltext/2018/01000/R_Function_for_Additive_Interaction_Measures.21.aspx)
+
+---
+class: middle
+### Nice Examples:
+
+&lt;img src="images/l13example1.png" width="75%" style="display: block; margin: auto;" /&gt;
+
+Kondracki, A.J.; Li, W.; Bursac, Z.; Mokhtari, M.; Reddick, B.; Barkin, J.L. [Interaction Effects of Maternal Sexually Transmitted Infections with Prenatal Care Utilization Status on Preterm Birth and Low Birthweight: U.S. National Data. J. Clin. Med. 2022, 11, 5184.](https://www.mdpi.com/2077-0383/11/17/5184)
+
+---
+class: middle
+**Other nice example**
+
+&lt;img src="images/l13exampledisab.jpg" width="55%" style="display: block; margin: auto;" /&gt;
+
+[Brown H.K., et al. Disability and Interpersonal Violence in the Perinatal Period. Obstetrics &amp; Gynecology: October 6, 2022 - Volume - Issue - 10.1097/AOG.0000000000004950](https://journals.lww.com/greenjournal/Fulltext/9900/Disability_and_Interpersonal_Violence_in_the.577.aspx)
+
+---
+class:middle
+
+###H&amp;R What if? 5.5 Sufficient cause interaction
+The colloquial use of the term “interaction between treatments **`X`** and **`E`**” evokes the existence of some causal mechanism by which the two treatments work together (i.e., “interact”) to produce certain outcome.
+- The definition of interaction within the counterfactual framework **does not require any knowledge about those mechanisms**.
+- We said that there is an interaction between the treatments **`X`** and **`E`** if the causal effect of **`X`** when everybody receives **`E`** is different from the causal effect of **`X`** when nobody receives **`E**`.
+
+--
+
+Interaction is defined by the contrast of counterfactual quantities, and can therefore be identified by conducting an ideal randomized experiment in which the conditions of exchangeability, positivity, and consistency hold for both treatments **`X`** and **`E`**.
+
+- &lt;span style="color:darkmagenta"&gt;There is no need to contemplate the causal mechanisms (physical, chemical, biologic, sociological...) that underlie the presence of interaction&lt;/span&gt;.
+
+
+---
+class:middle
+####H&amp;R What if? 5.5 Sufficient cause interaction
+Rothman (1976) described the concepts of synergism and antagonism within the sufficient-component cause framework.
+- This concept of interaction is not based on counterfactual contrasts but rather on `sufficient-component causes`, and thus we refer to it as interaction within the sufficient-component-cause framework or, “sufficient cause interaction.” 
+- Sufficient cause interaction is defined as the joint presence of treatments **`X` and `E`** in the same causal mechanism, that is, in the same sufficient cause. `\(^2\)`
+- For example, suppose some individuals with background factors U5 = 1 will develop the outcome when jointly receiving `X` and `E`, but not when receiving only one of the two treatments. 
+- That is, these individuals have counterfactual responses `\(Y^{a=1,e=1} =1\)` and `\(Y^{a=0,e=1} = Y^{a=1,e=0} = 0\)`.
+- Then there must exist some causal mechanism that requires the joint presence of both treatments **`X`** and **`E`**.
+
+`\(^2\)` See extra notes on sufficient causes or background causes in appendices for this lecture.
+
+---
+class:middle
+###H&amp;R What if? 5.5 Sufficient cause interaction
+Sufficient cause interactions can be synergistic or antagonistic. 
+- There is synergism between treatment `X` and treatment `E` when `X=1` and `E=1` are present in the `same sufficient cause`, 
+- Antagonism between treatment `X` and treatment `E` when `X=1` and `E=0` (or `X=0 and E=1`) are present in the same sufficient cause. 
+- Alternatively, one can think of antagonism between `X` and `E` as synergism between treatment `X` and no treatment `E` (or between no treatment `X` and treatment `E`). `\(^3\)`
+- Unlike the counterfactual definition of interaction, sufficient cause interaction makes explicit reference to the causal mechanisms involving the treatments `X` and `E`. 
+- One could then think that identifying the presence of sufficient cause interaction requires detailed knowledge about these causal mechanisms.
+
+&lt;span style="color:darkred"&gt; It turns out that this not always the case: sometimes we can conclude that sufficient cause interaction exists even if we lack any knowledge whatsoever about the sufficient causes and their components.&lt;/span&gt;
+
+`\(^3\)` See extra notes on synergism and sufficient causes in appendices.
+
+---
+class:middle
+####H&amp;R What if? [Fine Point 5.1](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/)
+The classification of individuals by counterfactual response types makes it easier to consider specific forms of interaction. 
+
+`\(Pr[Y^{x=1,e=1} =1] - Pr([Y^{x=0,e=1} =1] + [Y^{x=1,e=0} =1]) &gt;0\)`  or equivalently
+
+`\(Pr[Y^{x=1,e=1} =1] - Pr[Y^{x=0,e=1} =1] &gt; Pr[Y^{x=1,e=0} =1]) &gt;0\)`
+
+Some intuition: 
+- Synergism implies some individuals will develop the outcome when receiving both treatments `\(X = 1\)` and  `\(E = 1\)`, but not when receiving only one of the two.
+
+- Synergism implies there are individuals with counterfactual responses `\(Y^{x=1,e=1} = 1\)` and `\(Y^{x=0,e=1} = Y^{x=1,e=0} = 0\)`.
+
+The inequality is a sufficient condition for these individuals to exist.
+
+---
+class: middle
+####II- Theoretical information.
+
+**1 - Note on:H&amp;R What if? 5.2 Identifying interaction within the counterfactual framework**
+
+.small[In chapter 4, H&amp;R used the notation M (rather than E) for variables for which one was not willing to make exchangeability, positivity, or consistency assumptions.] 
+- In Chapter 4, the effect of transplant A was modified by nationality M, but we never required any identifying assumptions for the effect of M. We also found that nationality M did not have a causal effect on any individual’s Y. 
+- That M does not act on the outcome implies that it does not interact with A–no action, no interaction. Yet M is a modifier of the effect of A on Y because M is correlated with (e.g., it is a proxy for) an unidentified variable that actually has an effect on Y and interacts with A. 
+- Thus there can be modification of the effect of A by another variable without interaction between A and that variable.
+
+---
+class: middle
+**1b - Technical Point 5.2. Monotonicity of causal effects.**
+
+Consider a setting with a dichotomous treatment A and outcome Y. 
+- The value of the counterfactual outcome Y a=0 is greater than that of Y a=1 only among individuals of the “helped” type. 
+- For the other 3 types, Y a=1 ≥ Y a=0 or, equivalently, an individual’s counterfactual outcomes are monotonically increasing (i.e., non decreasing) in a. 
+- Thus, when the treatment cannot prevent any individual’s outcome (i.e., in the absence of “helped” individuals), all individuals’ counterfactual response types are monotonically increasing in a. 
+- We then simply say that the causal effect of A on Y is monotonic.
+- The concept of monotonicity can be generalized to two treatments A and E.
+
+---
+class:middle
+**2 - Note on: 5.4 H&amp;R What if? Sufficient causes**
+
+Consider those individuals who were actually treated. Some of them died and some of them didn’t, which implies that treatment alone is insufficient to bring about the outcome. 
+- As an oversimplified example, suppose that heart transplant A = 1 only results in death in subjects allergic to anesthesia or with a heightened immunological response. We refer to the smallest set of background factors that, together with A = 1, are sufficient to inevitably produce the outcome as U1. The simultaneous presence of treatment (A = 1) and these background factors (U1 = 1) is a sufficient cause of the outcome Y.
+
+Now consider individuals who were not treated. Again some of them died and some of them didn’t, which implies that lack of treatment alone is insufficient to bring about the outcome. As an oversimplified example, suppose that no heart transplant A = 0 only results in death if subjects have an ejection fraction less than 20%. We refer to the smallest set of background factors that, together with A = 0, are sufficient to produce the outcome as U2. The simultaneous absence of treatment (A = 0) and presence of these background factors (U2 = 1) is another sufficient cause of the outcome Y.
+By definition of “background” factors, U cannot be affected by treatment A.
+
+---
+class:middle
+**2 - Note on: 5.4 H&amp;R What if? Sufficient causes**
+
+Finally, consider those (“doomed”) individuals that would have developed the outcome whether they had been treated or untreated. 
+- The existence of these individuals implies that there are some other background factors that are themselves sufficient to bring about the outcome. 
+- As an oversimplified example, suppose that all subjects with pancreatic cancer at the start of the study will die. 
+- We refer to the smallest set of background factors that are sufficient to produce the outcome regardless of treatment status as U0. The presence of these factors (U0 = 1) is another sufficient cause of the outcome Y.
+
+---
+class:middle
+**3 - Note on: 5.4 H&amp;R What if? Sufficient causes and synergism**
+
+Specifically, if the inequality:
+
+`\(Pr[Y^{a=1,e=1} =1] - Pr([Y^{a=0,e=1} =1] + [Y^{a=1,e=0} =1]) &gt;0\)` or equivalently
+
+`\(Pr[Y^{a=1,e=1} =1] - Pr[Y^{a=0,e=1} =1] &gt; Pr[Y^{a=1,e=0} =1]) &gt;0\)`
+ 
+ holds, then there exists synergism between A and E.
+- This implies that one can conduct an experiment in which treatments A and E are randomly assigned, compute the three counterfactual risks in the above inequality, and empirically check that synergism is present without ever giving any thought to the causal mechanisms by which A and E work together to bring about the outcome.
+- This result is not that surprising because of the correspondence between counterfactual response types and sufficient causes, and because the above inequality is a sufficient but not a necessary condition, i.e., the inequality may not hold even if synergism exists.
+  - In fact this sufficient condition is so strong that it may miss most cases of synergism.
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "3:2",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
