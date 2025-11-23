@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Propensity Scores</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mabel Carabali" />
+    <script src="libs/header-attrs-2.29/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Propensity Scores
+]
+.subtitle[
+## Theory &amp; Practice
+]
+.author[
+### Mabel Carabali
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### (updated: 2025-11-19)
+]
+
+---
+
+
+
+
+
+
+
+
+
+class:middle
+
+**Expected competencies**
+- Knows the definition and mechanisms of confounding.
+- Knows and understand the principles of logistic regression and prediction.
+- Knows and understand considerations for causal inference.
+
+
+### Objectives
+- Provide an overview of what are and how to estimate propensity scores (PS).
+- Illustrate the use and application of PS on epidemiological inference.
+
+
+---
+class:middle
+## Map of propensity score lecture
+
+1. Theoretical background [5:18]
+2. Propensity score methods (parametric and semi-parametric)     
+  2.1 Overview [19:35]    
+  2.2 Stratification [37:41]    
+  2.3 **Matching [43:67]**    
+  2.4 **.blue[Weighting [69:84]]**     
+3. Propensity scores (miscellaneous topics) [&gt;85]
+
+---
+
+class: inverse, middle, center
+
+# Part 1 - Theoretical Background
+---
+
+class:middle
+## Experiments are great, but....
+
+Assuming successful randomization to treatment and control, 
+you **know** it's the treatment that's causing the effect.
+
+### Can't do everything
+
+- Ethics
+- External validity
+- Often non-representative
+- Some treatments are hard or impossible to assign randomly
+  - Motherhood
+  - Divorce
+  - Boycotts
+  - Smoking
+  
+  
+---
+class: middle, center
+## What do we want to know?
+
+We really care about the difference between `\(Y^0\)` and `\(Y^1\)`. 
+
+Let `\(\delta_i = y^1_i - y^0_i\)` (observed values)
+
+`\(E[\delta]=E[Y^1-Y^0]\)`
+
+`\(E[\delta]=E[Y^1]-E[Y^0]\)`
+
+This is the definition of a **Treatment Effect (TE)**.
+
+---
+class:middle
+
+**.red[Recall...]**
+
+**In a properly executed experiment, no association between potential outcome variables and treatment assignment**
+
+
+`\(E[Y^0 | T = 0] \simeq E[Y^0]\)`
+
+`\(E[Y^1 | T = 1] \simeq E[Y^1]\)`
+
+
+So...
+
+--
+&lt;br&gt;
+
+`\(E[\delta] = E[Y^1] - E[Y^0]\)`
+          `\(= E[Y|T=1]-E[Y|T=0]\)`
+
+&lt;br&gt;
+
+Treatment effect = `\(\Delta\)` (Delta = Change) between **observed** treatment and control averages
+  
+  
+---
+class: middle
+## But more often than not, we end up comparing...
+.pull-left[
+&lt;img src="images/apples.jpg" width="90%" style="display: block; margin: auto;" /&gt;
+ 
+]
+
+--
+.pull-right[
+## Or forcing matches...
+&lt;img src="images/forcedapple.png" width="75%" style="display: block; margin: auto;" /&gt;
+ 
+]
+---
+class:middle
+### To control of confounding we have:
+
+&lt;img src="images/confounders_methods.jpg" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+## The point of propensity scores?
+
+1. A **propensity score** is a subject's probability of receiving the treatment/intervention.
+
+--
+
+2. A **propensity score** is intended to make data points (observations) comparable.
+
+--
+
+3. A **propensity score** is a solution to the problem of _sparseness_. If we can't find exact matches for each case because of high dimensional (or fine-grained) data, can we reduce the complexity of the data and find "good enough" matches?
+
+
+---
+class:middle
+## The point of propensity scores
+
+- The propensity score (PS) is defined as the **conditional probability** of receiving a treatment given pre-treatment covariates {Z}:
+.center[**PS(Z) = Pr(X = 1 | Z)**]        
+
+--
+
+- .red[Exchangeability]. The propensity score PS(X) balances the distribution of all X between the treatment groups:
+.center[ **X ⊥ Z | PS(Z)**] 
+* _in the DAG_ `\(X \leftarrow Z \to Y\)`,  _the arrow between `\(Z\)` and `\(X\)` is broken_
+
+--
+
+- The propensity score balances the observed covariates, but .red[does not] generally balance unobserved covariates 
+
+--
+
+4. .purple[Bias-variance trade-off between modeling] `\(PS(X)\)` .purple[and directly modeling the outcome] `\(Pr(Y(t) | X)\)`
+
+
+---
+
+class:middle
+### Propensity Scores (PS) are not a "new" method
+.pull-left[
+&lt;img src="images/rr_ps1.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="images/rr_ps2.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+.small[Rosenbaum, P. R., &amp; Rubin, D. B. .red[(1984)]. Reducing Bias in Observational Studies Using Subclassification on the Propensity Score. Journal of the American Statistical Association, 79(387), 516–524. https://doi.org/10.1080/01621459.1984.10478078]
+
+---
+class:middle
+### Two common Propensity Scores questions
+
+.pull-left[
+
+**How do I estimate propensity scores?**
+- **.blue[Logistic regression]**
+- Probit regression
+- Covariate-balancing-type of propensity scores
+- Machine learning algorithms
+- any other classifier...
+
+]
+
+--
+
+.pull-right[
+
+**How to use them for causal inference?**
+- Stratification ("interval matching")
+- Matching
+- Weighting
+- Regression
+- any combination of the above
+
+]
+
+---
+class:middle
+## PS (standard) workflow*
+
+&lt;img src="images/ps_flowchart.jpg" width="100%" style="display: block; margin: auto;" /&gt;
+
+*Step 1 and 2 can be iterative, and before the empirical application one should plan ahead.
+
+---
+
+class:middle
+## Estimating the propensity score
+
+Most often estimate the PS using logistic regression:
+
+`$$E(X|Z) = \beta_0 + \beta_{1}Z_1 + \beta_{2}Z_2 + ... + \beta_{n}Z_n$$`
+Here, .blue[X] (a.k.a. the treatment, exposure or intervention, becomes the "outcome of interest" for the PS)
+--
+&lt;br&gt;
+
+.pull-right[
+To properly estimate the PS, one need to ask beforehand, **which covariates should be included in Z and what is the target estimand**.
+]
+
+---
+class:middle
+## Variable selection
+
+We should **include**:
+* Variables associated with **both the exposure and outcome** (confounders)
+  + Because these exposure-variable relationships are the ones we’re trying to break
+* Variables associated with the **outcome only**
+  + Improves precision
+
+--
+
+We should **not** include:
+* Variables on the **causal path**
+* Variables that are **predicted by both the exposure and outcome** (colliders)
+  + Opens backdoor pathways
+* Variables associated with the exposure that **do not form a causal path** (instrumental variables)
+
+---
+class:middle
+## Variable selection
+
+&lt;img src="images/var selection.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### Which estimand?
+After balance assessment, choosing the estimand involves choosing optimal population and matching approach. See: [Choosing the Causal Estimand for Propensity Score Analysis of Observational Studies](https://doi.org/10.48550/arXiv.2106.10577)      
+    
+&lt;img src="images/estimand_choice.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+- Weighting is generally preferred over matching &amp; stratification  
+.small[BMJ [DOI:10.1136 bmj.l5657](https://www.bmj.com/content/367/bmj.l5657)]
+
+
+
+---
+
+class: inverse, middle, center
+
+# Part 2 - Propensity score method (Overview) 
+
+---
+class:middle
+### Example
+
+**What is the effect of maternal smoking on infant health?**
+
+Data are from a subsample (*N* = 4642) of singleton births  between 1989-1991. See Almond et al. 2005. ["The Costs of Low Birth Weight"](https://www-jstor-org.proxy3.library.mcgill.ca/stable/25098762#metadata_info_tab_contents)
+
+--
+**Bring in the data**
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-9-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class:middle
+### Step 1 - Fit PS by logistic regression
+
+- We regress the Treatment/Exposure/Intervention as a function of other covariates.
+
+--
+
+``` r
+#d&lt;- as.data.frame(read.csv("PSdata.csv"))
+*psmod &lt;- glm( mbsmoke ~ mmarried + alcohol + mrace + fbaby +
+*           mage + I(mage^2) + medu + nprenatal , data = d ,family = binomial )
+round(summ(psmod, confint = T)$"coeftable", 2)
+```
+
+```
+##              Est.  2.5% 97.5% z val.    p
+## (Intercept) -3.04 -4.66 -1.43  -3.70 0.00
+## mmarried    -1.24 -1.43 -1.04 -12.36 0.00
+## alcohol      1.57  1.20  1.93   8.47 0.00
+## mrace        0.67  0.43  0.90   5.63 0.00
+## fbaby       -0.41 -0.58 -0.23  -4.47 0.00
+## mage         0.31  0.19  0.44   4.83 0.00
+## I(mage^2)   -0.01 -0.01  0.00  -4.95 0.00
+## medu        -0.14 -0.18 -0.11  -8.02 0.00
+## nprenatal   -0.03 -0.05 -0.01  -2.70 0.01
+```
+**This model SHOULD NOT be interpreted! but it can be made as complex as desirable**
+
+---
+class:middle
+### Step 2 - Estimate PS
+- We use the `predict` function to estimate the predicted probability of .blue[X] (i.e., Treatment, Exposure, or Intervention)
+
+``` r
+# add PS to DF
+d &lt;- d %&gt;% 
+* mutate(ps1 = predict(psmod, type = "response"))
+```
+
+--
+
+- Usually one would like to know/explore that distribution
+.pull-left[
+
+``` r
+round(summary(d$ps1), 2)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.01    0.10    0.15    0.19    0.24    0.93
+```
+]
+
+--
+
+.pull-right[
+
+``` r
+hist(d$ps1, breaks=10)
+```
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-12-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+class:middle
+###Step 2 - Examine Distribution of PS estimates
+- Explore, visually the distribution of PS across levels of the Treatment/Exposure/Intervention
+
+.pull-left[
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-13-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-14-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class:middle
+###Step 2 - Examine Distribution of PS estimates
+- Explore, visually the distribution of PS across levels of the Treatment/Exposure/Intervention
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-15-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### Model specification
+
+- All the same issues that apply to logistic regression in ordinary 
+circumstances apply here (e.g., goodness of fit, functional form).
+- If the model is wrong, the propensity scores may also be wrong!
+- The main assessment procedure in the traditional workflow is checking for
+**covariate balance**.
+
+---
+class:middle
+### Step 3 - Covariate balance
+
+- Propensity scores can be used to balance the treatment and control groups
+overall in three  ways:
+  - **Stratification** (create 5-10 subclassifications with similar p-scores, a.k.a., "subclassification" or "interval matching")
+  - **Matching** (e.g., matching typically 1:1 treated cases to controls with same or very 
+  similar PS)
+  - **Weighting** (e.g., applying inverse probability of treatment weights to the 
+  control cases to make their distribution look like the treatment group)
+  
+- Balance on the one-dimensional propensity score, however, .red[does _not_ guarantee that the treatment and control groups will be balanced on each of the individual component variables] that were used to estimate the PS. 
+
+
+---
+class:middle
+### Example: similar scores, different profiles
+
+
+```
+##      smoker mmarried mage medu fbaby alcohol mrace nprenatal        ps1
+## 1 Nonsmoker        1   36   16     0       0     0         8 0.03856625
+## 2    Smoker        1   36   17     1       0     1        12 0.03858220
+## 3 Nonsmoker        1   28   16     1       0     0        12 0.03882426
+## 4    Smoker        1   31   15     1       0     0        13 0.03884993
+## 5 Nonsmoker        1   34   17     1       0     1        16 0.04183232
+## 6    Smoker        1   43   12     0       0     1        10 0.04190382
+## 7 Nonsmoker        1   38   13     0       0     0        10 0.04298770
+## 8    Smoker        1   32   14     1       0     0        12 0.04320067
+```
+
+This is OK as long as the differences between the treatment and 
+control groups aren't systematic for any variable.  
+&lt;br&gt;
+Will need formal assessments of balance.
+
+---
+class:middle
+### Matching and covariate balance
+
+- Propensity scores are a means to an end: making *all* the variables summarized in the score *S*, independent of *T*.
+
+- Balance on the *propensity score* does not guarantee balance on all the individual covariates.
+
+- Consider the following equation: `\(log(\frac{p}{1-p}) = -1 + .3x_1 +.3x_2\)`.
+- If this is the propensity-score equation, `\(x_1\)` and `\(x_2\)` have the same effect on the propensity. 
+
+- Thus *any* combination of `\(x_1\)` and `\(x_2\)` with the same *sum* will produce the same propensity score, even if the cases are quite different. 
+
+---
+class:middle
+### Common support and overlap assumption
+
+
+``` r
+d %&gt;% 
+  group_by(smoker) %&gt;% 
+  summarize_at(vars(ps1), list(min=min,max=max))
+```
+
+```
+## # A tibble: 2 × 3
+##   smoker       min   max
+##   &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;
+## 1 Nonsmoker 0.0134 0.849
+## 2 Smoker    0.0386 0.926
+```
+
+There are some smokers with higher propensities than any nonsmoker and some nonsmokers with lower propensities than any smoker   
+&lt;br&gt;
+Need to decide if these violate the overlap (positivity) assumption or whether these non-overlapping regions are strictly due to sampling error       
+.pull-right[
+.purple[Graphs on slide 23 and 24 can be helpful.]
+]
+
+---
+
+class:middle
+### Visualizing common support
+.pull-left[
+**.black[Observing the entire Distribution (0, 1)]**
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-18-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+**.black[Restricting to region of common support (0, 0.8)]**
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-19-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+]
+---
+class:middle
+### Assessing covariate balance
+We use **standardized differences** to assess covariate balance or **SDM**
+
+Presented as well as:
+- For continuous variables: `\(d=\lvert \frac{E(Z|X=1)-E(Z|X=0)}{\sqrt{\frac{\sigma^2_{X=1}+\sigma^2_{X=0}}{2}}} \rvert\)`
+
+--
+
+- For dichotomous variables: `\(d= \lvert \frac{P(Z|X=1)-P(Z|X=0)}{\sqrt{\frac{P(Z|X=1)[1-P(Z|X=1)]+P(Z|X=0)[1-P(Z|X=0)]}{2}}} \rvert\)`
+
+Variables with standardized differences of **less than 10%** are usually considered to be balanced
+
+---
+class:middle
+### Assessing covariate balance
+Covariate distributions should also be balanced beyond measures of central tendency
+* Minimums, maximums, Q1, Q3, etc. should be similar
+
+--
+
+The **Kolmogorov-Smirnov distance** is the proportion of non-overlap between two distributions (or maximum distance
+between two cumulative distributions)
+.pull-left[
+&lt;img src="images/KS2_Example.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+* Identical distributions have a K-S distance of **0**
+* Non-overlapping distributions have a K-S distance of **1**
+* A value of **less than 5%** indicates balance
+]
+
+
+
+
+---
+class:middle
+### Assessing covariate balance
+
+.red[Recall:] 
+
+The **ratio of variance** can also be used to assess balance
+* A ratio close to 1 indicates balance
+* Can be calculated with `MatchBalance` function from the `Matching` package
+
+--
+
+Hypothesis testing to assess balance should be **avoided**
+* Balance is a **property of the sample** and should not be inferred to a larger population
+
+---
+class:middle
+### What if covariates aren't balanced?
+
+Time to **re-specify your propensity score model** by:
+* Adding **covariates**
+* Adding **interaction terms**
+* Adding **higher order terms** or **smoothers** (ex. splines)
+* Using **machine learning algorithms**
+
+---
+class:middle
+### A more complex PS model
+
+``` r
+psmod2 &lt;- glm(mbsmoke ~ mmarried + mrace + alcohol + fbaby + mage + medu + nprenatal + 
+*               I(mage^2)  + I(nprenatal^2),
+              data=d, family=binomial(link = "logit"))
+
+d$ps2 &lt;- predict(psmod2, type="response")
+#d %&gt;% group_by(smoker) %&gt;% summarize_at(vars(ps2), list(min=min, max=max))
+```
+
+--
+
+- .red[Again] one would like to know/explore that distribution
+.pull-left[
+
+``` r
+round(summary(d$ps2), 2)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.01    0.10    0.15    0.19    0.24    0.93
+```
+]
+.pull-right[
+
+``` r
+hist(d$ps2, breaks=10)
+```
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-23-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class:middle
+## PS (standard) workflow*
+
+&lt;img src="images/ps_flowchart.jpg" width="100%" style="display: block; margin: auto;" /&gt;
+
+*Step 1 and 2 can be iterative, and before the empirical application one should plan ahead.
+
+---
+
+class: inverse, middle, center
+
+# Part 2.2 - Propensity score methods (Stratification)
+---
+class:middle
+## What is propensity score stratification?
+### (a.k.a. subclassification or interval matching)
+
+Is the procedure when the sample is divided into equal-sized bins of the propensity score.
+
+--
+
+PS stratification is also when we:
+1. separate subjects into **mutually exclusive** equally-sized strata of the PS distribution (usually 5),
+
+2. **estimate the effect of the treatment on the outcome** within each of the strata, and
+
+3. **pool the estimates** to obtain a weighted average.
+
+---
+class:middle
+### Stratification Strategies according to the Estimand
+
+* To estimate the **.red[ATE]**, determine breakpoints using the PS distribution of the **entire population** and assign of each of the *k* strata a weight of `\(\frac{1}{k}\)`
+
+--
+
+* To estimate the **.purple[ATT]**, either:
+  + determine breakpoints using the PS distribution of the **treated group only** and assign each of the *k* strata a weight of `\(\frac{1}{k}\)`, or
+  
+  + determine breakpoints using the PS distribution of the **entire population** and assign each of the *k* strata a weight of the **proportion of treated subjects within each stratum.**
+
+---
+
+class:middle
+
+## Stratification: ATE breakpoints
+
+
+``` r
+strat.ATE &lt;- MatchIt::matchit(mbsmoke ~ mmarried + mrace + alcohol + fbaby + mage + medu + 
+                       nprenatal + I(mage^2) + I(medu^2) + I(nprenatal^2), data=d,    
+*                   method="subclass", subclass=5, estimand="ATE")
+```
+
+--
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-26-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class:middle
+## Stratification: ATT breakpoints
+
+``` r
+strat.ATT &lt;- MatchIt::matchit(mbsmoke ~ mmarried + mrace + alcohol + fbaby + mage + medu + nprenatal + 
+                      I(mage^2) + I(medu^2) + I(nprenatal^2), data=d, 
+                     method="subclass", subclass=5, estimand="ATT")
+```
+
+--
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-28-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+## Stratification
+Can be conceptualized as a **meta-analysis of quasi-randomized controlled trials**
+
+- To assess covariate balance, compute standardized differences for each variable within each stratum and take the average across strata
+
+.red[It is one of the less commonly used strategies and often discouraged method]
+
+---
+
+class: inverse, middle, center
+
+# Part 2.3 - Propensity score methods (Matching)
+---
+class:middle
+### Matching
+
+Matching is most often used when the **ATT** is the estimand of interest.
+
+--
+
+To estimate the ATT, we take each treated individual and **match them on propensity score** to an untreated individual.
+
+To estimate the ATE, we do the same, but additionally match **each untreated individual** to a treated individual on propensity score.
+
+
+#### There are multiple matching options that we need to think about
+
+
+---
+class:middle
+### Basic matching plan
+####Four primary steps:       
+&lt;br&gt;
+1) .red[Planning] - type of effect (conditional vs marginal), target population, selecting covariates too balance
+
+
+2) .red[Matching] - exact, nearest neighbor, full ...
+
+
+3) .red[Assessing] - quality of matches
+
+
+4) .red[Estimating] - the treatment effect and its uncertainty
+---
+class:middle
+## Matching options
+
+**Distance metric**: matching on PS vs. logit(PS)
+
+**Caliper**: determines how far a neighbour may be
+
+**Replacement**: whether one individual can serve as a match for only one individual or for multiple individuals
+
+**Matching order**: we generally want to go from largest to smallest PS
+
+**Ratio**: 1:1, 1:many, variable ratio matching
+
+**Algorithm**: greedy (nearest neighbour) vs. optimal
+
+**Exact matching**: whether we should match exactly on certain variables
+
+---
+
+class:middle
+### Preparing to use `MatchIt`
+
+Code will be easier to write and read if we pre-define formulae
+1. A version that simply lists the covariates
+2. A version that contains a more complex regression specification
+
+
+``` r
+# List version
+trt_form1 &lt;- "mbsmoke ~ mmarried + mrace + alcohol + fbaby +  mage + medu + nprenatal"       
+
+# Propensity score model version
+trt_form2 &lt;- "mbsmoke ~ mmarried + mrace + alcohol + fbaby +  
+  mage + medu + nprenatal + I(mage^2) + I(medu^2) + I(nprenatal^2)"    
+```
+
+.footnote[More complicated version of the regression specification with added squared terms to all of the continuous variables. Often a more reasonable default]
+
+
+---
+class:middle
+###MatchIt example
+.small-code[
+
+``` r
+set.seed(704) # for reproducible results (tied p-scores)
+*m_out &lt;- matchit(as.formula(trt_form2), data = d, # key function with many arguments
+          distance = "glm",          # model-based
+          link = "linear.logit",     # use log-odds directly
+          m.order = "largest",       # match order matters; start w/ highest PS
+*         replace = FALSE )         # default estimand ="ATT", ATE, ATC also available
+```
+]
+
+--
+
+``` r
+m_out
+```
+
+```
+## A `matchit` object
+##  - method: 1:1 nearest neighbor matching without replacement
+##  - distance: Propensity score
+##              - estimated with logistic regression and linearized
+##  - number of obs.: 4642 (original), 1728 (matched)
+##  - target estimand: ATT
+##  - covariates: mmarried, mrace, alcohol, fbaby, mage, medu, nprenatal, I(mage^2), I(medu^2), I(nprenatal^2)
+```
+
+``` r
+summary(m_out)$nn
+```
+
+```
+##               Control Treated
+## All (ESS)        3778     864
+## All              3778     864
+## Matched (ESS)     864     864
+## Matched           864     864
+## Unmatched        2914       0
+## Discarded           0       0
+```
+
+
+---
+class:middle
+###A simple plot from **MatchIt**
+
+
+``` r
+plot(m_out, type = "jitter", interactive = FALSE)
+```
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/matchitplot-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### Assessing covariate balance
+
+.pull-left[
+**Standardized mean differences For ATE**:
+
+`$$\text{bias}=\frac{\bar{x}_T - \bar{x}_C}{\sqrt{\frac{s^2_T + s^2_C}{2}}}$$`
+]
+
+.pull-right[
+**Standardized mean differences For ATT:**
+
+`$$\text{bias}=\frac{\bar{x}_T - \bar{x}_C}{s_T}$$`
+]
+
+- This is  an **effect size**: the difference in z-scores between the treatment and control groups.
+- The convention is that this should be no greater than 0.1 for any Treatment &amp; Control comparison for _any_ variable.
+- Some people use the pooled definition (on the left) regardless of the desired estimand as it is more "conservative."
+
+--
+
+- Can also use: **Kolmogorov-Smirnov distance (KSD)** for the proportion of non-overlap between two distributions (or maximum distance between two cumulative distributions).
+
+---
+class:middle
+### Balance checking with `cobalt`
+
+- `cobalt` is an *excellent* package to help check balance
+- *CO*variate *BAL*ance *T*ables
+- main functions are:
+  - `bal.tab` (balance tables)
+  - `bal.plot` (to compare single covariate distributions)
+  - `love.plot` (graphical balance checking; same info as `bal.tab` in graph form)
+
+.footnote[[Matching Methods for Confounder Adjustment: An Addition to the Epidemiologist’s Toolbox, Epidemiologic Reviews, Volume 43, Issue 1, 2021, Pages 118–129](https://doi.org/10.1093/epirev/mxab003)]
+---
+class:middle
+### Setting `love.plot` options
+
+Can avoid typing by defining a custom function for `love.plot` function in `cobalt` package 
+
+
+``` r
+love_plot &lt;- function(x) {
+  love.plot(x,
+            binary = "std" ,            # use same formula for binary vars
+            continuous = "std" ,        # standardize cont. variables
+            abs = TRUE ,                # absolute value
+            stats = c("m", "ks") ,      # std. bias and Kolmogorov-Smirnov
+            s.d.denom = "treat",        # use for ATT
+            line = FALSE ,              # to not connect with lines
+            var.order = "adj" ,         # sort by adjusted order
+            thresholds = c(.10, .05))   # rules of thumb 
+}
+```
+
+KS distance threshold set to .05 per `cobalt` documentation     
+Set 0.10 SD as mean difference 
+
+---
+class:middle
+### Check balance
+
+
+``` r
+love_plot(m_out)
+```
+
+.footnote[We're close here, but not quite balanced as well as we'd like.]
+
+---
+class:middle
+### Examine variables with issues
+
+#### Alcohol
+
+
+``` r
+bal.plot(m_out, "alcohol")
+```
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/alc_plot-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+.footnote[Looks like we didn't quite achieve good balance.]
+
+---
+class:middle
+### Examine variables with issues
+#### Education
+
+
+``` r
+bal.plot(m_out, var.name = "medu", type = "ecdf") # cumulative dist. function
+```
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/medu_plot-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+&lt;br&gt;     
+.footnote[Smokers are slightly *more* educated than their matches.]
+
+---
+class:middle
+### Imbalance: reasons and possible solutions
+
+.red[Lack of common support]
+  - discard treatment cases above maximum control propensity
+  - this will result in "feasible" estimates that may be biased by incomplete matching
+
+--
+
+.red[Poorly specified propensity-score model]
+  - add interaction terms in PSM
+  - add higher-order polynomials in PSM
+  - generally better to "overfit" since model is not really a "model" but a measure of similarity
+
+--
+
+.red["Inliers" (not enough available controls in a treatment-dense area of the PS distribution)] 
+  - use calipers (thus feasible estimates)
+  - use matching *with* replacement (not forcing as many bad matches)
+
+---
+class:middle
+### Matching *with* replacement
+
+
+``` r
+set.seed(704) # for reproducible results (tied p-scores)
+m_out2 &lt;- matchit(as.formula(trt_form2), data = d, distance = "linear.logit", # use log-odds directly
+*         m.order = "largest", replace = TRUE )
+m_out2; summary(m_out2)$nn
+```
+
+```
+## A `matchit` object
+##  - method: 1:1 nearest neighbor matching with replacement
+##  - distance: Propensity score
+##              - estimated with logistic regression
+##  - number of obs.: 4642 (original), 1505 (matched)
+##  - target estimand: ATT
+##  - covariates: mmarried, mrace, alcohol, fbaby, mage, medu, nprenatal, I(mage^2), I(medu^2), I(nprenatal^2)
+```
+
+```
+##                 Control Treated
+## All (ESS)     3778.0000     864
+## All           3778.0000     864
+## Matched (ESS)  475.4752     864
+## Matched        641.0000     864
+## Unmatched     3137.0000       0
+## Discarded        0.0000       0
+```
+
+.small[NOTE: Fewer control cases are matched here because some are used to match multiple treatment cases.]
+
+---
+class:middle
+### Checking balance
+
+
+``` r
+love_plot(m_out2)
+```
+
+.footnote[Mean balance is improved, most noticeably on alcohol. The distribution of education is still a bit off, however.]
+
+---
+class:middle
+### Checking balance
+
+
+``` r
+bal.plot(m_out2, "medu", type = c("ecdf"))
+```
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/edu_plot_2-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+.footnote[This is about the same as matching without replacement.]
+
+---
+class:middle
+### Checking balance
+
+
+``` r
+bal.plot(m_out2, "medu", type = c("hist"), bins = 18, which = "both")
+```
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/edu_plot_2b-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+.footnote[The distribution isn't perfect here but it's much improved.]
+
+---
+class:middle
+### Calipers
+
+- A "caliper" is maximum distance (in SDs of the propensity score) beyond which matches are not allowed. A typical caliper distance is .10.
+
+
+- Using a caliper means discarding treatment cases without high-quality matches.
+
+
+- Discarding treatment cases means getting **"feasible"** ATT estimates that may be biased as they don't generalize to the whole population from which the sample was drawn.
+
+---
+class:middle
+### Calipers
+
+
+``` r
+m_cal &lt;- matchit(as.formula(trt_form2), data = d, 
+*                caliper = .1, replace = FALSE)
+summary(m_cal)$nn
+```
+
+```
+##               Control Treated
+## All (ESS)        3778     864
+## All              3778     864
+## Matched (ESS)     828     828
+## Matched           828     828
+## Unmatched        2950      36
+## Discarded           0       0
+```
+
+Here we'd lose 36 treated cases, moving us from a SATT estimate to an FSATT (fine stratification-ATT) estimate.        
+- There are  better alternatives than calipers, but they *are* useful for diagnostic purposes      
+- If you're dropping a lot of cases, the data need a much closer look.
+
+---
+class:middle
+### Getting the matched dataset
+
+Let's assume we're OK with our slightly imperfect match without replacement.      
+Use `match.data` from `MatchIt` package to get the dataset for analysis.
+
+
+``` r
+m_data &lt;- match.data(m_out)
+nrow(m_data)                  # confirm that you have 2x treatment cases
+```
+
+```
+## [1] 1728
+```
+
+--
+
+In the `m_data` object we just created, there are twice the number of treated cases,
+exactly **as we'd expect with a 1:1 match without replacement**. **.blue[Subclass =strata]**
+
+
+```
+##      smoker mage medu alcohol mrace       ps1   distance weights subclass
+## 1 Nonsmoker   26   12       0     1 0.1168960 -1.8135954       1        1
+## 2    Smoker   26   12       0     1 0.1168960 -1.8135954       1        1
+## 3 Nonsmoker   21   12       0     1 0.3936464 -0.5125754       1        2
+## 4    Smoker   27   12       0     0 0.3338156 -0.4542560       1        2
+## 5 Nonsmoker   27   12       0     1 0.1198626 -1.7753232       1        3
+## 6    Smoker   19   10       0     1 0.1255924 -1.7758375       1        3
+```
+
+
+---
+class:middle
+### Next step: working with the matched data
+
+Now we just do a simple regression of the outcome (`zweight`) on the treatment indicator (`mbsmoke`). This will give us the ATT.
+
+
+``` r
+lm( zweight ~ mbsmoke , data = m_data ) %&gt;% tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept) -0.00129    0.0338   -0.0383 9.69e- 1
+## 2 mbsmoke     -0.386      0.0478   -8.07   1.31e-15
+```
+
+--
+
+``` r
+ATT &lt;- mean(m_data$zweight[m_data$mbsmoke==1]) -mean(m_data$zweight[m_data$mbsmoke==0])
+```
+
+- The ATT estimate here is **-0.386**
+- The SE estimate does *not* take into account that that PS was *estimated* prior to matching
+- Since the match is 1:1, no weights are needed to unconfound the summary score `\(S\)` and `\(T\)`.
+
+---
+class:middle
+### Next step: working with replacement-matched data
+
+Here is what the process would look like using the matching results .red[*with* replacement].
+
+
+``` r
+*m_data2 &lt;- match.data(m_out2)
+#head(m_data2)
+```
+--
+
+Here we **do not have `subclass` and the weights change**. Here, the use of the weights is preferred because some controls need to be counted multiple times, hence the **.red[replacement]**.
+
+
+```
+##      smoker mage medu alcohol mrace        ps1  distance   weights
+## 1    Smoker   36   17       0     1 0.03858220 -3.954881 1.0000000
+## 2 Nonsmoker   33   16       0     0 0.03068501 -3.826498 0.7418981
+## 3    Smoker   27   17       0     0 0.04917969 -3.825701 1.0000000
+## 4 Nonsmoker   27   16       0     0 0.03932312 -3.675367 0.7418981
+## 5    Smoker   25   17       0     1 0.05901390 -3.673114 1.0000000
+## 6 Nonsmoker   31   17       0     1 0.05445259 -3.659995 0.7418981
+```
+
+
+
+---
+class:middle
+### Next step: working with the matched data
+
+Here is what the process would look like using the matching results .red[*with* replacement].
+
+
+``` r
+summary(m_data2$weights)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.7419  0.7419  1.0000  1.0000  1.0000  4.4514
+```
+
+``` r
+lm( zweight ~ mbsmoke , data = m_data2, weights = weights ) %&gt;% tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept) -0.00679    0.0389    -0.175 8.61e- 1
+## 2 mbsmoke     -0.380      0.0514    -7.40  2.22e-13
+```
+
+``` r
+ATT &lt;- mean(m_data2$zweight[m_data2$mbsmoke==1]) -mean(m_data2$zweight[m_data2$mbsmoke==0])
+ATT
+```
+
+```
+## [1] -0.3965683
+```
+
+The estimate of the ATT is slightly larger,   **-0.397** and the **SE** is also slightly larger since replacements are being used.
+
+---
+class:middle
+### Bootstrapping standard errors
+
+Unlike a standard full-sample regression, there are multiple sources of uncertainty in matched ATT estimates:
+1. Sampling error in treatment and outcome (the "normal" kind)
+2. Sampling error in PS model covariates
+3. Arbitrary choice among tied matches
+
+If we take the `lm`-provided SE seriously, we are ignoring most of this.
+
+So we need a better approach, such as bootstrapping
+
+
+---
+class:middle
+###PS matching summary
+1) Special case of matching, the distance metric is the (estimated) propensity score
+
+2) 1-to-n closest neighbor matching is common when the control group is large compared to treatment group
+
+
+3) **Pros**: 
+  - Robust, matched pairs (within pair analysis), balance distributions in directions orthogonal to estimated PS, immensely popular, vast literature.
+
+
+4) **Cons**:
+  - Sometimes dimension reduction via the propensity score may be too drastic, recent methods advocate matching on the multivariate covariates directly, of fine stratification (PS used to create stratum, then weighting according to stratum size)
+
+---
+
+class:inverse, center, middle
+
+# Part 2.4 Propensity score (weighting)
+---
+class:middle
+### Still more options??? 
+&lt;img src="images/PS_steps.jpg" width="100%" style="display: block; margin: auto;" /&gt;
+
+.small[Desai R J, Franklin J M. Alternative approaches for confounding adjustment in observational studies using weighting based on the propensity score: a primer for practitioners BMJ 2019; 367 :l5657 doi:10.1136/bmj.l5657]
+
+---
+class:middle
+### What is weighting?
+
+- An approach that skips the subclassification or matching step and uses **inverse probability 
+of treatment weights** (IPTW) based on each case's propensity score directly.
+
+- The idea is to apply a weight to each case that makes the treatment and the control *groups* balanced on the propensity score and therefore (hopefully) on the individual covariates.
+
+---
+class:middle
+### IPTW is like survey weighting
+
+Sex    | P(population) | P(sample) | formula | weight
+:------|:--------------|:----------|:--------|:-------
+Male   | .50           | .40       | .50/.40 | 1.25
+Female | .50           | .60       | .50/.60 | 0.8333333
+
+- In surveys, more weight to groups that don’t show up as much 
+as they should in the sample
+
+
+- The logic with IPTW is the same – in an 
+experiment the treatment and control groups “should” be balanced in their 
+propensity to receive treatment and on any other factors as well.
+
+---
+class:middle
+### Recall .blue[Possible treatment effects]
+
+1. Average treatment effect (**ATE**) for all participants (quantity estimated from a RCT)
+2. Average treatment effect for those who received the treatment (**ATT**)
+3. Average treatment effect among controls (**ATC**) 
+4. Average treatment effect among the evenly matchable (**ATM**), nearly equivalent to cohort formed by one-to-one pair matching
+5. Average treatment effect among the overlap population (**ATO**), estimates the treatment effect among those likely to have received either treatment or control
+
+---
+class:middle
+### There are PS weights for each different treatment effects
+
+The PS for participant i is defined here as `\(e_i\)` and the treatment assignment is `\(T_i\)`, where T=1 indicates the participant received the treatment and T=0 indicates they received the control.
+
+`$$w_{ATE} = \frac{T_i}{e_i} + \frac{1 - T_i}{1 - e_i}$$`
+`$$w_{ATT} = \frac{e_iT_i}{e_i} + \frac{e_i(1-T_i)}{1-e_i}$$`
+
+`$$w_{ATC} = \frac{(1-e_i)T_i}{e_i} + \frac{(1-e_i) (1-T_i)}{1 - e_i}$$`
+`$$w_{ATM} = \frac{\min\{e_i, 1-e_i\}}{T_ie_i + (1- T_i)(1-e_i)}$$`
+`$$w_{AT0} = (1-e_i)T_i + e_i(1-T_i)$$`
+Coding the weights can be done manually BUT, it is not necessary as the `WeightIt` package offers all these estimands
+
+
+---
+class:middle
+### Example - Weighting for ATT
+
+- We can transform the propensity score into a weight so that the control group 
+has the same average propensity to smoke as the treatment group.
+- This works by giving more weight to high-propensity controls and less weight 
+to low-propensity controls (like survey weights).
+- Treatment cases all get a weight of 1 because the treatment cases already look like themselves!
+
+`$$w_i = T_i + (1-T_i)\frac{P(T=1|\mathbf{X}_i)}{1-P(T=1|\mathbf{X}_i)}$$`
+
+
+---
+class:middle
+### Creating the weights manually
+
+Creating weights that balance the treatment and control groups on the 
+propensity score is relatively simple.
+
+
+``` r
+psmod &lt;- glm(as.formula(trt_form2), data = d, family = binomial())
+
+d &lt;- d %&gt;% 
+  mutate(pscore = predict(psmod, type = "response") ,
+         attwt = if_else(mbsmoke==1, 1 , pscore/(1-pscore) ),
+         atewt = if_else(mbsmoke==1, 1/pscore , 1/(1-pscore) ))
+```
+
+--
+
+- **The ATT weight makes the _controls_ look like the treatment**
+- **The ATE weight makes _both groups_ look like the total sample**
+
+---
+class:middle
+### ATT weights improve balance
+
+
+
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-44-1.svg" width="130%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### Use `WeightIt` instead of manual calculation
+
+- `WeightIt` is an excellent package (same author as `MatchIt` package)
+- Just like `MatchIt` brings many capabilities under one package, `WeightIt` serves as a wrapper on the myriad weighting algorithms out there, giving them a unified syntax.
+
+
+``` r
+W1 &lt;- weightit(as.formula(trt_form2) ,
+               data = d ,
+               method = "ps" ,    # propensity score weighting
+               s.weights = NULL,  # placeholder for sampling weights
+               estimand = "ATT")  # ATT estimand (not ATE)
+```
+
+---
+class:middle
+### Results
+&lt;small&gt;
+
+``` r
+summary(W1)
+```
+
+```
+##                   Summary of weights
+## 
+## - Weight ranges:
+## 
+##           Min                                 Max
+## treated 1.        ||                        1.   
+## control 0.007 |---------------------------| 6.709
+## 
+## - Units with the 5 most extreme weights by group:
+##                                       
+##              1     2     3     4     5
+##  treated     1     1     1     1     1
+##           3585  3534  2497  1292   877
+##  control 3.305 3.684 3.709 4.244 6.709
+## 
+## - Weight statistics:
+## 
+##         Coef of Var   MAD Entropy # Zeros
+## treated       0.000 0.000   0.000       0
+## control       1.234 0.664   0.422       0
+## 
+## - Effective Sample Sizes:
+## 
+##            Control Treated
+## Unweighted 3778.       864
+## Weighted   1497.73     864
+```
+
+``` r
+min_ps &lt;- min(W1$ps)
+max_ps &lt;- max(W1$ps) 
+```
+&lt;/small&gt;
+
+
+
+---
+class:middle
+### Check balance
+
+
+``` r
+love_plot(W1)
+```
+
+Looks pretty good. Note: if we hadn't had `I(medu^2)` in the model, we would *not* have had acceptable balance.
+
+---
+class:middle
+
+### Assessing overlap
+
+
+``` r
+bal.plot(W1, var.name = "prop.score", which = "both", type = "histogram",
+         mirror = TRUE)
+```
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/balplot_iptw-1.svg" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### Estimate ATT
+
+- Here instead of using the dataframe with all covars, you will only use the **weights**
+
+
+``` r
+summary(W1$weights)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## 0.00714 0.10471 0.21182 0.37242 0.51383 6.70928
+```
+
+``` r
+lm(zweight ~ mbsmoke, data = d, 
+*  weights = W1$weights ) %&gt;%
+  tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept) -0.00508    0.0208    -0.244 8.07e- 1
+## 2 mbsmoke     -0.382      0.0295   -13.0   8.39e-38
+```
+
+The ATT estimate is thus **-0.382**.  (ATE from matching was -0.386)       
+Again might want to do some bootstrapping to get a better estimate of the SE
+
+---
+class:middle
+### Use `WeightIt` to estimate ATE
+- Creating the `weightit` object
+
+``` r
+W2 &lt;- weightit(as.formula(trt_form2) ,
+               data = d,   method = "ps", s.weights = NULL,  
+*              estimand = "ATE")
+```
+
+--
+
+**Compare the Weights for ATE:**
+
+``` r
+summary(W2$weights)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.007   1.105   1.211   2.003   1.495  53.189
+```
+
+**Compare the Weights for ATT:**
+
+``` r
+summary(W1$weights)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## 0.00714 0.10471 0.21182 0.37242 0.51383 6.70928
+```
+
+---
+class:middle
+### Comparing "hand-calcualted" and `WeightIt` estimated weights 
+.pull-left[
+**ATT**
+
+``` r
+round(summary(W1$weights),2) #ATT
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.01    0.10    0.21    0.37    0.51    6.71
+```
+
+``` r
+round(summary(d$attwt), 2) #ATT
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.01    0.10    0.21    0.37    0.51    6.71
+```
+
+]
+
+--
+.pull-right[
+**ATE**
+
+``` r
+round(summary(W2$weights),2) #ATE
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1.01    1.10    1.21    2.00    1.49   53.19
+```
+
+``` r
+round(summary(d$atewt),2) # ATE
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    1.01    1.10    1.21    2.00    1.49   53.19
+```
+]
+
+
+---
+class:middle
+### Use `WeightIt` to estimate ATE
+
+
+``` r
+lm(zweight ~ mbsmoke, data = d, 
+*  weights = W2$weights ) %&gt;%
+  tidy()
+```
+
+```
+## # A tibble: 2 × 5
+##   term        estimate std.error statistic  p.value
+##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)   0.0711    0.0205      3.46 5.38e- 4
+## 2 mbsmoke      -0.381     0.0290    -13.1  9.33e-39
+```
+
+Using the weights for ATE estimation we get **-0.381**
+
+ATE from matching was **-0.386**      
+
+---
+class:middle
+###IPTW (summary) 
+
+.red[Advantages]
+- Simple, with theoretical foundation 
+- Explicit target population 
+- Global balance 
+- Extends to more complex settings 
+&lt;br&gt;      
+--
+&lt;br&gt;
+
+.red[Disadvantages]  
+- More sensitive to model misspecification 
+- PS near 0 or 1 yield extreme weights 
+- ATE might not always be the sensible estimand
+---
+class:middle
+### Example of new weighting schemes
+.pull-left[
+&lt;img src="images/weight_density.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="images/weight_compare.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.small[BMJ [DOI:10.1136 bmj.l5657](https://www.bmj.com/content/367/bmj.l5657)]
+---
+class:middle
+### Example of new weighting schemes
+**Results**
+
+&lt;img src="images/weight_outcome.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+.small[BMJ [DOI:10.1136 bmj.l5657](https://www.bmj.com/content/367/bmj.l5657)]
+
+
+---
+
+class: middle
+
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+
+---
+class: middle
+
+### Extra resources
+
+- Propensity Score Analysis: A Primer and Tutorial by Noah Greifer [Here](https://iqss.github.io/dss-ps/)
+- Choosing the Causal Estimand for Propensity Score Analysis of Observational Studies (https://doi.org/10.48550/arXiv.2106.10577)
+- Griffin BA, Schuler MS, Cefalu M, et al. A Tutorial for Propensity Score Weighting for Moderation Analysis With Categorical Variables: An Application Examining Smoking Disparities Among Sexual Minority Adults. Med Care. 2023;61(12):836-845. doi:10.1097/MLR.0000000000001922
+- Quantitude Podcast: S3E27: Propensity Scores -- I Meant To Do That! [link here](https://quantitudepod.org/s3e27-propensity-scores/)
+- Austin, P.C. (2008), A critical appraisal of propensity-score matching in the medical literature between 1996 and 2003. Statist. Med., 27: 2037-2049. https://doi.org/10.1002/sim.3150
+- Austin, P.C. (2007), The performance of different propensity score methods for estimating marginal odds ratios. Statist. Med., 26: 3078-3094. https://doi-org.proxy3.library.mcgill.ca/10.1002/sim.2781
+- Austin, P.C. (2009), Balance diagnostics for comparing the distribution of baseline covariates between treatment groups in propensity-score matched samples. Statist. Med., 28: 3083-3107. https://doi.org/10.1002/sim.3697
+
+
+---
+class: middle
+
+### Extra resources
+
+- Wan F. Matched or unmatched analyses with propensity-score-matched data?. Stat Med. 2019;38(2):289-300. doi:10.1002/sim.7976
+- Til Stürmer, Kenneth J. Rothman, Jerry Avorn, Robert J. Glynn, Treatment Effects in the Presence of Unmeasured Confounding: Dealing With Observations in the Tails of the Propensity Score Distribution—A Simulation Study, American Journal of Epidemiology, Volume 172, Issue 7, 1 October 2010, Pages 843–854, https://doi.org/10.1093/aje/kwq198
+- Kosuke Imai, Marc Ratkovic, Covariate Balancing Propensity Score, Journal of the Royal Statistical Society Series B: Statistical Methodology, Volume 76, Issue 1, January 2014, Pages 243–263, https://doi.org/10.1111/rssb.12027
+- Paul R. Rosenbaum &amp; Donald B. Rubin (1984) Reducing Bias in Observational Studies Using Subclassification on the Propensity Score, Journal of the American Statistical Association, 79:387, 516-524, DOI: 10.1080/01621459.1984.10478078
+- Schneeweiss, Sebastian; Rassen, Jeremy A.; Glynn, Robert J.; Avorn, Jerry; Mogun, Helen; Brookhart, M Alan. High-dimensional Propensity Score Adjustment in Studies of Treatment Effects Using Health Care Claims Data. Epidemiology 20(4):p 512-522, July 2009. | DOI: 10.1097/EDE.0b013e3181a663cc
+
+---
+class:middle
+### Step 2 - Codes to Examine Distribution of PS estimates
+- Explore, visually the distribution of PS across levels of the Treatment/Exposure/Intervention
+
+
+
+``` r
+# density plot
+gg &lt;- ggplot(d, aes( x = ps1 , fill = smoker, color = smoker, after_stat(scaled) )) + 
+  geom_density(alpha = .3) +
+  labs(x = "Estimated Propensity Score" ,
+       y = "Density") +
+  theme(legend.position = "top") +
+  theme(legend.title = element_blank()) +
+  theme_xaringan(background_color = "#FFFFFF",
+                 text_font_size = 10,
+                 title_font_size = 12)
+#gg
+```
+
+---
+class:middle
+### Step 2 - Codes to Examine Distribution of PS estimates
+
+``` r
+# boxplot
+gg1 &lt;- ggplot(d, aes( y = ps1 , x = smoker )) + 
+  geom_boxplot(outlier.alpha = .3) +
+  labs(y = "Estimated Propensity Score" ,
+       x = "") +
+  theme(legend.position = "top") +
+  theme(legend.title = element_blank()) +
+  theme_xaringan(background_color = "#FFFFFF",
+                 text_font_size = 10,
+                 title_font_size = 12)
+#gg1 
+```
+
+---
+class:middle
+### Step 2 - Codes to Examine Distribution of PS estimates
+
+``` r
+gg2 &lt;- ggplot( d , aes( x = smoker , y = ps1 , color = smoker )) + geom_jitter(alpha = .5, size = .3, width = .2) +
+  theme(legend.position = "none") + coord_flip() + labs(x = "", y = "Est. propensity score") +
+  annotate(geom="rect", ymin = .013, ymax = .039, xmin = .8, xmax = 1.2, fill = "#F8766D", alpha = .2) +
+  annotate(geom="rect", ymin = .849, ymax = .926, xmin = 1.8, xmax = 2.2, fill = "#00BFC4", alpha = .2) +
+  theme_xaringan(background_color = "#FFFFFF", text_font_size = 10, title_font_size = 12)
+gg2
+```
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-59-1.svg" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+## Stratification: ATE breakpoints
+
+``` r
+strat.ATE &lt;- matchit(mbsmoke ~ mmarried + mrace + alcohol + fbaby + mage + medu + nprenatal +
+                       I(mage^2) + I(medu^2) + I(nprenatal^2), data=d, 
+*                    method="subclass", subclass=5, estimand="ATE")
+```
+
+
+``` r
+#ATE density plot
+ggplot(d, aes(x=ps1, fill=smoker, color=smoker)) + geom_density(alpha=0.3) + 
+  labs(x = "Estimated Propensity Score", y = "Density") + 
+  theme(legend.title = element_blank()) + 
+  geom_vline(aes(xintercept=strat.ATE$q.cut[2]), linetype = 3) + 
+  geom_vline(aes(xintercept=strat.ATE$q.cut[3]), linetype=3) + 
+  geom_vline(aes(xintercept=strat.ATE$q.cut[4]), linetype=3) + 
+  geom_vline(aes(xintercept=strat.ATE$q.cut[5]), linetype=3)
+```
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-61-1.svg" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+## Stratification: ATT breakpoints
+
+``` r
+strat.ATT &lt;- matchit(mbsmoke ~ mmarried + mrace + alcohol + fbaby + mage + medu + nprenatal + 
+                       I(mage^2) + I(medu^2) + I(nprenatal^2), data=d, 
+*                    method="subclass", subclass=5, estimand="ATT")
+```
+
+
+``` r
+#ATT density plot
+ggplot(d, aes(x=ps1, fill=smoker, color=smoker)) + geom_density(alpha=0.3) + 
+  labs(x = "Estimated Propensity Score", y = "Density") + theme(legend.title = element_blank()) + geom_vline(aes(xintercept=strat.ATT$q.cut[2]), linetype = 3) + 
+  geom_vline(aes(xintercept=strat.ATT$q.cut[3]), linetype=3) + 
+  geom_vline(aes(xintercept=strat.ATT$q.cut[4]), linetype=3) + 
+  geom_vline(aes(xintercept=strat.ATT$q.cut[5]), linetype=3)
+```
+
+&lt;img src="L18_EPIB704_Propensity_Scores_25_Essentials_files/figure-html/unnamed-chunk-63-1.svg" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class:middle
+#### Coding the weights manually (TL;NR)
+
+
+
+``` r
+# add weights to hypothetical data frame
+dat &lt;- dat %&gt;%
+  mutate(
+    w_ate = (treatment / propensity_score) + 
+      ((1 - treatment) / (1 - propensity_score)),
+    w_att = ((propensity_score * treatment) / propensity_score) + 
+      ((propensity_score * (1 - treatment)) / (1 - propensity_score)),
+    w_atc = (((1 - propensity_score) * treatment) / propensity_score) + 
+      (((1 - propensity_score) * (1 - treatment)) / (1 - propensity_score)),
+    w_atm = pmin(propensity_score, 1 - propensity_score) / 
+      (treatment * propensity_score + (1 - treatment) * (1 - propensity_score)),
+    w_ato = (1 - propensity_score) * treatment + 
+      propensity_score * (1 - treatment)
+  )
+```
+
+This is not necessary as the **WeightIt** package offers all these estimands
+
+---
+class:middle
+### Interpreting the summary form WeightIt
+
+
+This `summary` = `summary(W1)` will give you a sense of the distribution of weights.
+
+
+The lowest weight is 0.007. These are non-smokers that are so
+unlike the smokers that they don't tell us much about the counterfactual
+world in which they smoke
+
+The highest weight is 0.887. These are non-smokers that are quite
+like the smokers so they  tell us much about the counterfactual
+world in which they smoke
+
+The **effective sample size (ESS)** gives a sense of how much useful counterfactual information we have about the control cases.
+
+It's calculated as:
+
+`$$\Sigma(w)^2 / \Sigma(w^2)$$`
+
+Weights with low variability are desirable because they improve the precision  of the estimator      
+Variability by i) ratio of the largest weight to the smallest in each group, ii) coefficient of 
+variation (standard deviation divided by the mean) of the weights in each 
+group, and iii) effective sample size computed from the weights.
+---
+
+class: inverse, center, middle
+
+# Part 3. - Propensity score (miscellaneous topics)
+---
+class:middle
+### The problem with the traditional workflow
+
+&lt;img src="images/workflow.JPG" width="60%" style="display: block; margin: auto;" /&gt;
+
+The "fit logistic regression" approach relies too much on human balance checking and refitting.    
+People aren't so good at this.   
+Modern techniques attempt to take humans out of the process.
+
+---
+class:middle
+### Approaches to PS beyond logoistic regression   
+
+**Covariate balancing propensity scores (CBPS)**
+  - `CBPS` package (integrated in `WeightIt` package), a newer technique that can jointly minimize covariate imbalance while maximizing 
+prediction of treatment selection, e.g. `CBPS::CBPS` or with `weightit( ... , method = "CBPS")` set `estimand` to `ATT` or `ATE`)
+
+**Mahalanobis distance matching**
+  - match in multidimensional "covariate space" rather than on a unidimensional PS (available in `matchit`)
+  
+**Entropy balancing**
+  - find a *single weight* that can be applied to the control cases  that will balance *all* the covariates (available in `matchit`)
+  
+**[SuperLearner](https://github.com/ecpolley/SuperLearner)**
+  - a collection of machine learning and ensembling algorithms implemented in `WeightIt`
+ 
+---
+class:middle
+### The "new approach"
+
+- The traditional approach was simply to stratify, weight, or match, and then 
+compare treatment and control using t-tests (or another difference in means 
+test). That’s mostly what we've done so far.
+
+- These days, many researchers regard matching or weighting as "preprocessing" that makes the parametric regression model you would have estimated anyway less dependent on modeling choices.
+
+- We talked about how matching and weighting unconfound the relationship between `\(T\)` and `\(X\)` by breaking the "backdoor" connection at `\(S\)`. We also talked about how regression unconfounds the relationship by controlling for `\(X\)`. So why not do both at the same time? These are called "doubly robust" estimators of TEs because they give you two chances to get it right.
+
+
+---
+class:middle
+### Basic workflow
+
+1. **Balance treatment and controls**  using stratifying, weighting, or matching for the covariates.
+
+2. **Estimate the parametric regression** on the matched or weighted sample. Control for any covariates you think are pre-treatment confounders. *It's OK if they were also used in Step 1!*
+
+3. **Interpret** `\(\hat{\beta}\)` as either (F)SATT or (F)SATE, depending on what approach you used in Step 1.
+
+4. **Resist the temptation** to interpret the coefficients on the control variables. They are *only there* to unconfound the relationship between `\(T\)` and `\(Y\)`. [Table 2 fallacy](https://pubmed.ncbi.nlm.nih.gov/23371353/)
+
+---
+class:middle
+### That's really all there is to it!
+
+- You can extend this to *any* parametric model you would ordinarily use.
+
+
+- For example, you can use this with logistic regression, count regressions,
+survival models, etc.
+
+
+- You can think of stratification, matching, or weight as "getting the data 
+ready" (or **preprocessing**) to estimate the model you would have run
+anyway.
+
+---
+class:middle
+### Multinomial treatments
+
+- Not all treatments are binary. Sometimes there are multiple (3+) treatment arms that we want to compare.
+
+
+- These types of comparisons are most readily accomplished with *weighting.* The idea is to generate weights that make all the treatment groups have the same distribution of all the covariates. This breaks the association between treatment assignment and all selection variables.
+
+
+- Because the target distribution is (almost always) the sample average, we are computing an ATE.
+
+
+- This can also be handled by **weightIt**
+
+---
+class:middle
+### Continuous treatments
+
+- Treatments don't always need to be categorical. Sometimes we have a "dose-response" style of treatment that is actually continuous.
+
+- Again, we proceed with ATE weighting because there is no clear "treated" vs. "untreated" distinction.
+
+- The target here is to create weights that make the *Pearson's correlation* between the *treatment* and the *covariates* as close to zero as possible.
+
+- This will break the backdoor path between the treatment and the selection variables.
+
+- This can also be handled by **weightIt**
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "3:2",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "navigation": {
+    "scroll": false
+  }
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
