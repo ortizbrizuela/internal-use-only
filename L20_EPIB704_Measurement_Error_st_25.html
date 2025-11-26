@@ -22,7 +22,7 @@ class: left, middle, inverse, title-slide
 ### EBOH, McGill University
 ]
 .date[
-### updated: 2025-11-20
+### updated: 2025-11-25
 ]
 
 ---
@@ -345,7 +345,7 @@ class:middle
 
 ---
 class: middle
-### Causality and Measuremetn Error
+### Causality and Measurement Error
 [Hernán &amp; Robins Chapter 9](https://www.hsph.harvard.edu/miguel-hernan/causal-inference-book/)
 
 9.1: Sets up a model in which `\(A\)` is the exposure, `\(A^*\)` is the measured exposure, and the causes of `\(A^*\)` are `\(A\)` and `\(U_a\)`, which are all the other reasons that `\(A^*\)` takes its specific value other than `\(A\)` (and which can include random or obscure inputs).
@@ -523,15 +523,18 @@ class:middle
 ### Misclassification 
 
 The probability that a subject who was truly exposed was correctly classified as exposed is the classification scheme’s **sensitivity** (SE). 
-- If the misclassified value of `\(E\)` is denoted by `\(E^∗\)`, then the sensitivity can be expressed as `\(Pr(E^∗ = 1|E = 1)\)`. 
--The proportion of those who were truly exposed who were incorrectly classified as unexposed is the false-negative proportion `\((FN)\)`, or `\(1 − SE = Pr(E^∗ = 0|E = 1)\)`.
+
+- If the misclassified value of `\(E\)` is denoted by `\(E^∗\)`, then the sensitivity can be expressed as: `$$Pr(E^∗ = 1|E = 1)$$`
+ 
+- The proportion of those who were truly exposed who were incorrectly classified as unexposed is the false-negative proportion `\((FN)\)`, or `$$1 − SE = Pr(E^∗ = 0|E = 1)$$`
 
 ---
 class:middle
 ### Misclassification 
 
-The probability that a subject who was truly unexposed was correctly classified as unexposed is the classification scheme’s **specificity (SP)**, or `\(Pr(E^∗ = 0|E = 0)\)`. 
-- The proportion of those who were truly unexposed who were incorrectly classified as exposed is the false-positive proportion `\((FP)\)`, or `\(1 − SP=Pr(E^∗ = 1|E = 0)\)`. 
+The probability that a subject who was truly unexposed was correctly classified as unexposed is the classification scheme’s **specificity (SP)**, or `$$Pr(E^∗ = 0|E = 0)$$` 
+
+- The proportion of those who were truly unexposed who were incorrectly classified as exposed is the false-positive proportion `\((FP)\)`, or `$$1 − SP=Pr(E^∗ = 1|E = 0)$$`. 
 
 .small[Because these measures are proportions, their values range from 0 to 1.]
  
@@ -598,9 +601,9 @@ class:middle
 
 `$$P(E^*=0|E=0, D=1) = P(E^*=0|E=0, D=0)$$`
 
-.small[ 
+
 - _If either or both of these equalities does not hold, we say we have **differential misclassification**._ 
-- _Statistically speaking, nondifferential misclassification implies that `\(E^∗\)` is independent of `\(D\)`, given `\(E\)`._] 
+- _Statistically speaking, nondifferential misclassification implies that `\(E^∗\)` is independent of `\(D\)`, given `\(E\)`._
 
 ---
 class:middle
@@ -644,11 +647,6 @@ Therefore the observed `D` cell count will contain:
 `\(((1-sensitivity) \times B’) + ((specificity) \times D’)\)`
 
 
----
-class:middle
-### Misclassification
-
-&lt;img src="images/misclass2by2.png" width="150%" style="display: block; margin: auto;" /&gt;
 
 ---
 class:middle
@@ -910,11 +908,11 @@ modcorrectedR0&lt;-data.frame(mod.simexR0[["SIMEX.estimates"]])
 class: middle
 ###Non- Differential Misclassification of the Exposure
 .pull-left[
-&lt;img src="L20_EPIB704_Measurement_Error_st_25_files/figure-html/unnamed-chunk-42-1.png" width="120%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L20_EPIB704_Measurement_Error_st_25_files/figure-html/unnamed-chunk-41-1.png" width="120%" style="display: block; margin: auto;" /&gt;
 ]
 --
 .pull-right[
-&lt;img src="L20_EPIB704_Measurement_Error_st_25_files/figure-html/unnamed-chunk-43-1.png" width="120%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L20_EPIB704_Measurement_Error_st_25_files/figure-html/unnamed-chunk-42-1.png" width="120%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -945,10 +943,10 @@ class: middle
 ```
 --
 .pull-left[
-&lt;img src="L20_EPIB704_Measurement_Error_st_25_files/figure-html/unnamed-chunk-45-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L20_EPIB704_Measurement_Error_st_25_files/figure-html/unnamed-chunk-44-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
-&lt;img src="L20_EPIB704_Measurement_Error_st_25_files/figure-html/unnamed-chunk-46-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L20_EPIB704_Measurement_Error_st_25_files/figure-html/unnamed-chunk-45-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -979,10 +977,10 @@ class: middle
 ```
 --
 .pull-left[
-&lt;img src="L20_EPIB704_Measurement_Error_st_25_files/figure-html/unnamed-chunk-48-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L20_EPIB704_Measurement_Error_st_25_files/figure-html/unnamed-chunk-47-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 .pull-right[
-&lt;img src="L20_EPIB704_Measurement_Error_st_25_files/figure-html/unnamed-chunk-49-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;img src="L20_EPIB704_Measurement_Error_st_25_files/figure-html/unnamed-chunk-48-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 ]
 
 ---
@@ -1002,6 +1000,11 @@ Carroll, R.J., Küchenhoff, H., Lombard, F. and Stefanski L.A. (1996) Asymptotic
 ]
 
 
+---
+class:middle
+### Misclassification wont stop at .red[Exposures-only or Outcomes only]
+
+&lt;img src="images/misclass2by2.png" width="150%" style="display: block; margin: auto;" /&gt;
 
 
 ---
