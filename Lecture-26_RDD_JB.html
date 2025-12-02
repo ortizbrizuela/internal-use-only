@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Quasi-experimental designs: Regression discontinuity design (RDD)</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Julia Brillinger (adapted from Jay Brophy)" />
+    <script src="libs/header-attrs-2.30/header-attrs.js"></script>
+    <link href="libs/tile-view-0.2.6/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view-0.2.6/tile-view.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Quasi-experimental designs: Regression discontinuity design (RDD)
+]
+.author[
+### Julia Brillinger (adapted from Jay Brophy)
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### 2025-11-23 (updated: 2025-12-01)
+]
+
+---
+
+
+
+
+
+
+
+
+
+
+
+## What are quasi-experimental methods?
+- Quasi-experimental methods take advantage of natural experiments
+- Exploit situations where treatment assignment is as good as random
+- **Key benefit:** Exchangeability. Balances measured and unmeasured baseline covariates (by design)
+- Common quasi-experimental methods: interrupted time series, instrumental variables, difference-in-differences, regression discontinuity
+---
+## Regression discontintuity design
+- Participants are assigned to treatment based on whether a measure falls above or below a certain **cut-point**/**cutoff**/**threshold**
+- That measure that determines treatment/eligibility is called a **running variable**/**forcing variable**/**assignment variable**
+- The running variable must be continuous at cutoff
+
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/dag2-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+---
+## Example: Hypothetical tutoring program
+- Students take an exam at the beginning of the year (entrance exam) and at the end of the year (exit exam)
+- A tutoring program was introduced to improve test scores
+- Students who score 70 or lower on the entrance exam get a free tutor for the year
+
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/unnamed-chunk-1-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+---
+## Example: Hypothetical tutoring program
+- We want to know the **effect of a tutoring program** on a student's **exit exam score** at the end of the year (`\(ATE = \mathbb{E}[Y(X=1)] - \mathbb{E}[Y(X=0)]\)`, where `\(Y\)` is the exit exam score and `\(X\)` is having a tutor)
+- Do we have exchangeability?
+
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/unnamed-chunk-2-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Example: Hypothetical tutoring program
+
+- Probably not for the entire sample
+- But the people right before and right after the cutoff are essentially the same 
+- They are similar on observed and unobserved pre-treatment covariates, like in an RCT
+
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+---
+## The running variable
+- The running variable is subject to random variation (measurement error, sampling variability, chance factors)
+- The arbitrary cutoff creates random variation in treatment assignment
+- Other examples of running variables: CD4 count for initiation of ART, low birth weight for intensive interventions, income eligibility for benefits
+---
+## Causal inference intuition
+- Compare **outcomes** for those right before/after
+- Measure the gap (difference) in outcome for people on both sides of the cutoff point
+- Magnitude of this difference is the **local average treatment effect (LATE) **, the causal estimate under **perfect compliance**
+- `\(\text{LATE} = \lim_{z \uparrow c} \mathbb{E}[Y_i \mid Z_i = z] - \lim_{z \downarrow c} \mathbb{E}[Y_i \mid Z_i = z]\)`, where `\(Z_i\)` is the running variable and `\(c\)` the the cutoff
+
+.pull-left[
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/tutoring-outcome-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+.pull-right[
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/tutoring-outcome-delta-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+---
+## Noncompliance
+- People on the margin of the cutoff might end up in/out of the program
+- Sharp vs. fuzzy discontinuities
+
+.pull-left[
+Sharp discontinuity - perfect compliance
+
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/tutoring-sharp-1.png" width="1000%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+Fuzzy discontinuity - imperfect compliance
+
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/tutoring-fuzzy-1.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+---
+## Key conditions for causal inference:
+
+1. The decision rule exists and the cutoff `\(c\)` is known
+  - Probability of treatment must change **discontinuously** at `\(c\)` of the running variable `\(Z\)`
+  - `\(\lim_{Z \uparrow c} \Pr[X_i = 1 \mid Z_i = z] \neq \lim_{Z \downarrow c} \Pr[X_i = 1 \mid Z_i = z]\)`
+  - Check this by plotting the running variable `\(Z\)` against treatment `\(X\)`
+2. The running variable `\(Z\)` is continuous at the cutoff
+  - Check covariate balance and potential manipulation
+3. The relationship between `\(Z_i\)` and the potential outcomes `\(Y_i(0), Y_i(1)\)` is continuous at `\(c\)`
+
+---
+
+## Back to our tutoring example
+**Step 1:** Verify the decision rule exists and the cutoff is known (done)   
+**Step 2:** Determine if the design is fuzzy or sharp (done)                
+**Step 3:** Check for discontinuity in running variable around cutoff (i.e make sure there's no unexpected variation, like many people clustered just below the cutoff to get tutoring)
+
+.pull-left[
+
+``` r
+gg &lt;- ggplot(tutoring, aes(x = entrance_exam, fill = tutoring)) +
+  geom_histogram(binwidth = 2, color = "white", boundary = 70) + 
+  geom_vline(xintercept = 70) + 
+  labs(x = "Entrance exam score", y = "Count", fill = "In program")
+```
+]
+.pull-right[
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/unnamed-chunk-5-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+]
+
+Here it doesn’t look like there’s a jump around the cutoff but use `rddensity::rddensity()` to do a formal statistical test.
+---
+##Worked example (continued)
+
+Formal statistical test
+
+``` r
+test_density &lt;- rddensity(tutoring$entrance_exam, c = 70)
+output &lt;- summary(test_density)
+```
+
+```
+## 
+## Manipulation testing using local polynomial density estimation.
+## 
+## Number of obs =       1000
+## Model =               unrestricted
+## Kernel =              triangular
+## BW method =           estimated
+## VCE method =          jackknife
+## 
+## c = 70                Left of c           Right of c          
+## Number of obs         238                 762                 
+## Eff. Number of obs    207                 523                 
+## Order est. (p)        2                   2                   
+## Order bias (q)        3                   3                   
+## BW est. (h)           20.946              18.277              
+## 
+## Method                T                   P &gt; |T|             
+## Robust                -0.4607             0.645               
+## 
+## 
+## P-values of binomial tests (H0: p=0.5).
+## 
+## Window Length / 2          &lt;c     &gt;=c    P&gt;|T|
+## 0.897                      20      20    1.0000
+## 1.794                      35      36    1.0000
+## 2.692                      48      56    0.4926
+## 3.589                      62      75    0.3052
+## 4.486                      75      95    0.1448
+## 5.383                      87     119    0.0305
+## 6.281                     103     149    0.0045
+## 7.178                     120     170    0.0039
+## 8.075                     129     197    0.0002
+## 8.972                     135     224    0.0000
+```
+---
+##Worked example (continued)
+
+
+``` r
+plot_density_test &lt;- rdplotdensity(rdd = test_density, 
+                                   X = tutoring$entrance_exam, 
+                                   type = "both")  # This adds both points and lines
+```
+
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/unnamed-chunk-7-1.png" width="30%" style="display: block; margin: auto;" /&gt;
+
+In the plot that the confidence intervals overlap substantially. Also the robust p-value &gt; 0.05, so we have no evidence of a significant difference between the two lines. Based on this plot and the t-statistic, no evidence of manipulation or bunching.
+
+---
+##Worked example (continued)
+**Step 4:** Check for discontinuity in outcome across running variable   
+
+.pull-left[
+
+``` r
+gg &lt;- ggplot(tutoring, aes(x = entrance_exam, y = exit_exam, color = tutoring)) +
+  geom_point(size = 0.5, alpha = 0.5) + 
+  # Add a line based on a linear model for the people scoring 70 or less
+  geom_smooth(data = filter(tutoring, entrance_exam &lt;= 70), method = "lm") +
+  # Add a line based on a linear model for the people scoring more than 70
+  geom_smooth(data = filter(tutoring, entrance_exam &gt; 70), method = "lm") +
+  geom_vline(xintercept = 70) +
+  labs(x = "Entrance exam score", y = "Exit exam score", color = "Used tutoring")
+```
+]
+
+.pull-right[
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/unnamed-chunk-9-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+.left[
+Based on the clear discontinuity, participation in the tutoring program seems to boost final scores
+]
+---
+## Step 5: Select a bandwidth and model
+- Small bandwidths reduce potential bias from approximating outcome/exposure relationship using linear function
+- However, larger bandwidth allows for greater power
+- Algorithms exist to choose optimal width    
+- Also use common sense. Maybe ±5 for the entrance exam?    
+- For robustness, check what happens, if you double and halve the bandwidth
+
+
+
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/bandwidth-plots-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+## Modelling
+.pull-left[
+- Simplest approach is linear model
+- Can allow for the same or different slopes on either side of the cutoff
+- Could also consider polynomial terms or use splines
+- Could also use lines without parameters (use data to find the best line, often with windows and moving averages)
+  - Locally  estimated weighted scatter plot smoothing **(LOESS/LOWESS)** is a common method
+- You can give greater weight to data closer to the cutoff using a **kernel**
+]
+.pull-right[
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/unnamed-chunk-10-1.png" width="504" style="display: block; margin: auto;" /&gt;
+]
+---
+## Kernels
+.pull-left[
+- Kernel = method for assigning importance to observations based on distance to the cutoff
+- Because we care the most about observations right by the cutoff, give more distant ones less weight (weighted least squares)]
+.pull-right[
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/kernel-examples-1.png" width="504" style="display: block; margin: auto;" /&gt;
+]
+---
+
+##Worked example (continued)
+**Step 6:** Measure the size of the effect and its statistical significance      
+
+`\(\text{Exit exam} = \beta_0 + \beta_1 \text{Entrance exam score}_\text{centered} + \beta_2 \text{Tutoring program} + \epsilon\)` 
+
+
+``` r
+tutoring_centered &lt;- tutoring %&gt;% 
+  mutate(entrance_centered = entrance_exam - 70)
+
+model_simple &lt;- lm(exit_exam ~ entrance_centered + tutoring, data = filter(tutoring_centered, entrance_centered &gt;= -5 &amp; entrance_centered &lt;= 5))
+tidy(model_simple)
+```
+
+```
+## # A tibble: 3 × 5
+##   term              estimate std.error statistic   p.value
+##   &lt;chr&gt;                &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)         60.1       1.10      54.8  1.29e-117
+## 2 entrance_centered    0.553     0.338      1.64 1.03e-  1
+## 3 tutoringTRUE        10.2       1.93       5.26 3.81e-  7
+```
+---
+##Worked example (continued)
+**Interpretation:**    
+
+`\(\beta_0\)` This is the intercept. It shows the predicted exit exam score when entrance_centered is 0 (i.e. 70) and when tutoring is FALSE.)     
+
+`\(\beta_1\)` This is the coefficient for entrance_centered. For every point above 70 that people score on the entrance exam, they score 0.55 points higher on the exit exam. We don’t really care that much about this number.     
+
+`\(\beta_2\)` This is the coefficient for the tutoring program, and this is the one we care about the most. This is the shift in intercept when tutoring is true, or the difference between scores at the threshold. Participating in the tutoring program increases exit exam scores by 10.2 points.    
+---
+
+## To whom does the LATE apply?
+- This is a **local** ATE. Do we care about the effect only at the cutoff?
+- If we assume constant treatment effects, it would apply to everyone
+- Problem arises if treatment effect is heterogeneous and dependent on `\(Z\)`
+- Nevertheless, often the local effect is relevant to policy makers (should they change the threshold?)
+
+&lt;img src="Lecture-26_RDD_JB_files/figure-html/unnamed-chunk-12-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+---
+## Fuzzy RD
+
+- What if there is imperfect compliance? (not all students eligible receive tutoring)
+- We use the same model as for the sharp RD:
+  `\(\text{Exit exam} = \beta_0 + \beta_1 \text{Entrance exam score}_\text{centered} + \beta_2 \text{Tutoring program} + \epsilon\)` 
+- But this time, this gives us the effect of **treatment eligibility (the intention-to-treat, ITT)**  not **treatment**
+---
+## Fuzzy RD (continued)
+- Four possible types of students: always takers (get tutored regardless of eligibility), never takers (would never be tutored regardless of eligibility), compliers (get tutored if eligible) and deniers (only get tutored if ineligible)
+- What if we want to know the effect of the **treatment**?
+- We focus on the compliers
+- Assume monotonicity (no deniers)
+- Divide the effect of ITT by the probability of treatment at the cutoff to get the **complier average treatment effect (CACE)**
+  - `\(CACE = \frac{\lim_{z \uparrow c} E[Y_i(1)\mid Z_i=z] - \lim_{z \downarrow c} E[Y_i(0)\mid Z_i=z]}{\lim_{z \uparrow c} E[X_i=1 \mid Z_i=z] - \lim_{z \downarrow c} E[X_i=1 \mid Z_i=z]}\)`
+  - This is akin to an instrumental variable approach, where `\(1[Z_i &lt; c\mid Z_i\to c]\)` is the instrument
+---
+## Fuzzy RD (continued)
+- Like with an IV, must assume `\(Z_i\)` being just above or just below `\(c\)` only effects `\(Y_i\)` through `\(X_i\)` **(the exclusion restriction)**
+- Can use **two-stage least squares (2SLS) estimation** to estimate the CACE
+
+``` r
+library(sem)
+model_fuzzy &lt;- tsls(exit_exam ~  tutoring_fuzzy + entrance_centered, ~tutoring + entrance_centered, 
+                    data = filter(tutoring_centered, entrance_centered &gt;= -5 &amp; entrance_centered &lt;= 5))
+```
+
+---
+
+``` r
+summary(model_fuzzy)
+```
+
+```
+## 
+##  2SLS Estimates
+## 
+## Model Formula: exit_exam ~ tutoring_fuzzy + entrance_centered
+## 
+## Instruments: ~tutoring + entrance_centered
+## 
+## Residuals:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -18.948  -5.064   1.071   0.000   5.081  20.951 
+## 
+##                      Estimate Std. Error  t value   Pr(&gt;|t|)    
+## (Intercept)        58.8895756  1.4549821 40.47443 &lt; 2.22e-16 ***
+## tutoring_fuzzyTRUE 13.0350207  2.7591769  4.72424 4.5108e-06 ***
+## entrance_centered   0.7912343  0.4200305  1.88375   0.061142 .  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 7.7005034 on 188 degrees of freedom
+```
+
+``` r
+confint(model_fuzzy)
+```
+
+```
+##                          2.5 %    97.5 %
+## (Intercept)        56.03786310 61.741288
+## tutoring_fuzzyTRUE  7.62713338 18.442908
+## entrance_centered  -0.03201037  1.614479
+```
+---
+## Conclusions
+- **Benefits:**
+  - Exchangeability (can balance measured and unmeasured baseline covariates)
+  - Analysis is fairly simple
+  - Causal effect estimation requires few assumptions
+  - When done well, offers strong causal estimate
+- **Concerns:**
+  - Statistical power (it's greedy, you need lots of data)
+  - Bias can be introduced by **manipulation of the running variable** and **discontinuous potential outcomes** at the cutoff
+  - Consider the relevance of the estimand (LATE for sharp, CATE for fuzzy)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "3:2",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
