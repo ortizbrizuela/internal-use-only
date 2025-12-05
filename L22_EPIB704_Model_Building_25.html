@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Model selection</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mabel Carabali" />
+    <script src="libs/header-attrs-2.29/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Model selection
+]
+.subtitle[
+## &amp; some other Miscelaneous
+]
+.author[
+### Mabel Carabali
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### updated: 2025-12-02
+]
+
+---
+
+
+
+
+
+
+
+class: middle
+
+##&lt;span style="color:darkmagenta"&gt;What do you think?&lt;/span&gt;
+
+&lt;img src="images/alcohol_stroke.png" width="75%" style="display: block; margin: auto;" /&gt;
+[Effects of Heavy Alcohol Use on Acute Intracerebral Hemorrhage and Cerebral Small Vessel Disease](https://www.neurology.org/doi/10.1212/WNL.0000000000214348) Hindsholm, M., et al.,. (2025). Neurology, 105 (11), doi: 10.1212/WNL.0000000000214348.
+
+
+
+---
+class: middle
+**Expected Competencies**
+- Understand the difference between predictive and etiological epidemiology principles.
+- Knows statistical assumptions for different regression models.
+- Knows basic model fit or "goodness-of-fit" statistics. 
+
+
+--
+## Objectives
+- To revise the principles and differences between predictive and etiological research.
+- To revise the use of main "goodness-of-fit" statistics.
+- To revise the overall framework for model parameterization and specification for prediction models.
+- To revise variable parameterization and selection.
+
+---
+class:middle
+
+## What is model selection?
+
+- There are two important considerations when building a regression model:
+  - The kind of outcome data you want to model (continuous, count, binary, etc.)
+  - **.black[The variables and interactions you include in your model]** 
+&lt;br&gt;
+
+--
+&lt;br&gt;
+- **.red[Model selection]** is a process that attempts to find the best model for a given purpose.
+&lt;br&gt;
+
+--
+&lt;br&gt;
+- The two main purposes of regression models are:
+  - **.red[Causal Inference:]** To estimate the effect of one or more variables while adjusting for the possible confounding effects of other variables.
+  - **.red[Prediction:]** To predict outcomes for a set of similar individuals.
+
+
+---
+class: middle
+
+## Prediction: Examples 
+
+Not only .red[weather]...
+- Credit scores
+- Netflix recommendations
+- Cardiovascular risk scores `\(^*\)`
+- Kidney function estimates `\(^*\)`
+- Predicting mortality 
+
+&lt;br&gt;
+`\(^*\)` Some, including the misstep "race correction", different form "race-adjustment".
+---
+class: middle
+**Prediction Examples**
+.pull-left[
+Framingham cardiovascular disease (10-year risk) [calculator](https://ccs.ca/frs/)
+
+&lt;img src="images/ccs_frs.png" width="75%" style="display: block; margin: auto;" /&gt;&lt;img src="images/ccs_frs1.png" width="75%" style="display: block; margin: auto;" /&gt;
+]
+--
+.pull-right[
+Or [AHA's CV Risk Calculator](https://static.heart.org/riskcalc/app/index.html#!/baseline-risk)
+&lt;img src="images/ascvd.png" width="80%" style="display: block; margin: auto;" /&gt;&lt;img src="images/ascvd1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class:middle
+
+## Causal Inference vs. Prediction
+
+**.red[Important:]** We can't interpret coefficients from prediction models as causal parameters
+  - Not appropriately controlled for confounding (because we aren't worried about this)
+  - .red[This is often a pitfall that people fall into!]
+--
+
+&lt;img src="images/table2fallacy.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class:inverse, center, middle
+
+# OK, but how do I build a model?
+
+---
+class:middle
+
+## What is required to build a "Good" model?
+
+**.blue[Criteria:]**
+- Is our .blue[research question] causal or predictive?
+  + This will determine the "philosophy" we use to build our model
+- Sample size (Power and .blue[Precision])
+- Choice of statistical model/.blue[distribution/link] (Poisson, logistic, linear, etc.)
+- Consideration of different .blue[sources of bias] (for causal inference).
+- What data do we have available to us?
+
+---
+class: middle
+
+### Overall framework for model building / specification:
+
+1) Variable specification (including assessment of number and parameterization)
+
+2) Interaction assessment (including assessment of heterogeneity)* 
+
+3) Confounding assessment (including consideration of precision)*
+
+&lt;br&gt;
+*Steps 1 and 2 can occur iteratively and depending on the research question investigated differently.
+
+
+---
+class: middle
+
+### When do we say our model is "good"? - Variable specification
+
+Especially when we have many predictor variables (with many possible interactions), it can be difficult to find a good model.
+
+  - Which main effects do we include?
+  - Which interactions do we include?
+  - With 6 variables, there are .red[64 potential models] with just main effects!
+
+---
+class: middle
+
+## What did we get from our "dream model"?
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-5-1.png" width="110%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+## What did we get from our "dream model"?
+
+.pull-left[
+**Outcome**
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-6-1.png" width="110%" style="display: block; margin: auto;" /&gt;
+
+]
+
+--
+
+.pull-right[
+**Exposures**
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-7-1.png" width="110%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class: middle
+
+### When do we say our model is "good"? - Variable specification
+- An active research problem in statistics
+- Model selection procedures try to simplify this task.
+
+--
+
+**Evaluating Model Fit**
+
+To implement a model selection procedure, we first need a criterion to compare models. 
+
+The goal is to select the model with the optimal value of the criterion. 
+
+To that end, we assess the: **Goodness-of-Fit Statistics and use some statistical model metrics**
+
+
+---
+class:middle
+
+### Evaluating Model Fit: .red[Recall]
+
+.pull-left[
+**R-squared `\(R^2\)`**
+
+- `\(R^2\)` represents the proportion of variance in the outcome explained by all the predictors in the model.
+- **.red[Criterion:]** Choose the model with the largest `\(R^2\)`
+- **.red[Problem:]** `\(R^2\)` always increases with model size
+- If only use `\(R^2\)` means simply choosing the largest model: .red[not very useful].
+- Helpful when comparing models with the same number of parameters.
+]
+
+--
+.pull-right[
+**Adj. R-squared `\(R^2\)`**
+- Adjusted `\(R^2\)` represents the proportion of variance in the outcome explained by all the predictors in the model, **.red[penalized for the number of variables included in the model]**.
+- **.red[Criterion:]** Choose the model with the largest adjusted `\(R^2\)`.
+- Here, the largest model is not necessarily the best model.
+]
+
+
+---
+class:middle
+
+.pull-left[
+**AIC = Akaike Information Criterion**
+
+`\(AIC = -2ln(Likelihood) + 2p\)`
+- **.red[The best model is the one with the smallest AIC]**.
+- The AIC is formed by two terms:
+  - The likelihood: measure of fit 
+  - The penalty term: `\(2p\)`, accounts for adding more terms to the model.
+
+The first term **.red[always]** decreases as more terms are added to the model, so `\(2p\)` is needed for "balance".
+- AIC can be used whenever we have a likelihood, so this generalizes to many statistical models.
+
+]
+--
+.pull-right[
+**BIC = Bayesian Information Criterion**
+
+`\(BIC = -2ln(Likelihood) + p ln(n)\)`
+- **.red[The best model is the one with the smallest BIC]**.
+- AIC and BIC are very similar - only the last term changes
+- BIC will always choose a model as small or smaller than the AIC (if using the same search strategy).
+
+]
+
+---
+class:middle
+## Selection Strategies - Prediction
+
+- Now that we know how to evaluate model fit, we need to figure out how to find the model with the **.red[best]** fit.
+
+- **.red[Best subset:]** Search all possible models and take the one with the highest `\(R^2\)`, or lowest MSE/AIC/BIC, etc.
+  - Such searches are typically only feasible when you have less than 30 potential predictor variables.
+
+- **.red[Stepwise (forward, backward, or both) searches:]** Useful when the number of potential predictor variables is large.
+
+
+---
+class:middle
+## Illustration with the datasets used in 704 (1)
+
+
+``` r
+library(epib.704.data)
+data("Amazonas_HQoL")
+glimpse(Amazonas_HQoL)
+```
+
+```
+## Rows: 1,179
+## Columns: 47
+## $ X       &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,…
+## $ ID      &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,…
+## $ morador &lt;int&gt; 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1,…
+## $ FILTRO  &lt;int&gt; 3, 3, 2, 3, 3, 3, 2, 3, 2, 2, 3, 3, 3, 2, 3, 2, 3, 3, 3, 2, 3,…
+## $ P72     &lt;int&gt; 1, 1, 1, 2, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1,…
+## $ P73     &lt;int&gt; 1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1,…
+## $ P74     &lt;int&gt; 1, 1, 1, 2, 1, 1, 3, 1, 2, 3, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1,…
+## $ P75     &lt;int&gt; 2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 3, 2, 2, 1, 2, 2, 2,…
+## $ P76     &lt;int&gt; 1, 1, 1, 2, 2, 1, 2, 1, 1, 3, 2, 2, 1, 1, 2, 1, 2, 1, 1, 1, 2,…
+## $ P77     &lt;int&gt; 90, 80, 80, 50, 40, 80, 50, 70, 50, 10, 80, 60, 80, 80, 70, 80…
+## $ P1      &lt;int&gt; 9, 6, 7, 3, 4, 2, 5, 2, 3, 1, 1, 3, 4, 2, 2, 4, 7, 2, 1, 1, 1,…
+## $ P11     &lt;int&gt; 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 2,…
+## $ P12     &lt;int&gt; 6, 3, 3, 3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 3, 1, 3,…
+## $ P13     &lt;int&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1,…
+## $ P14     &lt;int&gt; 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1,…
+## $ P15     &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1,…
+## $ P16     &lt;int&gt; 3, 5, 4, 5, 4, 5, 6, 5, 2, 4, 3, 2, 2, 1, 4, 4, 3, 6, 3, 3, 1,…
+## $ P17     &lt;int&gt; 2, 1, 1, 2, 2, 3, 1, 1, 1, 1, 1, 2, 0, 0, 0, 1, 1, 1, 1, 1, 1,…
+## $ P18     &lt;int&gt; 3, 4, 4, 4, 3, 3, 4, 3, 3, 3, 3, 3, NA, NA, NA, 3, 2, 4, 4, 1,…
+## $ P19     &lt;int&gt; 2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 1,…
+## $ P20A    &lt;int&gt; 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0,…
+## $ P20B    &lt;int&gt; 2, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1,…
+## $ P20C    &lt;int&gt; 0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1,…
+## $ P20D    &lt;int&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ P20E    &lt;int&gt; 1, 1, 1, 1, 0, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1,…
+## $ P20F    &lt;int&gt; 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ P20G    &lt;int&gt; 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 2, 0, 0, 0,…
+## $ P20H    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,…
+## $ P20I    &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1,…
+## $ P20J    &lt;int&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ P20K    &lt;int&gt; 0, 2, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0,…
+## $ P20L    &lt;int&gt; 2, 2, 4, 1, 1, 0, 1, 2, 3, 1, 1, 1, 3, 0, 2, 2, 4, 2, 2, 1, 1,…
+## $ P20M    &lt;int&gt; 2, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2,…
+## $ P20N    &lt;int&gt; 2, 1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2,…
+## $ P21     &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+## $ P24     &lt;int&gt; 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 2, 1, 2, 1, 1, 1, 9, 2,…
+## $ P28     &lt;int&gt; 2, 7, 7, 2, 3, 2, 7, 7, 9, 3, 5, 7, 6, 2, 3, 7, 6, 2, 2, 4, 2,…
+## $ P5      &lt;int&gt; 1, 2, 2, 1, 2, 2, 2, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 2, 2, 2, 2,…
+## $ P4      &lt;int&gt; 44, 35, 32, 50, 50, 79, 46, 47, 31, 63, 59, 20, 31, 46, 39, 18…
+## $ P78     &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,…
+## $ P81A    &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 1, 2, 2, 2, 1,…
+## $ P81B    &lt;int&gt; 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1,…
+## $ P81C    &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,…
+## $ P81D    &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2,…
+## $ P82     &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2,…
+## $ P83     &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2,…
+## $ ZONA    &lt;int&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,…
+```
+
+---
+class:middle
+**Regression subset selection: Illustration with the "Amazonas_HQoL" data**
+
+
+
+
+``` r
+library(leaps) #Regression subset selection package
+
+*regfit_full.1 &lt;- regsubsets(binQoL ~ .,
+                     data = Amazonas_HQoL, 
+                     method = "exhaustive", really.big=T) 
+```
+
+```
+## Reordering variables and trying again:
+```
+
+.red[Need to specify when &gt;50 vars]
+
+--
+
+
+``` r
+reg_summary.1 &lt;- summary(regfit_full.1)
+summary(regfit_full.1)
+```
+
+```
+## Subset selection object
+## Call: regsubsets.formula(binQoL ~ ., data = Amazonas_HQoL, method = "exhaustive", 
+##     really.big = T)
+## 58 Variables  (and intercept)
+##               Forced in Forced out
+## X                 FALSE      FALSE
+## ID                FALSE      FALSE
+## morador           FALSE      FALSE
+## FILTRO            FALSE      FALSE
+## P72               FALSE      FALSE
+## P73               FALSE      FALSE
+## P74               FALSE      FALSE
+## P75               FALSE      FALSE
+## P76               FALSE      FALSE
+## P77               FALSE      FALSE
+## P1                FALSE      FALSE
+## P11               FALSE      FALSE
+## P12               FALSE      FALSE
+## P13               FALSE      FALSE
+## P14               FALSE      FALSE
+## P15               FALSE      FALSE
+## P16               FALSE      FALSE
+## P17               FALSE      FALSE
+## P18               FALSE      FALSE
+## P19               FALSE      FALSE
+## P20A              FALSE      FALSE
+## P20B              FALSE      FALSE
+## P20C              FALSE      FALSE
+## P20D              FALSE      FALSE
+## P20E              FALSE      FALSE
+## P20F              FALSE      FALSE
+## P20G              FALSE      FALSE
+## P20H              FALSE      FALSE
+## P20I              FALSE      FALSE
+## P20J              FALSE      FALSE
+## P20K              FALSE      FALSE
+## P20L              FALSE      FALSE
+## P20M              FALSE      FALSE
+## P20N              FALSE      FALSE
+## P21               FALSE      FALSE
+## P24               FALSE      FALSE
+## P28               FALSE      FALSE
+## P5                FALSE      FALSE
+## P4                FALSE      FALSE
+## P78               FALSE      FALSE
+## P81A              FALSE      FALSE
+## P81B              FALSE      FALSE
+## P81C              FALSE      FALSE
+## P81D              FALSE      FALSE
+## P82               FALSE      FALSE
+## P83               FALSE      FALSE
+## ZONA              FALSE      FALSE
+## exposure          FALSE      FALSE
+## age_category1     FALSE      FALSE
+## age_category2     FALSE      FALSE
+## age_category3     FALSE      FALSE
+## age_category4     FALSE      FALSE
+## educat            FALSE      FALSE
+## chronic           FALSE      FALSE
+## P77_1             FALSE      FALSE
+## education         FALSE      FALSE
+## P24_1             FALSE      FALSE
+## P11_1             FALSE      FALSE
+## 1 subsets of each size up to 9
+## Selection Algorithm: exhaustive
+##          X   ID  morador FILTRO P72 P73 P74 P75 P76 P77 P1  P11 P12 P13 P14 P15
+## 1  ( 1 ) " " " " " "     " "    " " " " " " " " " " " " " " " " " " " " " " " "
+## 2  ( 1 ) " " " " " "     " "    " " " " " " " " " " "*" " " " " " " " " " " " "
+## 3  ( 1 ) " " " " " "     " "    "*" " " " " " " " " " " " " " " " " " " " " " "
+## 4  ( 1 ) " " " " " "     "*"    "*" " " " " " " " " " " " " " " " " " " " " " "
+## 5  ( 1 ) " " " " " "     "*"    "*" " " " " " " " " " " " " " " " " " " " " " "
+## 6  ( 1 ) " " " " " "     "*"    "*" " " " " " " " " " " " " " " " " " " " " " "
+## 7  ( 1 ) " " " " " "     "*"    "*" " " " " " " " " "*" " " " " " " " " " " " "
+## 8  ( 1 ) " " " " " "     "*"    "*" " " " " " " " " " " " " " " " " " " " " " "
+## 9  ( 1 ) " " " " " "     "*"    "*" " " " " " " " " " " " " " " " " " " " " " "
+##          P16 P17 P18 P19 P20A P20B P20C P20D P20E P20F P20G P20H P20I P20J P20K
+## 1  ( 1 ) " " " " " " " " " "  " "  " "  " "  " "  " "  " "  " "  " "  " "  " " 
+## 2  ( 1 ) " " " " " " " " " "  " "  " "  " "  " "  " "  " "  " "  " "  " "  " " 
+## 3  ( 1 ) " " " " " " " " " "  " "  " "  " "  " "  " "  " "  " "  " "  " "  " " 
+## 4  ( 1 ) " " " " " " " " " "  " "  " "  " "  " "  " "  " "  " "  " "  " "  " " 
+## 5  ( 1 ) " " " " " " "*" " "  " "  " "  " "  " "  " "  " "  " "  " "  " "  " " 
+## 6  ( 1 ) "*" " " " " "*" " "  " "  " "  " "  " "  " "  " "  " "  " "  " "  " " 
+## 7  ( 1 ) "*" " " " " "*" " "  " "  " "  " "  " "  " "  " "  " "  " "  " "  " " 
+## 8  ( 1 ) "*" " " " " "*" " "  " "  " "  "*"  " "  " "  " "  " "  " "  " "  " " 
+## 9  ( 1 ) "*" " " " " "*" " "  " "  " "  "*"  " "  " "  " "  " "  " "  " "  " " 
+##          P20L P20M P20N P21 P24 P28 P5  P4  P78 P81A P81B P81C P81D P82 P83
+## 1  ( 1 ) " "  " "  " "  " " " " " " " " " " " " " "  " "  " "  " "  " " " "
+## 2  ( 1 ) " "  " "  " "  " " " " "*" " " " " " " " "  " "  " "  " "  " " " "
+## 3  ( 1 ) " "  " "  " "  " " " " " " " " " " " " " "  " "  " "  " "  " " " "
+## 4  ( 1 ) " "  " "  " "  " " " " " " " " " " " " " "  " "  " "  " "  " " " "
+## 5  ( 1 ) " "  " "  " "  " " " " " " " " " " " " " "  " "  " "  " "  " " " "
+## 6  ( 1 ) " "  " "  " "  " " " " " " " " " " " " " "  " "  " "  " "  " " " "
+## 7  ( 1 ) "*"  " "  " "  " " " " " " " " " " " " " "  " "  " "  " "  " " " "
+## 8  ( 1 ) "*"  " "  " "  " " " " " " " " " " " " " "  " "  " "  " "  " " " "
+## 9  ( 1 ) "*"  " "  " "  " " " " " " " " " " " " " "  " "  " "  " "  " " " "
+##          ZONA P77_1 exposure age_category1 age_category2 age_category3
+## 1  ( 1 ) " "  "*"   " "      " "           " "           " "          
+## 2  ( 1 ) " "  " "   " "      " "           " "           " "          
+## 3  ( 1 ) " "  "*"   " "      " "           " "           " "          
+## 4  ( 1 ) " "  "*"   " "      " "           " "           " "          
+## 5  ( 1 ) " "  "*"   " "      " "           " "           " "          
+## 6  ( 1 ) " "  "*"   " "      " "           " "           " "          
+## 7  ( 1 ) " "  " "   " "      " "           " "           " "          
+## 8  ( 1 ) " "  "*"   " "      " "           " "           " "          
+## 9  ( 1 ) " "  "*"   " "      "*"           " "           " "          
+##          age_category4 education educat chronic P24_1 P11_1
+## 1  ( 1 ) " "           " "       " "    " "     " "   " "  
+## 2  ( 1 ) " "           " "       " "    " "     " "   " "  
+## 3  ( 1 ) " "           "*"       " "    " "     " "   " "  
+## 4  ( 1 ) " "           "*"       " "    " "     " "   " "  
+## 5  ( 1 ) " "           "*"       " "    " "     " "   " "  
+## 6  ( 1 ) " "           "*"       " "    " "     " "   " "  
+## 7  ( 1 ) " "           "*"       " "    " "     " "   " "  
+## 8  ( 1 ) " "           "*"       " "    " "     " "   " "  
+## 9  ( 1 ) " "           "*"       " "    " "     " "   " "
+```
+
+
+---
+class:middle
+### Illustration with the "Amazonas_HQoL" data
+
+
+``` r
+par(mfrow = c(1,2))
+
+plot(reg_summary.1$adjr2, xlab = "Number of Variables", ylab = "Adjusted RSq", type = "l")
+adj_r2_max.1 = which.max(reg_summary.1$adjr2)
+points(adj_r2_max.1, reg_summary.1$adjr2[adj_r2_max.1], col ="red", cex = 2, pch = 20)
+
+plot(reg_summary.1$bic, xlab = "Number of Variables", ylab = "BIC", type = "l")
+bic_min.1 = which.min(reg_summary.1$bic) 
+points(bic_min.1, reg_summary.1$bic[bic_min.1], col = "red", cex = 2, pch = 20)
+```
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-12-1.png" width="60%" height="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### Illustration with the "Amazonas_HQoL" data
+
+``` r
+plot(regfit_full.1, scale = "adjr2", 
+     main= "'adjr2' for 'Amazonas_HQoL' data")
+```
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-13-1.png" width="110%" height="50%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### Illustration with the "Amazonas_HQoL" data
+
+``` r
+plot(regfit_full.1, scale = "bic", 
+     main= "'BIC' for 'Amazonas_HQoL' data")
+```
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-14-1.png" width="110%" height="50%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: middle
+
+## What did we get from our "dream model"?
+
+|What dataset you used? | 	Write the equation of the model |
+|:---------------:|:----------------------------------------------------------|
+|Amazonas_HQoL|	VAS ~ any_malaria + SES_Index_scaled + Age + Sex +ZONA |
+|Amazonas_HQoL|	"logit(P(Yi​=1))=β0​+β1​Xi, when adding in the weights |
+|Amazonas_HQoL |	Prob(HRQoL_VeryHigh=1∣Malaria)]=β0​+β1(Recent Malaria)|
+|Amazonas_HQoL	|"Model &lt;- glm(binQoL ~ Status2, data = Data1, family = binomial(), weights = w.out1$weights)" |
+|Amazonas_HQoL |	"Model fitted: weighted logistic regression: log{(P(Y=0∣Matched Set)/P(Y=1∣Matched Set)} = B0 + Bexposure.Xexposure+ Bsex.Xsex +Bage.Xage + BSES.XSES + Bresidence.Xresidence |
+
+
+---
+class:middle
+### Illustration with the dataset used in 704 (2)
+
+
+
+``` r
+glimpse(Covid_Bangladesh)
+```
+
+```
+## Rows: 2,502
+## Columns: 27
+## $ ex        &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 1…
+## $ hhid      &lt;int&gt; 2, 2, 3, 3, 6, 6, 8, 8, 9, 9, 10, 10, 11, 12, 12, 13, 13, 14…
+## $ memid     &lt;int&gt; 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 2, 1, …
+## $ gih_4     &lt;chr&gt; "Dhaka", "Dhaka", "Dhaka", "Dhaka", "Dhaka", "Dhaka", "Dhaka…
+## $ village   &lt;chr&gt; "Duaripara", "Duaripara", "Duaripara", "Duaripara", "Duaripa…
+## $ vdoses    &lt;int&gt; 2, 2, 2, 2, 1, 2, 1, 3, 3, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, …
+## $ dose2     &lt;int&gt; 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, …
+## $ dose3     &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ age_cat   &lt;chr&gt; "18-40 years old", "18-40 years old", "18-40 years old", "18…
+## $ gender    &lt;chr&gt; "Male", "Female", "Female", "Male", "Female", "Male", "Male"…
+## $ marital   &lt;chr&gt; "Married", "Married", "Married", "Separated/Divorced/Widow(e…
+## $ educ      &lt;chr&gt; "No education", "Primary or less", "Primary or less", "Above…
+## $ occup2    &lt;chr&gt; "Day labor", "Service", "Day labor", "Business or self-emplo…
+## $ relation2 &lt;chr&gt; "HH head", "Spouse", "Spouse", "Others", "Spouse", "Others",…
+## $ sesh_15_5 &lt;int&gt; 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, …
+## $ sesh_15_7 &lt;int&gt; 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, …
+## $ sesi_51   &lt;chr&gt; "No", "No", "Yes", "No", "No", "No", "No", "No", "No", "No",…
+## $ chroill_1 &lt;chr&gt; "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", …
+## $ acill_26  &lt;chr&gt; "No", "No", "No", "No", "No", "Yes", "No", "No", "No", "No",…
+## $ mi_1      &lt;chr&gt; "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", …
+## $ gih_15    &lt;int&gt; 5, 5, 4, 4, 6, 6, 4, 4, 6, 6, 4, 4, 2, 3, 3, 11, 11, 4, 4, 2…
+## $ income    &lt;dbl&gt; 10000, 10000, 20000, 20000, 30000, 30000, 16000, 16000, 4000…
+## $ wbscore   &lt;int&gt; 12, 20, 76, 68, 80, 36, 52, 64, 32, 36, 40, 40, 20, 60, 80, …
+## $ distance  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+## $ wbbin     &lt;fct&gt; 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, …
+## $ exposure  &lt;int&gt; 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, …
+## $ income1   &lt;dbl&gt; 10000, 10000, 20000, 20000, 30000, 30000, 16000, 16000, 4000…
+```
+
+
+---
+class:middle
+**Regression subset selection: Illustration with the "Covid_Bangladesh" data**
+
+
+
+``` r
+library(leaps) #Regression subset selection package
+Covid_Bangladesh1 &lt;- Covid_Bangladesh %&gt;% select(wbbin, exposure, age_cat, gender, marital, educ,occup2, vdoses, dose3, chroill_1, income1, wbscore, relation2, sesh_15_7, sesh_15_5, acill_26)
+
+*regfit_full.2 &lt;- regsubsets(wbbin ~ .,
+                     data = Covid_Bangladesh1, 
+                     method = "exhaustive") 
+```
+
+--
+
+
+
+``` r
+reg_summary.2 &lt;- summary(regfit_full.2)
+summary(regfit_full.2)
+```
+
+```
+## Subset selection object
+## Call: regsubsets.formula(wbbin ~ ., data = Covid_Bangladesh1, method = "exhaustive")
+## 20 Variables  (and intercept)
+##                                               Forced in Forced out
+## exposure                                          FALSE      FALSE
+## age_catAbove 40                                   FALSE      FALSE
+## genderMale                                        FALSE      FALSE
+## maritalSeparated/Divorced/Widow(er)/Unmarried     FALSE      FALSE
+## educNo education                                  FALSE      FALSE
+## educPrimary or less                               FALSE      FALSE
+## occup2Business or self-employed                   FALSE      FALSE
+## occup2Day labor                                   FALSE      FALSE
+## occup2Others                                      FALSE      FALSE
+## occup2Service                                     FALSE      FALSE
+## vdoses                                            FALSE      FALSE
+## dose3                                             FALSE      FALSE
+## chroill_1Yes                                      FALSE      FALSE
+## income1                                           FALSE      FALSE
+## wbscore                                           FALSE      FALSE
+## relation2Others                                   FALSE      FALSE
+## relation2Spouse                                   FALSE      FALSE
+## sesh_15_7                                         FALSE      FALSE
+## sesh_15_5                                         FALSE      FALSE
+## acill_26Yes                                       FALSE      FALSE
+## 1 subsets of each size up to 8
+## Selection Algorithm: exhaustive
+##          exposure age_catAbove 40 genderMale
+## 1  ( 1 ) " "      " "             " "       
+## 2  ( 1 ) " "      " "             " "       
+## 3  ( 1 ) " "      " "             " "       
+## 4  ( 1 ) " "      " "             " "       
+## 5  ( 1 ) " "      " "             " "       
+## 6  ( 1 ) " "      " "             " "       
+## 7  ( 1 ) " "      " "             " "       
+## 8  ( 1 ) " "      " "             " "       
+##          maritalSeparated/Divorced/Widow(er)/Unmarried educNo education
+## 1  ( 1 ) " "                                           " "             
+## 2  ( 1 ) " "                                           "*"             
+## 3  ( 1 ) " "                                           "*"             
+## 4  ( 1 ) " "                                           "*"             
+## 5  ( 1 ) " "                                           "*"             
+## 6  ( 1 ) " "                                           "*"             
+## 7  ( 1 ) " "                                           "*"             
+## 8  ( 1 ) " "                                           "*"             
+##          educPrimary or less occup2Business or self-employed occup2Day labor
+## 1  ( 1 ) " "                 " "                             " "            
+## 2  ( 1 ) " "                 " "                             " "            
+## 3  ( 1 ) " "                 " "                             "*"            
+## 4  ( 1 ) " "                 " "                             " "            
+## 5  ( 1 ) " "                 " "                             " "            
+## 6  ( 1 ) " "                 " "                             " "            
+## 7  ( 1 ) " "                 " "                             " "            
+## 8  ( 1 ) " "                 " "                             " "            
+##          occup2Others occup2Service vdoses dose3 chroill_1Yes income1 wbscore
+## 1  ( 1 ) " "          " "           " "    " "   " "          " "     "*"    
+## 2  ( 1 ) " "          " "           " "    " "   " "          " "     "*"    
+## 3  ( 1 ) " "          " "           " "    " "   " "          " "     "*"    
+## 4  ( 1 ) "*"          "*"           " "    " "   " "          " "     "*"    
+## 5  ( 1 ) "*"          "*"           " "    " "   " "          "*"     "*"    
+## 6  ( 1 ) "*"          "*"           " "    " "   " "          "*"     "*"    
+## 7  ( 1 ) "*"          "*"           " "    " "   "*"          "*"     "*"    
+## 8  ( 1 ) "*"          "*"           " "    " "   "*"          "*"     "*"    
+##          relation2Others relation2Spouse sesh_15_7 sesh_15_5 acill_26Yes
+## 1  ( 1 ) " "             " "             " "       " "       " "        
+## 2  ( 1 ) " "             " "             " "       " "       " "        
+## 3  ( 1 ) " "             " "             " "       " "       " "        
+## 4  ( 1 ) " "             " "             " "       " "       " "        
+## 5  ( 1 ) " "             " "             " "       " "       " "        
+## 6  ( 1 ) " "             " "             " "       "*"       " "        
+## 7  ( 1 ) " "             " "             " "       "*"       " "        
+## 8  ( 1 ) " "             "*"             " "       "*"       " "
+```
+
+
+---
+class:middle
+### Illustration with the "Covid_Bangladesh" data
+
+
+``` r
+par(mfrow = c(1,2))
+
+plot(reg_summary.2$adjr2, xlab = "Number of Variables", ylab = "Adjusted RSq", type = "l")
+adj_r2_max.2 = which.max(reg_summary.2$adjr2)
+points(adj_r2_max.2, reg_summary.2$adjr2[adj_r2_max.2], col ="red", cex = 2, pch = 20)
+
+plot(reg_summary.2$bic, xlab = "Number of Variables", ylab = "BIC", type = "l")
+bic_min.2 = which.min(reg_summary.2$bic) 
+points(bic_min.2, reg_summary.2$bic[bic_min.2], col = "red", cex = 2, pch = 20)
+```
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-19-1.png" width="60%" height="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### Illustration with the "Covid_Bangladesh" data
+
+``` r
+plot(regfit_full.2, scale = "adjr2", 
+     main= "'adjr2' for 'Covid_Bangladesh' data")
+```
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-20-1.png" width="110%" height="50%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### Illustration with the "Covid_Bangladesh" data
+
+
+``` r
+plot(regfit_full.2, scale = "bic", 
+     main= "'BIC' for 'Covid_Bangladesh' data")
+```
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-21-1.png" width="110%" height="50%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+## What did we get from our "dream model"?
+
+| What dataset you used?	| Write the equation of the model |
+|:-----------------:|:-------------------------------------------------------------|
+|Covid_Bangladesh|	Mental score=B0+B1xCovid-19vaccine+B2xGender+B3xage + B4xarea + B5xEducation+ B6xChronic + B7xrelation_household+ B8xOccupation + B9xHousehold_size + B10xMigration + B11xAccess_TV + B12x Acces_smartphone.|
+|Covid_Bangladesh|	log(pi) = beta0 + betaXi|
+|Covid_Bangladesh|	"E (Yi∣Xi) = B0 + B1 x Exp+ B2 x Sex + B3 x Age+ B4 x Chronic Illness + B5 x Occupation + B6 x Income"|
+
+
+
+---
+class:middle
+### Illustration with the dataset used in 704 (3)
+
+
+
+
+``` r
+glimpse(VL_Nigeria)
+```
+
+```
+## Rows: 127,198
+## Columns: 30
+## $ S_No_                            &lt;int&gt; 1, 2, 4, 5, 8, 9, 11, 12, 13, 15, 16,…
+## $ State                            &lt;chr&gt; "Adamawa", "Adamawa", "Adamawa", "Ada…
+## $ SEX                              &lt;chr&gt; "Female", "Male", "Male", "Male", "Fe…
+## $ Age.group                        &lt;chr&gt; "20-29", "40+", "40+", "40+", "40+", …
+## $ ART_Start                        &lt;int&gt; 2021, 2020, 2015, 2020, 2016, 2018, 2…
+## $ Days_of_ARV_Refill               &lt;int&gt; 180, 180, 180, 180, 180, 180, 180, 18…
+## $ Current_Regimen_Line             &lt;chr&gt; "Adult.1st.Line", "Adult.1st.Line", "…
+## $ Current_ART_Regimen              &lt;chr&gt; "TDF-3TC-DTG", "TDF-3TC-DTG", "TDF-3T…
+## $ Functional_Status_at_last_Visit  &lt;chr&gt; "Working", "Working", "Working", "Wor…
+## $ Clinical_Staging_at_Last_Visit   &lt;chr&gt; "Stage I", "Stage I", "Stage I", "Sta…
+## $ VL.Result                        &lt;dbl&gt; NA, 38.1, 81.7, 419.0, 0.0, NA, 1617.…
+## $ Date_of_current_viral_load__yyyy &lt;int&gt; NA, 2021, 2020, 2022, 2019, NA, 2021,…
+## $ Viral_Load_Indication            &lt;chr&gt; "", "Routine Monitoring", "Routine Mo…
+## $ Current_ART_Status               &lt;chr&gt; "Active", "Active", "Active", "Active…
+## $ ART_enrollment_setting           &lt;chr&gt; "Community", "Facility", "Facility", …
+## $ Enhanced_Adherence_Counselling   &lt;chr&gt; "No", "No", "No", "No", "No", "No", "…
+## $ Date_of_commencement_of_EAC_yyyy &lt;chr&gt; "", "", "", "", "", "", "2021", "", "…
+## $ Number_of_EAC_Sessions_Completed &lt;int&gt; NA, NA, NA, NA, NA, NA, 3, NA, 3, 3, …
+## $ X                                &lt;int&gt; NA, NA, NA, NA, NA, NA, 2021, NA, 202…
+## $ Repeat_Viral_Load___Post_EAC_VL  &lt;chr&gt; "", "", "", "", "", "", "Yes", "", "Y…
+## $ Date_of_Repeat_Viral_Load___Post &lt;int&gt; NA, NA, NA, NA, NA, NA, 2022, NA, 202…
+## $ Repeated.VL                      &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, 26.1,…
+## $ X.1                              &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, 2022,…
+## $ TB_status_at_Last_Visit          &lt;chr&gt; "No sign or symptoms of TB", "No sign…
+## $ TB_Screening_Outcome             &lt;chr&gt; "No sign or symptoms of TB", "No sign…
+## $ exposure                         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0…
+## $ binSupress                       &lt;dbl&gt; NA, 1, 1, 1, 1, NA, 0, 1, 1, 1, 1, 1,…
+## $ clinstage                        &lt;chr&gt; "Stage I", "Stage I", "Stage I", "Sta…
+## $ funcstat                         &lt;fct&gt; Working, Working, Working, Working, W…
+## $ log.outcome                      &lt;dbl&gt; NA, 3.640214, 4.403054, 6.037871, -In…
+```
+
+---
+class:middle
+**Regression subset selection: Illustration with the "VL_Nigeria" data**
+
+
+
+``` r
+library(leaps) #Regression subset selection package
+VL_Nigeria1 &lt;- VL_Nigeria %&gt;% select(binSupress, exposure, Age.group, SEX, clinstage, funcstat, TB_Screening_Outcome, ART_Start, Enhanced_Adherence_Counselling, ART_enrollment_setting, Viral_Load_Indication, Current_ART_Regimen)
+#Number_of_EAC_Sessions_Completed, Repeated.VL,
+
+*regfit_full.3 &lt;- regsubsets(binSupress ~ .,
+                     data = VL_Nigeria1, 
+                     method = "exhaustive") 
+```
+
+```
+## Reordering variables and trying again:
+```
+--
+
+
+``` r
+reg_summary.3 &lt;- summary(regfit_full.3)
+summary(regfit_full.3)
+```
+
+```
+## Subset selection object
+## Call: regsubsets.formula(binSupress ~ ., data = VL_Nigeria1, method = "exhaustive")
+## 44 Variables  (and intercept)
+##                                                                               Forced in
+## exposure                                                                          FALSE
+## Age.group10-19                                                                    FALSE
+## Age.group19-20                                                                    FALSE
+## Age.group20-29                                                                    FALSE
+## Age.group30-39                                                                    FALSE
+## Age.group40+                                                                      FALSE
+## SEXMale                                                                           FALSE
+## clinstageStage II                                                                 FALSE
+## clinstageStage III                                                                FALSE
+## clinstageStage IV                                                                 FALSE
+## funcstatBedridden                                                                 FALSE
+## funcstatAmbulatory                                                                FALSE
+## TB_Screening_OutcomePresumptive TB                                                FALSE
+## ART_Start                                                                         FALSE
+## ART_enrollment_settingClinical Platforms (Community Pharmacy)                     FALSE
+## ART_enrollment_settingClinical Platforms (Laboratories)                           FALSE
+## ART_enrollment_settingClinical Platforms (PHCs/Private Clinics/Nursing Homes)     FALSE
+## ART_enrollment_settingClinical Platforms (TBAs)                                   FALSE
+## ART_enrollment_settingCommunity                                                   FALSE
+## ART_enrollment_settingCommunity Based Organisation                                FALSE
+## ART_enrollment_settingFacility                                                    FALSE
+## ART_enrollment_settingOVC                                                         FALSE
+## ART_enrollment_settingSelf Testing                                                FALSE
+## Viral_Load_IndicationTargeted Monitoring                                          FALSE
+## Current_ART_RegimenABC-3TC-DDI                                                    FALSE
+## Current_ART_RegimenABC-3TC-DTG                                                    FALSE
+## Current_ART_RegimenABC-3TC-EFV                                                    FALSE
+## Current_ART_RegimenABC-3TC-LPV/r                                                  FALSE
+## Current_ART_RegimenABC-3TC-NVP                                                    FALSE
+## Current_ART_RegimenABC-3TC-pDTG                                                   FALSE
+## Current_ART_RegimenAZT-3TC-ATV/r                                                  FALSE
+## Current_ART_RegimenAZT-3TC-LPV/r                                                  FALSE
+## Current_ART_RegimenAZT-3TC-NVP                                                    FALSE
+## Current_ART_RegimenAZT-3TC-TDF                                                    FALSE
+## Current_ART_RegimenAZT-TDF-3TC-LPV/r                                              FALSE
+## Current_ART_RegimenOther                                                          FALSE
+## Current_ART_RegimenTDF-3TC-ATV/r                                                  FALSE
+## Current_ART_RegimenTDF-3TC-DTG                                                    FALSE
+## Current_ART_RegimenTDF-3TC-EFV                                                    FALSE
+## Current_ART_RegimenTDF-3TC-LPV/r                                                  FALSE
+## Current_ART_RegimenTDF-3TC-NVP                                                    FALSE
+## Current_ART_RegimenTDF-FTC-ATV/r                                                  FALSE
+## Current_ART_RegimenTDF-FTC-LPV/r                                                  FALSE
+## Enhanced_Adherence_CounsellingYes                                                 FALSE
+##                                                                               Forced out
+## exposure                                                                           FALSE
+## Age.group10-19                                                                     FALSE
+## Age.group19-20                                                                     FALSE
+## Age.group20-29                                                                     FALSE
+## Age.group30-39                                                                     FALSE
+## Age.group40+                                                                       FALSE
+## SEXMale                                                                            FALSE
+## clinstageStage II                                                                  FALSE
+## clinstageStage III                                                                 FALSE
+## clinstageStage IV                                                                  FALSE
+## funcstatBedridden                                                                  FALSE
+## funcstatAmbulatory                                                                 FALSE
+## TB_Screening_OutcomePresumptive TB                                                 FALSE
+## ART_Start                                                                          FALSE
+## ART_enrollment_settingClinical Platforms (Community Pharmacy)                      FALSE
+## ART_enrollment_settingClinical Platforms (Laboratories)                            FALSE
+## ART_enrollment_settingClinical Platforms (PHCs/Private Clinics/Nursing Homes)      FALSE
+## ART_enrollment_settingClinical Platforms (TBAs)                                    FALSE
+## ART_enrollment_settingCommunity                                                    FALSE
+## ART_enrollment_settingCommunity Based Organisation                                 FALSE
+## ART_enrollment_settingFacility                                                     FALSE
+## ART_enrollment_settingOVC                                                          FALSE
+## ART_enrollment_settingSelf Testing                                                 FALSE
+## Viral_Load_IndicationTargeted Monitoring                                           FALSE
+## Current_ART_RegimenABC-3TC-DDI                                                     FALSE
+## Current_ART_RegimenABC-3TC-DTG                                                     FALSE
+## Current_ART_RegimenABC-3TC-EFV                                                     FALSE
+## Current_ART_RegimenABC-3TC-LPV/r                                                   FALSE
+## Current_ART_RegimenABC-3TC-NVP                                                     FALSE
+## Current_ART_RegimenABC-3TC-pDTG                                                    FALSE
+## Current_ART_RegimenAZT-3TC-ATV/r                                                   FALSE
+## Current_ART_RegimenAZT-3TC-LPV/r                                                   FALSE
+## Current_ART_RegimenAZT-3TC-NVP                                                     FALSE
+## Current_ART_RegimenAZT-3TC-TDF                                                     FALSE
+## Current_ART_RegimenAZT-TDF-3TC-LPV/r                                               FALSE
+## Current_ART_RegimenOther                                                           FALSE
+## Current_ART_RegimenTDF-3TC-ATV/r                                                   FALSE
+## Current_ART_RegimenTDF-3TC-DTG                                                     FALSE
+## Current_ART_RegimenTDF-3TC-EFV                                                     FALSE
+## Current_ART_RegimenTDF-3TC-LPV/r                                                   FALSE
+## Current_ART_RegimenTDF-3TC-NVP                                                     FALSE
+## Current_ART_RegimenTDF-FTC-ATV/r                                                   FALSE
+## Current_ART_RegimenTDF-FTC-LPV/r                                                   FALSE
+## Enhanced_Adherence_CounsellingYes                                                  FALSE
+## 1 subsets of each size up to 9
+## Selection Algorithm: exhaustive
+##          exposure Age.group10-19 Age.group19-20 Age.group20-29 Age.group30-39
+## 1  ( 1 ) "*"      " "            " "            " "            " "           
+## 2  ( 1 ) " "      " "            " "            " "            " "           
+## 3  ( 1 ) "*"      " "            " "            " "            " "           
+## 4  ( 1 ) "*"      " "            " "            " "            " "           
+## 5  ( 1 ) "*"      " "            " "            " "            " "           
+## 6  ( 1 ) "*"      " "            " "            " "            " "           
+## 7  ( 1 ) "*"      " "            " "            " "            " "           
+## 8  ( 1 ) " "      " "            " "            " "            " "           
+## 9  ( 1 ) " "      " "            " "            " "            " "           
+##          Age.group40+ SEXMale clinstageStage II clinstageStage III
+## 1  ( 1 ) " "          " "     " "               " "               
+## 2  ( 1 ) " "          " "     " "               " "               
+## 3  ( 1 ) " "          " "     " "               " "               
+## 4  ( 1 ) " "          " "     " "               " "               
+## 5  ( 1 ) " "          " "     " "               " "               
+## 6  ( 1 ) "*"          " "     " "               " "               
+## 7  ( 1 ) "*"          " "     "*"               " "               
+## 8  ( 1 ) "*"          " "     "*"               " "               
+## 9  ( 1 ) "*"          " "     "*"               " "               
+##          clinstageStage IV funcstatBedridden funcstatAmbulatory
+## 1  ( 1 ) " "               " "               " "               
+## 2  ( 1 ) " "               " "               " "               
+## 3  ( 1 ) " "               " "               " "               
+## 4  ( 1 ) " "               " "               " "               
+## 5  ( 1 ) " "               " "               " "               
+## 6  ( 1 ) " "               " "               " "               
+## 7  ( 1 ) " "               " "               " "               
+## 8  ( 1 ) " "               " "               " "               
+## 9  ( 1 ) " "               " "               " "               
+##          TB_Screening_OutcomePresumptive TB ART_Start
+## 1  ( 1 ) " "                                " "      
+## 2  ( 1 ) " "                                " "      
+## 3  ( 1 ) " "                                " "      
+## 4  ( 1 ) " "                                " "      
+## 5  ( 1 ) "*"                                " "      
+## 6  ( 1 ) "*"                                " "      
+## 7  ( 1 ) "*"                                " "      
+## 8  ( 1 ) "*"                                " "      
+## 9  ( 1 ) "*"                                " "      
+##          Enhanced_Adherence_CounsellingYes
+## 1  ( 1 ) " "                              
+## 2  ( 1 ) "*"                              
+## 3  ( 1 ) " "                              
+## 4  ( 1 ) " "                              
+## 5  ( 1 ) " "                              
+## 6  ( 1 ) " "                              
+## 7  ( 1 ) " "                              
+## 8  ( 1 ) "*"                              
+## 9  ( 1 ) "*"                              
+##          ART_enrollment_settingClinical Platforms (Community Pharmacy)
+## 1  ( 1 ) " "                                                          
+## 2  ( 1 ) " "                                                          
+## 3  ( 1 ) " "                                                          
+## 4  ( 1 ) " "                                                          
+## 5  ( 1 ) " "                                                          
+## 6  ( 1 ) " "                                                          
+## 7  ( 1 ) " "                                                          
+## 8  ( 1 ) " "                                                          
+## 9  ( 1 ) " "                                                          
+##          ART_enrollment_settingClinical Platforms (Laboratories)
+## 1  ( 1 ) " "                                                    
+## 2  ( 1 ) " "                                                    
+## 3  ( 1 ) " "                                                    
+## 4  ( 1 ) " "                                                    
+## 5  ( 1 ) " "                                                    
+## 6  ( 1 ) " "                                                    
+## 7  ( 1 ) " "                                                    
+## 8  ( 1 ) " "                                                    
+## 9  ( 1 ) " "                                                    
+##          ART_enrollment_settingClinical Platforms (PHCs/Private Clinics/Nursing Homes)
+## 1  ( 1 ) " "                                                                          
+## 2  ( 1 ) " "                                                                          
+## 3  ( 1 ) " "                                                                          
+## 4  ( 1 ) " "                                                                          
+## 5  ( 1 ) " "                                                                          
+## 6  ( 1 ) " "                                                                          
+## 7  ( 1 ) " "                                                                          
+## 8  ( 1 ) " "                                                                          
+## 9  ( 1 ) " "                                                                          
+##          ART_enrollment_settingClinical Platforms (TBAs)
+## 1  ( 1 ) " "                                            
+## 2  ( 1 ) " "                                            
+## 3  ( 1 ) " "                                            
+## 4  ( 1 ) " "                                            
+## 5  ( 1 ) " "                                            
+## 6  ( 1 ) " "                                            
+## 7  ( 1 ) " "                                            
+## 8  ( 1 ) " "                                            
+## 9  ( 1 ) " "                                            
+##          ART_enrollment_settingCommunity
+## 1  ( 1 ) " "                            
+## 2  ( 1 ) " "                            
+## 3  ( 1 ) " "                            
+## 4  ( 1 ) " "                            
+## 5  ( 1 ) " "                            
+## 6  ( 1 ) " "                            
+## 7  ( 1 ) " "                            
+## 8  ( 1 ) "*"                            
+## 9  ( 1 ) "*"                            
+##          ART_enrollment_settingCommunity Based Organisation
+## 1  ( 1 ) " "                                               
+## 2  ( 1 ) " "                                               
+## 3  ( 1 ) " "                                               
+## 4  ( 1 ) " "                                               
+## 5  ( 1 ) " "                                               
+## 6  ( 1 ) " "                                               
+## 7  ( 1 ) " "                                               
+## 8  ( 1 ) " "                                               
+## 9  ( 1 ) " "                                               
+##          ART_enrollment_settingFacility ART_enrollment_settingOVC
+## 1  ( 1 ) " "                            " "                      
+## 2  ( 1 ) " "                            " "                      
+## 3  ( 1 ) "*"                            " "                      
+## 4  ( 1 ) "*"                            " "                      
+## 5  ( 1 ) "*"                            " "                      
+## 6  ( 1 ) "*"                            " "                      
+## 7  ( 1 ) "*"                            " "                      
+## 8  ( 1 ) "*"                            " "                      
+## 9  ( 1 ) "*"                            " "                      
+##          ART_enrollment_settingSelf Testing
+## 1  ( 1 ) " "                               
+## 2  ( 1 ) " "                               
+## 3  ( 1 ) " "                               
+## 4  ( 1 ) " "                               
+## 5  ( 1 ) " "                               
+## 6  ( 1 ) " "                               
+## 7  ( 1 ) " "                               
+## 8  ( 1 ) " "                               
+## 9  ( 1 ) " "                               
+##          Viral_Load_IndicationTargeted Monitoring
+## 1  ( 1 ) " "                                     
+## 2  ( 1 ) "*"                                     
+## 3  ( 1 ) "*"                                     
+## 4  ( 1 ) "*"                                     
+## 5  ( 1 ) "*"                                     
+## 6  ( 1 ) "*"                                     
+## 7  ( 1 ) "*"                                     
+## 8  ( 1 ) "*"                                     
+## 9  ( 1 ) "*"                                     
+##          Current_ART_RegimenABC-3TC-DDI Current_ART_RegimenABC-3TC-DTG
+## 1  ( 1 ) " "                            " "                           
+## 2  ( 1 ) " "                            " "                           
+## 3  ( 1 ) " "                            " "                           
+## 4  ( 1 ) " "                            " "                           
+## 5  ( 1 ) " "                            " "                           
+## 6  ( 1 ) " "                            " "                           
+## 7  ( 1 ) " "                            " "                           
+## 8  ( 1 ) " "                            " "                           
+## 9  ( 1 ) " "                            " "                           
+##          Current_ART_RegimenABC-3TC-EFV Current_ART_RegimenABC-3TC-LPV/r
+## 1  ( 1 ) " "                            " "                             
+## 2  ( 1 ) " "                            " "                             
+## 3  ( 1 ) " "                            " "                             
+## 4  ( 1 ) " "                            " "                             
+## 5  ( 1 ) " "                            " "                             
+## 6  ( 1 ) " "                            " "                             
+## 7  ( 1 ) " "                            " "                             
+## 8  ( 1 ) " "                            " "                             
+## 9  ( 1 ) " "                            " "                             
+##          Current_ART_RegimenABC-3TC-NVP Current_ART_RegimenABC-3TC-pDTG
+## 1  ( 1 ) " "                            " "                            
+## 2  ( 1 ) " "                            " "                            
+## 3  ( 1 ) " "                            " "                            
+## 4  ( 1 ) " "                            " "                            
+## 5  ( 1 ) " "                            " "                            
+## 6  ( 1 ) " "                            " "                            
+## 7  ( 1 ) " "                            " "                            
+## 8  ( 1 ) " "                            " "                            
+## 9  ( 1 ) " "                            " "                            
+##          Current_ART_RegimenAZT-3TC-ATV/r Current_ART_RegimenAZT-3TC-LPV/r
+## 1  ( 1 ) " "                              " "                             
+## 2  ( 1 ) " "                              " "                             
+## 3  ( 1 ) " "                              " "                             
+## 4  ( 1 ) " "                              " "                             
+## 5  ( 1 ) " "                              " "                             
+## 6  ( 1 ) " "                              " "                             
+## 7  ( 1 ) " "                              " "                             
+## 8  ( 1 ) " "                              " "                             
+## 9  ( 1 ) " "                              " "                             
+##          Current_ART_RegimenAZT-3TC-NVP Current_ART_RegimenAZT-3TC-TDF
+## 1  ( 1 ) " "                            " "                           
+## 2  ( 1 ) " "                            " "                           
+## 3  ( 1 ) " "                            " "                           
+## 4  ( 1 ) " "                            " "                           
+## 5  ( 1 ) " "                            " "                           
+## 6  ( 1 ) " "                            " "                           
+## 7  ( 1 ) " "                            " "                           
+## 8  ( 1 ) " "                            " "                           
+## 9  ( 1 ) " "                            " "                           
+##          Current_ART_RegimenAZT-TDF-3TC-LPV/r Current_ART_RegimenOther
+## 1  ( 1 ) " "                                  " "                     
+## 2  ( 1 ) " "                                  " "                     
+## 3  ( 1 ) " "                                  " "                     
+## 4  ( 1 ) " "                                  " "                     
+## 5  ( 1 ) " "                                  " "                     
+## 6  ( 1 ) " "                                  " "                     
+## 7  ( 1 ) " "                                  " "                     
+## 8  ( 1 ) " "                                  " "                     
+## 9  ( 1 ) " "                                  " "                     
+##          Current_ART_RegimenTDF-3TC-ATV/r Current_ART_RegimenTDF-3TC-DTG
+## 1  ( 1 ) " "                              " "                           
+## 2  ( 1 ) " "                              " "                           
+## 3  ( 1 ) " "                              " "                           
+## 4  ( 1 ) " "                              "*"                           
+## 5  ( 1 ) " "                              "*"                           
+## 6  ( 1 ) " "                              "*"                           
+## 7  ( 1 ) " "                              "*"                           
+## 8  ( 1 ) " "                              "*"                           
+## 9  ( 1 ) "*"                              "*"                           
+##          Current_ART_RegimenTDF-3TC-EFV Current_ART_RegimenTDF-3TC-LPV/r
+## 1  ( 1 ) " "                            " "                             
+## 2  ( 1 ) " "                            " "                             
+## 3  ( 1 ) " "                            " "                             
+## 4  ( 1 ) " "                            " "                             
+## 5  ( 1 ) " "                            " "                             
+## 6  ( 1 ) " "                            " "                             
+## 7  ( 1 ) " "                            " "                             
+## 8  ( 1 ) " "                            " "                             
+## 9  ( 1 ) " "                            " "                             
+##          Current_ART_RegimenTDF-3TC-NVP Current_ART_RegimenTDF-FTC-ATV/r
+## 1  ( 1 ) " "                            " "                             
+## 2  ( 1 ) " "                            " "                             
+## 3  ( 1 ) " "                            " "                             
+## 4  ( 1 ) " "                            " "                             
+## 5  ( 1 ) " "                            " "                             
+## 6  ( 1 ) " "                            " "                             
+## 7  ( 1 ) " "                            " "                             
+## 8  ( 1 ) " "                            " "                             
+## 9  ( 1 ) " "                            " "                             
+##          Current_ART_RegimenTDF-FTC-LPV/r
+## 1  ( 1 ) " "                             
+## 2  ( 1 ) " "                             
+## 3  ( 1 ) " "                             
+## 4  ( 1 ) " "                             
+## 5  ( 1 ) " "                             
+## 6  ( 1 ) " "                             
+## 7  ( 1 ) " "                             
+## 8  ( 1 ) " "                             
+## 9  ( 1 ) " "
+```
+
+
+---
+class:middle
+### Illustration with the "VL_Nigeria" data
+
+
+``` r
+par(mfrow = c(1,2))
+
+plot(reg_summary.3$adjr2, xlab = "Number of Variables", ylab = "Adjusted RSq", type = "l")
+adj_r2_max.3 = which.max(reg_summary.3$adjr2)
+points(adj_r2_max.3, reg_summary.3$adjr2[adj_r2_max.3], col ="red", cex = 2, pch = 20)
+
+plot(reg_summary.3$bic, xlab = "Number of Variables", ylab = "BIC", type = "l")
+bic_min.3 = which.min(reg_summary.3$bic) 
+points(bic_min.3, reg_summary.3$bic[bic_min.3], col = "red", cex = 2, pch = 20)
+```
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-26-1.png" width="60%" height="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### Illustration with the "VL_Nigeria" data
+
+``` r
+plot(regfit_full.3, scale = "adjr2", 
+     main= "'adjr2' for 'VL_Nigeria' data")
+```
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-27-1.png" width="120%" height="100%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### Illustration with the "VL_Nigeria" data
+
+
+``` r
+plot(regfit_full.3, scale = "bic", 
+     main= "'BIC' for 'VL_Nigeria' data")
+```
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-28-1.png" width="120%" height="100%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+## What did we get from our "dream model"?
+
+| What dataset you used?	| Write the equation of the model |
+|:-----------------:|:-------------------------------------------------------------|
+|VL_Nigeria	| PS Model (Weight Generation): l𝑜𝑔𝑖𝑡(𝑃 (𝐸𝑥𝑝𝑜𝑠𝑢𝑟𝑒 = 1)) = 𝛽0 +𝛽1(𝐴𝑔𝑒.𝑔𝑟𝑜𝑢𝑝) + 𝛽2(𝑆𝐸𝑋) + 𝛽3(𝐴𝑅𝑇_𝑆𝑡𝑎𝑟𝑡) + 𝛽4(𝐶𝑙𝑖𝑛𝑖𝑐𝑎𝑙_𝑆𝑡𝑎𝑔𝑖𝑛𝑔) + 𝛽5(𝑇𝐵_𝑆𝑐𝑟𝑒𝑒𝑛𝑖𝑛𝑔_𝑂𝑢𝑡𝑐𝑜𝑚𝑒) |
+|VL_Nigeria	| log((P(Outcome=1∣Exposure)/P(Outcome=0∣Exposure))= log(Odds)= logit(P)=β0+β1xExposure; log((P(binSupress=1|enhanced_adherence_counselling/P(binSupress=0|enahanced_adherence_counselling)) =log (Odds) = β0+ β1xEnhanced_adherence_counselling + β2xsex +β3xage_group + β4xtb_screening_outcome + β5xclinical_staging_at_last_visit +β6xart_start |
+|VL_Nigeria |	`\(ViralLoadSupression = \beta_0 + \beta_{EAC}X_{EAC} + \beta_{age_2}X_{age2} + \beta_{age_3}X_{age3} + \beta_{age_4}X_{age4} + \beta_{Male}X_{Male} + \beta_{AdvancedStage}X_{AdvancedStage} +  \beta_{Clinical}X_{Clinical} +  \beta_{Year}X_{Year} + \beta_{TB}X_{TB} + \epsilon\)` |
+
+
+
+---
+class: middle
+### Illustration of selection with the 'VL_Nigeria' dataset 
+
+Subset selection object `\(\to\)` automatically selects the "best" sets:
+  regsubsets.formula(binSupress ~ ., data = VL_Nigeria, method = "exhaustive")
+- .blue[44 Variables/ parameter (and intercept) with 1 subsets of each size up to 9 variables]
+
+--
+
+- Based on this, we would probably choose to include a model with .red[3-8 variables]:
+  - Likely exposure, age, SAB, clinstage, funcstat, TB_Screening_Outcome, Current_ART_Regimen depending on the choice of metrics...
+
+--
+
+## .red[Do you trust this approach?] .purple[Any concerns??]
+
+  
+
+---
+class:middle
+### Even the _"smartest"_ software, program or technology will need, .red[until now], a bit of guidance...
+
+**Selecting a pool of variables to choose from, may help**
+
+``` r
+VL_Nigeria2 &lt;- VL_Nigeria %&gt;% select(binSupress, exposure, Age.group, SEX, clinstage,
+                                     funcstat, TB_Screening_Outcome, ART_Start,
+                                     Enhanced_Adherence_Counselling, ART_enrollment_setting)
+#removing Current_ART_Regimen, State
+```
+
+--
+**Then re-formulating the selection**
+
+``` r
+regfit_full.4 &lt;- regsubsets(binSupress ~ .,
+*                    data = VL_Nigeria2,
+                     method = "exhaustive") 
+```
+
+```
+## Reordering variables and trying again:
+```
+
+--
+
+
+``` r
+reg_summary.4 &lt;- summary(regfit_full.4)
+```
+
+---
+class: middle
+### Illustration of selection with the "VL_Nigeria" data
+From the selected covariates, there are .blue[9 variables and 24 parameters] to be estimated.
+- The package proposes .red[9 models with several combinations] of the parameters/covariates.
+
+--
+
+```
+## Subset selection object
+## Call: regsubsets.formula(binSupress ~ ., data = VL_Nigeria2, method = "exhaustive")
+## 24 Variables  (and intercept)
+##                                                                               Forced in
+## exposure                                                                          FALSE
+## Age.group10-19                                                                    FALSE
+## Age.group19-20                                                                    FALSE
+## Age.group20-29                                                                    FALSE
+## Age.group30-39                                                                    FALSE
+## Age.group40+                                                                      FALSE
+## SEXMale                                                                           FALSE
+## clinstageStage II                                                                 FALSE
+## clinstageStage III                                                                FALSE
+## clinstageStage IV                                                                 FALSE
+## funcstatBedridden                                                                 FALSE
+## funcstatAmbulatory                                                                FALSE
+## TB_Screening_OutcomePresumptive TB                                                FALSE
+## ART_Start                                                                         FALSE
+## ART_enrollment_settingClinical Platforms (Community Pharmacy)                     FALSE
+## ART_enrollment_settingClinical Platforms (Laboratories)                           FALSE
+## ART_enrollment_settingClinical Platforms (PHCs/Private Clinics/Nursing Homes)     FALSE
+## ART_enrollment_settingClinical Platforms (TBAs)                                   FALSE
+## ART_enrollment_settingCommunity                                                   FALSE
+## ART_enrollment_settingCommunity Based Organisation                                FALSE
+## ART_enrollment_settingFacility                                                    FALSE
+## ART_enrollment_settingOVC                                                         FALSE
+## ART_enrollment_settingSelf Testing                                                FALSE
+## Enhanced_Adherence_CounsellingYes                                                 FALSE
+##                                                                               Forced out
+## exposure                                                                           FALSE
+## Age.group10-19                                                                     FALSE
+## Age.group19-20                                                                     FALSE
+## Age.group20-29                                                                     FALSE
+## Age.group30-39                                                                     FALSE
+## Age.group40+                                                                       FALSE
+## SEXMale                                                                            FALSE
+## clinstageStage II                                                                  FALSE
+## clinstageStage III                                                                 FALSE
+## clinstageStage IV                                                                  FALSE
+## funcstatBedridden                                                                  FALSE
+## funcstatAmbulatory                                                                 FALSE
+## TB_Screening_OutcomePresumptive TB                                                 FALSE
+## ART_Start                                                                          FALSE
+## ART_enrollment_settingClinical Platforms (Community Pharmacy)                      FALSE
+## ART_enrollment_settingClinical Platforms (Laboratories)                            FALSE
+## ART_enrollment_settingClinical Platforms (PHCs/Private Clinics/Nursing Homes)      FALSE
+## ART_enrollment_settingClinical Platforms (TBAs)                                    FALSE
+## ART_enrollment_settingCommunity                                                    FALSE
+## ART_enrollment_settingCommunity Based Organisation                                 FALSE
+## ART_enrollment_settingFacility                                                     FALSE
+## ART_enrollment_settingOVC                                                          FALSE
+## ART_enrollment_settingSelf Testing                                                 FALSE
+## Enhanced_Adherence_CounsellingYes                                                  FALSE
+## 1 subsets of each size up to 9
+## Selection Algorithm: exhaustive
+##          exposure Age.group10-19 Age.group19-20 Age.group20-29 Age.group30-39
+## 1  ( 1 ) " "      " "            " "            " "            " "           
+## 2  ( 1 ) "*"      " "            " "            " "            " "           
+## 3  ( 1 ) "*"      " "            " "            " "            " "           
+## 4  ( 1 ) "*"      " "            " "            " "            " "           
+## 5  ( 1 ) "*"      " "            " "            " "            " "           
+## 6  ( 1 ) "*"      "*"            " "            " "            " "           
+## 7  ( 1 ) "*"      "*"            " "            " "            " "           
+## 8  ( 1 ) "*"      "*"            " "            " "            " "           
+## 9  ( 1 ) "*"      "*"            " "            " "            " "           
+##          Age.group40+ SEXMale clinstageStage II clinstageStage III
+## 1  ( 1 ) " "          " "     " "               " "               
+## 2  ( 1 ) " "          " "     " "               " "               
+## 3  ( 1 ) "*"          " "     " "               " "               
+## 4  ( 1 ) "*"          " "     " "               " "               
+## 5  ( 1 ) "*"          " "     " "               " "               
+## 6  ( 1 ) "*"          " "     " "               " "               
+## 7  ( 1 ) "*"          " "     " "               " "               
+## 8  ( 1 ) "*"          " "     " "               " "               
+## 9  ( 1 ) "*"          " "     "*"               " "               
+##          clinstageStage IV funcstatBedridden funcstatAmbulatory
+## 1  ( 1 ) " "               " "               " "               
+## 2  ( 1 ) " "               " "               " "               
+## 3  ( 1 ) " "               " "               " "               
+## 4  ( 1 ) " "               " "               " "               
+## 5  ( 1 ) " "               " "               " "               
+## 6  ( 1 ) " "               " "               " "               
+## 7  ( 1 ) " "               " "               " "               
+## 8  ( 1 ) "*"               " "               " "               
+## 9  ( 1 ) "*"               " "               " "               
+##          TB_Screening_OutcomePresumptive TB ART_Start
+## 1  ( 1 ) " "                                " "      
+## 2  ( 1 ) " "                                " "      
+## 3  ( 1 ) " "                                " "      
+## 4  ( 1 ) " "                                "*"      
+## 5  ( 1 ) " "                                "*"      
+## 6  ( 1 ) " "                                "*"      
+## 7  ( 1 ) "*"                                "*"      
+## 8  ( 1 ) "*"                                "*"      
+## 9  ( 1 ) "*"                                "*"      
+##          Enhanced_Adherence_CounsellingYes
+## 1  ( 1 ) "*"                              
+## 2  ( 1 ) " "                              
+## 3  ( 1 ) " "                              
+## 4  ( 1 ) " "                              
+## 5  ( 1 ) " "                              
+## 6  ( 1 ) " "                              
+## 7  ( 1 ) " "                              
+## 8  ( 1 ) " "                              
+## 9  ( 1 ) " "                              
+##          ART_enrollment_settingClinical Platforms (Community Pharmacy)
+## 1  ( 1 ) " "                                                          
+## 2  ( 1 ) " "                                                          
+## 3  ( 1 ) " "                                                          
+## 4  ( 1 ) " "                                                          
+## 5  ( 1 ) " "                                                          
+## 6  ( 1 ) " "                                                          
+## 7  ( 1 ) " "                                                          
+## 8  ( 1 ) " "                                                          
+## 9  ( 1 ) " "                                                          
+##          ART_enrollment_settingClinical Platforms (Laboratories)
+## 1  ( 1 ) " "                                                    
+## 2  ( 1 ) " "                                                    
+## 3  ( 1 ) " "                                                    
+## 4  ( 1 ) " "                                                    
+## 5  ( 1 ) " "                                                    
+## 6  ( 1 ) " "                                                    
+## 7  ( 1 ) " "                                                    
+## 8  ( 1 ) " "                                                    
+## 9  ( 1 ) " "                                                    
+##          ART_enrollment_settingClinical Platforms (PHCs/Private Clinics/Nursing Homes)
+## 1  ( 1 ) " "                                                                          
+## 2  ( 1 ) " "                                                                          
+## 3  ( 1 ) " "                                                                          
+## 4  ( 1 ) " "                                                                          
+## 5  ( 1 ) " "                                                                          
+## 6  ( 1 ) " "                                                                          
+## 7  ( 1 ) " "                                                                          
+## 8  ( 1 ) " "                                                                          
+## 9  ( 1 ) " "                                                                          
+##          ART_enrollment_settingClinical Platforms (TBAs)
+## 1  ( 1 ) " "                                            
+## 2  ( 1 ) " "                                            
+## 3  ( 1 ) " "                                            
+## 4  ( 1 ) " "                                            
+## 5  ( 1 ) " "                                            
+## 6  ( 1 ) " "                                            
+## 7  ( 1 ) " "                                            
+## 8  ( 1 ) " "                                            
+## 9  ( 1 ) " "                                            
+##          ART_enrollment_settingCommunity
+## 1  ( 1 ) " "                            
+## 2  ( 1 ) " "                            
+## 3  ( 1 ) " "                            
+## 4  ( 1 ) " "                            
+## 5  ( 1 ) "*"                            
+## 6  ( 1 ) "*"                            
+## 7  ( 1 ) "*"                            
+## 8  ( 1 ) "*"                            
+## 9  ( 1 ) "*"                            
+##          ART_enrollment_settingCommunity Based Organisation
+## 1  ( 1 ) " "                                               
+## 2  ( 1 ) " "                                               
+## 3  ( 1 ) " "                                               
+## 4  ( 1 ) " "                                               
+## 5  ( 1 ) " "                                               
+## 6  ( 1 ) " "                                               
+## 7  ( 1 ) " "                                               
+## 8  ( 1 ) " "                                               
+## 9  ( 1 ) " "                                               
+##          ART_enrollment_settingFacility ART_enrollment_settingOVC
+## 1  ( 1 ) " "                            " "                      
+## 2  ( 1 ) "*"                            " "                      
+## 3  ( 1 ) "*"                            " "                      
+## 4  ( 1 ) "*"                            " "                      
+## 5  ( 1 ) "*"                            " "                      
+## 6  ( 1 ) "*"                            " "                      
+## 7  ( 1 ) "*"                            " "                      
+## 8  ( 1 ) "*"                            " "                      
+## 9  ( 1 ) "*"                            " "                      
+##          ART_enrollment_settingSelf Testing
+## 1  ( 1 ) " "                               
+## 2  ( 1 ) " "                               
+## 3  ( 1 ) " "                               
+## 4  ( 1 ) " "                               
+## 5  ( 1 ) " "                               
+## 6  ( 1 ) " "                               
+## 7  ( 1 ) " "                               
+## 8  ( 1 ) " "                               
+## 9  ( 1 ) " "
+```
+
+---
+class: middle
+**Illustration of selection with the "VL_Nigeria" data**
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-33-1.png" width="100%" height="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-34-1.png" width="120%" height="60%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-35-1.png" width="120%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+### Other Subset Selection 
+
+``` r
+#Backwards selection
+regsubsets(outcome ~ .,
+           data = VL_Nigeria, 
+           method = "backward") 
+
+#Forwards selection
+regsubsets(outcome ~ .,
+           data = VL_Nigeria, 
+           method = "forward") 
+
+#Stepwise selection
+regsubsets(outcome ~ .,
+           data = cVL_Nigeria, 
+           method = "seqrep") 
+```
+
+&lt;br&gt;
+**.red[Still any decision should be made with caution!]**
+
+---
+class:middle
+## Selection Strategies: .red[Caution!] 
+
+- Different model fit metrics (e.g., `\(R^2\)`, AIC, Mallow's Cp) can show different models as the "best".
+&lt;br&gt;
+
+--
+&lt;br&gt;
+- Can be a recipe for a type I error (chance significant findings) .red[recall Ioannidis paper?]
+  - Particularly when the number of candidate predictors is large relative to the sample size.
+&lt;br&gt;
+
+--
+&lt;br&gt;
+- Automated selection procedures make it easy for researchers to ignore good practices for causal inference, like .blue[choosing variables based on a DAG].
+&lt;br&gt;
+
+--
+&lt;br&gt;
+- High .purple[risk of overfitting] to your data set.
+  - Selected variables may strongly discriminate among individuals in your data set, but may have less ability to do so on other data. 
+
+---
+class: middle
+
+##Overall framework for model specification:
+1) Variable specification:
+&gt; .blue[
+- What is the universe of variables I would consider? 
+ - There is a limited number available, some of the ones we would need, will not be. 
+ - We need to think this through and choose. 
+ - Leaving variables out is a strong assumption about that not having an effect ( `\(\beta = 0\)` )
+]
+
+2) Interaction assessment (including assessment of heterogeneity) 
+
+3) Confounding assessment (including consideration of precision)
+
+---
+class: middle
+
+## What did we get from our "dream model"?
+
+&lt;img src="images/john_travolta.gif" width="65%" style="display: block; margin: auto;" /&gt;
+
+--
+
+## .red[Where are the interactions at????]
+
+---
+class: middle
+## Selection and Specification
+&gt; _"The approach is guided by several principles, including the adherence to a hierarchically defined initial (full) model, and a backward elimination strategy._
+
+&lt;br&gt;
+
+--
+&lt;br&gt;
+**Corollaries**
+- Collinearity, correlation (other hierarchical structures)
+- Moderate or correct for your own Degrees of Freedom
+- Multiple testing and Bonferroni corrections
+
+---
+class: middle
+## Summary
+
+- **.red[Prediction and inference are different types of problems]**.
+- If the goal is causal inference, we must think about confounding .red[(and other biases!)] and model interpretation is important.
+
+--
+&lt;br&gt;
+- If the goal is prediction, model interpretation can be less important, and the choice of predictor variables is driven more by the data we have available and model evaluation metrics.
+
+--
+&lt;br&gt;
+- Model selection strategies can be used for both, but much more care must be taken if you choose to use them for an inference question
+
+
+---
+class:inverse, center, middle
+
+##“All models are wrong, but some are useful”
+
+— George Box (1919-2013)
+
+---
+class: middle
+## What did we get from our "dream model"?
+
+
+
+.pull-left[
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-39-1.png" width="125%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-40-1.png" width="125%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class:inverse, center, middle
+
+### Read it again:
+## “_All models are wrong, but some are useful_”
+
+— George Box (1919-2013)
+
+
+---
+class: middle
+
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+
+---
+class: middle
+
+&lt;img src="images/L25tweet.png" width="65%" style="display: block; margin: auto;" /&gt;
+[Endogeneity tweet](https://twitter.com/BearCurd/status/1596590553323298816)
+
+---
+class: middle
+## Resources:
+- Greenland et al. 2016. "Outcome modelling strategies in epidemiology: traditional methods and basic alternatives." Int. J. Epidemiol.
+
+- Steyerberg, Ewout W. 2019. Clinical Prediction Models: A Practical Approach to Development, Validation, and Updating. Springer, Cham.
+
+- Harrell, Frank E., Jr. 2015. Regression Modeling Strategies: With Applications to Linear Models, Logistic and Ordinal Regression, and Survival Analysis. Springer Series in Statistics. Cham: Springer International Publishing.
+
+---
+class: middle
+
+### Causal Inference and Prediction: Different Goals!
+
+- **.blue[Causal Inference]**: estimating the effect of a variable on an outcome
+  - Usually adjusted for confounding
+  - Want a model with good confounder selection, determined via a DAG and substantive knowledge
+  
+  
+- **.purple[Prediction]**: predicting a future outcome using a set of covariates
+  - We want predictions that are close to the actual value, but avoid overfitting
+  - May prioritize measurable predictors over strong predictors
+- **.red[The two goals do NOT require the same model selection approach!]**
+
+
+---
+class:middle
+
+## Prediction??
+
+- **.red[Prediction]** aims to anticipate some future outcome using a set of covariates
+- Prediction models are typically built using data from an existing group of individuals, with the goal of being able to predict the outcome for future individuals.
+- Here, we are concerned with getting the best model that gives "optimal" predictions for future subjects. 
+- A good predictive model doesn't necessarily tell you anything useful about how to intervene to change the outcome!
+  - Age, sex, and prior hospitalization may be good predictors of heart failure, but we wouldn't stop admitting people to the hospital to prevent heart failure
+  
+  
+---
+class:middle  
+## Miscelaneous
+
+
+---
+class: middle
+
+### Goodness-of-Fit Statistics and model metrics 
+
+- **R-squared** `\(R^2\)` : % of variation in `Y` explained by `"predictors"` variables. The higher `\(R^2\)`, the better the model.
+- **Root Mean Squared Error (RMSE)**: the average error performed by the model in predicting the outcome for an observation. RMSE = sqrt(MSE); The `\(\uparrow\)` the RMSE, the better the model.
+- **Residual Standard Error (RSE):** the model sigma, a variant of RMSE adjusted # predictors in the model. The `\(\downarrow\)` RSE, the better the model. 
+- **Mean Absolute Error (MAE)**, measures the prediction error. MAE = mean(abs(observed- predicted)). Less sensitive to outliers compared to RMSE.
+
+---
+class: middle
+### Goodness-of-Fit Statistics and model metrics
+- **AIC:** (Akaike’s Information Criteria) penalizes the inclusion of additional variables to a model.
+- **AICc:** is a version of AIC corrected for small sample sizes.
+- **BIC:** (or Bayesian information criteria) is a variant of AIC with a stronger penalty.
+- **Mallows Cp:** A variant of AIC developed by Colin Mallows.
+- **WAIC:** Widely (Watanabe) Application Criterion (Bayesian) 
+- **PSIS:** Pareto-Smoothed Importance Sampling [(Bayesian)](https://mouse-imaging-centre.github.io/blog/post/2018-01-31_loo-intro/) 
+- **DIC:** Deviance Information Criterion (Bayesian) 
+---
+class: middle
+## Evaluating Prediction Models
+
+- The model fit in the **training data** (i.e., the data used to develop a predictive model) is not our primary interest
+- What we are primarily interested in is the accuracy of our model predictions **when our model is applied to new data** that was not used as part of the model development process (i.e., **test data**)
+- **.red[A good model fit in the training data doesn't necessarily ensure a good ability to predict using other data]**.
+
+---
+class: middle
+###Paramaterization, Trends, Dose-Response?
+**&lt;span style="color:darkmagenta"&gt; Recall this?&lt;/span&gt;**
+
+<div id="pzveloiefp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#pzveloiefp table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#pzveloiefp thead, #pzveloiefp tbody, #pzveloiefp tfoot, #pzveloiefp tr, #pzveloiefp td, #pzveloiefp th {
+  border-style: none;
+}
+
+#pzveloiefp p {
+  margin: 0;
+  padding: 0;
+}
+
+#pzveloiefp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#pzveloiefp .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#pzveloiefp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#pzveloiefp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#pzveloiefp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#pzveloiefp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#pzveloiefp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#pzveloiefp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#pzveloiefp .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#pzveloiefp .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#pzveloiefp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#pzveloiefp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#pzveloiefp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#pzveloiefp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#pzveloiefp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pzveloiefp .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#pzveloiefp .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#pzveloiefp .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#pzveloiefp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pzveloiefp .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#pzveloiefp .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pzveloiefp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#pzveloiefp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pzveloiefp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#pzveloiefp .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pzveloiefp .gt_left {
+  text-align: left;
+}
+
+#pzveloiefp .gt_center {
+  text-align: center;
+}
+
+#pzveloiefp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#pzveloiefp .gt_font_normal {
+  font-weight: normal;
+}
+
+#pzveloiefp .gt_font_bold {
+  font-weight: bold;
+}
+
+#pzveloiefp .gt_font_italic {
+  font-style: italic;
+}
+
+#pzveloiefp .gt_super {
+  font-size: 65%;
+}
+
+#pzveloiefp .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#pzveloiefp .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#pzveloiefp .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#pzveloiefp .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#pzveloiefp .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#pzveloiefp .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#pzveloiefp .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#pzveloiefp .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#pzveloiefp div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  &lt;caption class='gt_caption'&gt;&lt;span class='gt_from_md'&gt;&lt;strong&gt;Table 1. Summary of Study Characteristics&lt;/strong&gt;&lt;/span&gt;&lt;/caption&gt;
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="label"><span class='gt_from_md'><strong>Characteristic</strong></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="stat_0"><span class='gt_from_md'><strong>N = 355</strong></span><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">covid_status</td>
+<td headers="stat_0" class="gt_row gt_center">55 (16%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">adm_agemons</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Median (Q1, Q3)</td>
+<td headers="stat_0" class="gt_row gt_center">30 (15, 63)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">muac_average</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Median (Q1, Q3)</td>
+<td headers="stat_0" class="gt_row gt_center">14.70 (13.40, 15.70)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">caregiver_educ1</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    None</td>
+<td headers="stat_0" class="gt_row gt_center">21 (5.9%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Primary</td>
+<td headers="stat_0" class="gt_row gt_center">216 (61%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Secondary</td>
+<td headers="stat_0" class="gt_row gt_center">87 (25%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Above secondary</td>
+<td headers="stat_0" class="gt_row gt_center">30 (8.5%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">nutrition</td>
+<td headers="stat_0" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    malnutrition</td>
+<td headers="stat_0" class="gt_row gt_center">123 (35%)</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    nutrition</td>
+<td headers="stat_0" class="gt_row gt_center">230 (65%)</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="2"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> <span class='gt_from_md'>Median (IQR) or Frequency (%); ‘adm_agemons’ is age in months; ‘muac_average’ is measured in cms; ‘nutrition’, and ‘muac’ are measures of nutritional status; ‘caregiver_edu’ is education level of caregiver</span></td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+
+
+[Clinical epidemiology of COVID-19 among hospitalized children in rural western Kenya](https://journals.plos.org/globalpublichealth/article?id=10.1371/journal.pgph.0002011#abstract0) 
+
+
+---
+class: middle
+###Paramaterization, Trends, Dose-Response?
+Let's consider Education of the caregiver and nutritional status measured by Mid Upper Arm Circumference (MUAC) in cm, as the continuous outcome.
+.pull-left[
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-43-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+.pull-right[
+
+```
+## # A tibble: 5 × 2
+##   caregiver_educ_n m.muac
+##              &lt;dbl&gt;  &lt;dbl&gt;
+## 1                0   15.2
+## 2                1   14.6
+## 3                2   14.7
+## 4                3   15.2
+## 5               NA   14.4
+```
+]
+
+[Clinical epidemiology of COVID-19 among hospitalized children in rural western Kenya](https://journals.plos.org/globalpublichealth/article?id=10.1371/journal.pgph.0002011#abstract0) 
+
+---
+class: middle
+###Paramaterization, Trends, Dose-Response?
+How can we assess their relationship?
+**Using a continuous variable &lt;span style="color:red"&gt;assumptions?&lt;/span&gt;**
+
+``` r
+muac1&lt;- glm(muac_average ~ caregiver_educ_n, data = L25data)
+round(j_summ(muac1, confint = T)$coeftable, 2)
+```
+
+```
+##                   Est.  2.5% 97.5% t val.    p
+## (Intercept)      14.67 14.11 15.22  52.15 0.00
+## caregiver_educ_n -0.03 -0.39  0.33  -0.18 0.86
+```
+
+--
+
+**Using a categorical version of the variable &lt;span style="color:red"&gt;assumptions?&lt;/span&gt;**
+
+``` r
+muac2&lt;- glm(muac_average ~ factor(caregiver_educ_n), data = L25data)
+round(j_summ(muac2, confint = T)$coeftable, 2)
+```
+
+```
+##                            Est.  2.5% 97.5% t val.    p
+## (Intercept)               15.23 14.18 16.29  28.23 0.00
+## factor(caregiver_educ_n)1 -0.65 -1.76  0.46  -1.15 0.25
+## factor(caregiver_educ_n)2 -0.79 -1.97  0.39  -1.31 0.19
+## factor(caregiver_educ_n)3 -0.24 -1.62  1.14  -0.35 0.73
+```
+
+[Clinical epidemiology of COVID-19 among hospitalized children in rural western Kenya](https://journals.plos.org/globalpublichealth/article?id=10.1371/journal.pgph.0002011#abstract0)
+
+
+---
+class: middle
+###Paramaterization, Trends, Dose-Response?
+Let's consider COVID-19 status (disease yes/no) and Education, can we assess their relationship?
+.pull-left[
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-47-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-48-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+[Clinical epidemiology of COVID-19 among hospitalized children in rural western Kenya](https://journals.plos.org/globalpublichealth/article?id=10.1371/journal.pgph.0002011#abstract0)
+
+
+---
+class: middle
+###Paramaterization, Trends, Dose-Response?
+
+**Dichotomous Outcome**
+.pull-left[
+
+``` r
+muac3&lt;- glm(covid_status ~ caregiver_educ_n, 
+            data = L25data, family= binomial(link = "logit"))
+round(j_summ(muac3, confint = T)$coeftable, 2)
+```
+
+```
+##                   Est.  2.5% 97.5% z val.    p
+## (Intercept)      -1.44 -2.05 -0.83  -4.64 0.00
+## caregiver_educ_n -0.18 -0.60  0.24  -0.85 0.39
+```
+
+
+``` r
+muac4&lt;- glm(covid_status ~ factor(caregiver_educ_n), 
+            data = L25data, family= binomial(link = "logit"))
+round(j_summ(muac4, confint = T)$coeftable, 2)
+```
+
+```
+##                            Est.  2.5% 97.5% z val.    p
+## (Intercept)               -1.16 -2.17 -0.16  -2.27 0.02
+## factor(caregiver_educ_n)1 -0.47 -1.54  0.59  -0.87 0.38
+## factor(caregiver_educ_n)2 -0.85 -2.05  0.35  -1.39 0.16
+## factor(caregiver_educ_n)3 -0.41 -1.80  0.99  -0.57 0.57
+```
+]
+
+--
+
+.pull-right[
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-51-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+[Clinical epidemiology of COVID-19 among hospitalized children in rural western Kenya](https://journals.plos.org/globalpublichealth/article?id=10.1371/journal.pgph.0002011#abstract0)
+
+---
+class: middle
+###Paramaterization, Trends, Dose-Response?
+What happens when the referent group has a very small sample size?
+- OR estimates are all imprecise &lt;span style="color:darkred"&gt;(since the imprecision for the referent group is propogated)&lt;/span&gt;
+ - One way are this is to use incremental coding of the dummy variables
+
+
+``` r
+L25data$edu1&lt;- L25data$edu2&lt;-L25data$edu3&lt;-0
+
+L25data$edu1[L25data$caregiver_educ_n&gt;=1]&lt;- 1
+L25data$edu2[L25data$caregiver_educ_n&gt;=2]&lt;- 1
+L25data$edu3[L25data$caregiver_educ_n&gt;=3]&lt;- 1
+
+L25data$edu1[is.na(L25data$caregiver_educ_n)==T]&lt;- NA
+L25data$edu2[is.na(L25data$caregiver_educ_n)==T]&lt;- NA
+L25data$edu3[is.na(L25data$caregiver_educ_n)==T]&lt;- NA
+```
+
+[Clinical epidemiology of COVID-19 among hospitalized children in rural western Kenya](https://journals.plos.org/globalpublichealth/article?id=10.1371/journal.pgph.0002011#abstract0)
+
+---
+class: middle
+**Paramaterization, Trends, Dose-Response?**
+.pull-left[ 
+**Incremental categories***
+
+``` r
+*muac5&lt;- glm(covid_status ~ edu1+edu2+edu3,
+            data = L25data,
+            family= binomial(link = "logit"))
+round(j_summ(muac5, confint = T)$coeftable, 2)
+```
+
+```
+##              Est.  2.5% 97.5% z val.    p
+## (Intercept) -1.16 -2.17 -0.16  -2.27 0.02
+## edu1        -0.47 -1.54  0.59  -0.87 0.38
+## edu2        -0.38 -1.13  0.38  -0.98 0.33
+## edu3         0.45 -0.72  1.61   0.75 0.45
+```
+
+**OR what we usually do...**
+
+``` r
+muac6&lt;- glm(covid_status ~ caregiver_educ1, 
+            data = L25data, family= binomial(link = "logit"))
+round(j_summ(muac6, confint = T)$coeftable, 2)
+```
+
+```
+##                                 Est.  2.5% 97.5% z val.    p
+## (Intercept)                    -1.16 -2.17 -0.16  -2.27 0.02
+## caregiver_educ1Primary         -0.47 -1.54  0.59  -0.87 0.38
+## caregiver_educ1Secondary       -0.85 -2.05  0.35  -1.39 0.16
+## caregiver_educ1Above secondary -0.41 -1.80  0.99  -0.57 0.57
+```
+]
+
+--
+.pull-right[
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-55-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+.small[
+*Incremental means, that the reference is the immediately previous category/group
+
+[Clinical epidemiology of COVID-19 among hospitalized children in rural western Kenya](https://journals.plos.org/globalpublichealth/article?id=10.1371/journal.pgph.0002011#abstract0)
+]
+
+---
+class: middle
+**Splines examples!**
+.pull-left[
+- `Y`= muac_average (MUAC in cms); 
+- `X`= hfaz (Height for age, Z-score)
+
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-56-1.png" width="80%" style="display: block; margin: auto;" /&gt;&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-56-2.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+--
+.pull-right[
+
+``` r
+require(splines)
+lmmod6.11a&lt;- glm(muac_average~ breast_feeding1 + adm_sex + age_cat_new+ 
+*                  ns(hfaz, df=2), data = covidkenya)
+#round(j_summ(lmmod6.11a, confint = T)$coeftable, 2)
+lmmod6.11b&lt;- glm(muac_average~ breast_feeding1 + adm_sex + age_cat_new + 
+*                  ns(hfaz, df=5), data = covidkenya)
+round(j_summ(lmmod6.11b, confint = T)$coeftable, 2)
+```
+
+```
+##                              Est.  2.5% 97.5% t val.    p
+## (Intercept)                 12.95  9.55 16.35   7.47 0.00
+## breast_feeding1nobreastfeed -0.08 -0.74  0.59  -0.22 0.83
+## adm_sexMale                  0.08 -0.34  0.49   0.36 0.72
+## age_cat_new&gt;=5 years         3.99  3.01  4.96   8.02 0.00
+## age_cat_new12-23 months      1.58  0.66  2.50   3.38 0.00
+## age_cat_new2-5 years         2.53  1.59  3.46   5.31 0.00
+## age_cat_new6-11 months       1.24  0.26  2.22   2.48 0.01
+## ns(hfaz, df = 5)1           -0.64 -3.91  2.63  -0.38 0.70
+## ns(hfaz, df = 5)2            0.03 -3.32  3.39   0.02 0.98
+## ns(hfaz, df = 5)3            3.32  0.24  6.40   2.11 0.04
+## ns(hfaz, df = 5)4           -2.67 -9.94  4.60  -0.72 0.47
+## ns(hfaz, df = 5)5            7.34  3.22 11.46   3.49 0.00
+```
+
+``` r
+#attr(terms(lmmod6.11b), "predvars")
+```
+
+]
+
+---
+class: middle
+**Last Splines examples!**
+.pull-left[
+- `Y`= muac_average (MUAC in cms);
+- `X`= adm_agemons (Age in months)
+&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-58-1.png" width="80%" style="display: block; margin: auto;" /&gt;&lt;img src="L22_EPIB704_Model_Building_25_files/figure-html/unnamed-chunk-58-2.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+--
+.pull-right[
+
+``` r
+lmmod6.12a&lt;- glm(muac_average~ breast_feeding1 + adm_sex + 
+*                  ns(adm_agemons, df=5), data = covidkenya)
+#round(j_summ(lmmod6.12a, confint = T)$coeftable, 2)
+lmmod6.12b&lt;- glm(muac_average~ breast_feeding1 + adm_sex +
+*                  poly(adm_agemons, 5, raw=T), data = covidkenya)
+round(j_summ(lmmod6.12b, confint = T)$coeftable, 2)
+```
+
+```
+##                                 Est.  2.5% 97.5% t val.    p
+## (Intercept)                    11.70 10.75 12.66  23.96 0.00
+## breast_feeding1nobreastfeed    -0.29 -0.97  0.38  -0.85 0.40
+## adm_sexMale                     0.13 -0.30  0.56   0.59 0.56
+## poly(adm_agemons, 5, raw = T)1  0.21  0.09  0.34   3.31 0.00
+## poly(adm_agemons, 5, raw = T)2  0.00 -0.01  0.00  -1.90 0.06
+## poly(adm_agemons, 5, raw = T)3  0.00  0.00  0.00   1.11 0.27
+## poly(adm_agemons, 5, raw = T)4  0.00  0.00  0.00  -0.52 0.61
+## poly(adm_agemons, 5, raw = T)5  0.00  0.00  0.00   0.08 0.94
+```
+
+``` r
+#attr(terms(lmmod6.12b), "predvars")
+```
+]
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "3:2",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "navigation": {
+    "scroll": false
+  }
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
