@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Treatment Effects &amp; Randomized Control Trials</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Mabel Carabali" />
+    <script src="libs/header-attrs-2.31/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="extra.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: left, middle, inverse, title-slide
+
+.title[
+# Treatment Effects &amp; Randomized Control Trials
+]
+.author[
+### Mabel Carabali
+]
+.institute[
+### EBOH, McGill University
+]
+.date[
+### (Updated: 2026-09-07)
+]
+
+---
+
+
+
+
+
+
+
+
+
+class:middle
+
+**Expected competencies**
++ Understand basic causal inference concepts including counterfactuals and potential outcomes.
++ Knows the rationale and understand different study phases in experiment designs.
++ Can recognize and describe RCTs according to their framework, objective, and design. 
+
+--
+### Objectives
+- Provide an overview and revise the framework for Treatment Effects.
+- Provide an overview of available designs for the realization of RCTs.
+- Provide tools for the understanding of statistical analysis of RCTs.
+
+.small[Acknowledgements: Some notes from J. Brophy, E. Ortiz-Brizuela]
+
+---
+class: middle
+
+**Brief history... Causal criteria**
+
+.pull-left[
+&lt;img src="images/b_hill.png" alt="" width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+1. Strength 
+2. Consistency 
+3. Specificity 
+4. **Temporality**
+5. Biological gradient
+6. Plausibility 
+7. Coherence
+8. Experimental evidence
+9. Analogy
+]
+
+**Sir Austin Bradford Hill’s causal considerations**
+
+--
+
+## .red[Causal effect estimation] `\(\neq\)` .blue[Causal inference]
+
+
+---
+class: middle
+
+## Three fundamental tasks in research…
+- **Description:** Provides a quantitative summary of the characteristics of a population (e.g., to guide resource allocation or generate hypotheses).
+
+- **Prediction:** Identifies associations between population characteristics (e.g., to anticipate resource requirements).
+
+- **Causal inference:**  Estimates the effect (impact) of an exposure, treatment, or intervention on outcomes (to inform decision-making).
+
+
+---
+
+class: middle
+&lt;img src="images/WI_cover.png" alt="" width="50%" style="display: block; margin: auto;" /&gt;
+ **_What if?_** by Miguel Hernán and James Robins, available [here](https://miguelhernan.org/whatifbook)
+   
+---
+class: middle   
+
+## What If...
+
+&gt; _"a book that helps scientists—especially health and social scientists—generate and analyze data to make causal inferences that are explicit about both the causal question and
+the assumptions underlying the data analysis."_
+
+--
+
+&gt; _"we stress the need to **take the causal question seriously enough** to articulate it, and to delineate the separate roles of data and assumptions for causal inference. Once these foundations are in place, causal inferences become necessarily less casual, which helps prevent confusion."_
+
+.small[Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]]
+
+---
+class: middle   
+
+## .pull-right[Seriously enough?]
+
+--
+&lt;img src="images/zeushera_old.jpg" alt="" width="40%" style="display: block; margin: auto;" /&gt;
+... The version of Zeus and Hera **I know...**
+
+---
+class: middle   
+&lt;img src="images/kaos_zeushera.png" alt="" width="75%" style="display: block; margin: auto;" /&gt;
+... The version of Zeus and Hera **You might know...?**
+
+--
+.pull-right[
+## Less casual?? 
+⚠️ [Kaos](https://www.netflix.com/ca/title/80997258) .red[PG15+ Raunchy content] ⚠️
+]
+
+
+
+---
+class: inverse, middle, center
+
+# Causal inference without models:
+## Nonparametric identification of causal effects
+
+
+---
+class: middle  
+## Causal Effects
+
+&gt; _"We compare (usually only mentally) the outcome when an action A is taken versus the outcome when the action A is withheld._ 
+
+&gt; _**If the two outcomes differ, we say that the action A has a causal effect**, causative or preventive, on the outcome. Otherwise, we say that the action A has no causal effect on the outcome."_
+
+
+where, `\(A\)`  ~  Action, Intervention, Exposure, Policy, or Treatment.
+
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+### .red[Individual] causal effects (Zeus)
+
+.pull-left[
+&lt;img src="images/zeus1.png" alt="" width="130%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="images/zeus2.png" alt="" width="130%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class: middle
+## .red[Individual] causal effects (Hera)
+
+.pull-left[
+&lt;img src="images/hera1.png" alt="" width="130%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="images/hera2.png" alt="" width="130%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class: middle
+## .red[Individual] causal effects (Zeus &amp; Hera)
+
+.pull-left[
+&lt;img src="images/zeus2.png" alt="" width="140%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="images/hera2.png" alt="" width="130%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class: middle
+
+### From Causal intuition to Mathematical notation and Statistical analysis 
+- Dichotomous treatment variable `\(A\)` (1: treated, 0: untreated) 
+- Dichotomous outcome variable `\(Y\)` (1: death, 0: survival). 
+ - Variables `\(A\)` and `\(Y\)`, random variables.
+
+--
+
+`\(Y^{a=1}\)` the outcome that .red[ would have been observed under the treatment value a= 1] 
+
+`\(Y^{a=0}\)` the outcome that .blue[would have been observed under the treatment value a = 0] 
+
+  + `\(Y^{a=1}\)` and `\(Y^{a=0}\)` are also random variables. 
+
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+
+### From Causal intuition to Mathematical notation and Statistical analysis
+
+- Zeus has `\(Y^{a=1} = 1\)` and `\(Y^{a=0} =0\)` because .red[he died when treated] but would have survived if untreated,  
+
+- Hera has `\(Y^{a=1} = 0\)` and `\(Y^{a=0} =0\)` because .blue[she survived when treated] and would also have survived if untreated. 
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+### .red[Definition of a causal effect for an individual:]
+
+The treatment `\(A\)` has a causal effect on an individual’s outcome `\(Y\)` if:
+
+`\(Y^{a=1} \neq Y^{a=0}\)` for the individual. 
+
+- The treatment **.red[has a causal effect on Zeus’s outcome]** because `\(Y^{a=1} = 1 \neq 0 = Y^{a=0}\)`, 
+- The treatment **.azure[has not a causal effect on Hera’s outcome]** because `\(Y^{a=1} = 0 = Y^{a=0}\)`. 
+
+--
+
+**The variables `\(Y^{a=1}\)` and `\(Y^{a=0}\)` are referred to as potential outcomes or as counterfactual outcomes.** 
+
+Three pieces of information to define an individual causal effect:
+1. An outcome of interest, 
+2. The actions a= 1 and a= 0 to be compared, and 
+3. The individual whose counterfactual outcomes `\(Y^{a=0}\)` and `\(Y^{a=1}\)` are to be compared.
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## .red[Individual] Causal Effects
+
+Only one of those outcomes is observed for each individual: the one **actually experienced** under the actual corresponding treatment. 
+
+- .red[All other counterfactual outcomes remain unobserved.] 
+
+--
+
+## The fundamental problem, **.red[Missing data!]** 
+&gt; Individual effects cannot be identified so, they cannot be expressed as a function of the observed data ! .tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+--
+## .pull-right[.purple[What can we do?]] 
+
+
+---
+class: middle
+## .blue[Average] Causal Effects
+
+.pull-left[
+&lt;img src="images/zeusfam.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="images/kaosfam.png" alt="" width="70%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class: middle
+## Causal Effects
+
+.pull-left[
+**.red[Individual] Causal Effects**
+
+1. An outcome of interest, 
+2. The actions `\(a= 1\)` and `\(a= 0\)` to be compared, 
+3. The .red[individual] whose counterfactual outcomes `\(Y^{a=0}\)` and `\(Y^{a=1}\)` are to be compared.
+]
+
+--
+.pull-right[
+**.blue[Average] Causal Effects**
+
+1. An outcome of interest, 
+2. The actions `\(a = 1\)` and `\(a = 0\)` to be compared, 
+3. A .blue[well-defined population of individuals] whose outcomes `\(Y^{a=0}\)` and `\(Y^{a=1}\)` are to be compared.
+]
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## .blue[Average] Causal Effects
+.pull-left[
+&lt;img src="images/kaosfam.png" alt="" width="70%" style="display: block; margin: auto;" /&gt;
+]
+--
+.pull-right[
+&lt;img src="images/WItab1.png" alt="" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## .blue[Average] Causal Effects
+
+.pull-left[
+&lt;img src="images/WItab1.png" alt="" width="50%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="images/WItab1ace1.png" alt="" width="110%" style="display: block; margin: auto;" /&gt;
+]
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+### .blue[Average] Causal Effects
+
+&lt;img src="images/WItab1ace2.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## .blue[Average] Causal Effects
+
+.pull-left[
+&lt;img src="images/WItab1ace2.png" alt="" width="120%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="images/WIACE.png" alt="" width="120%" style="display: block; margin: auto;" /&gt;
+]
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Average Causal Effects
+
+- ACE of `\(A\)` on  `\(Y\)` is present if `\(Pr[Y^{a=1}= 1]  \neq Pr [Y^{a=0} = 1]\)` in the .blue[population of interest].
+- Equivalently, there is ACE if `\(E[Y^{a=1}] \neq E[Y^{a=0}]\)`
+
+--
+
+- .red[Absence of an average causal effect does not imply absence of individual effects].
+
+- The sharp causal null hypothesis is true if `\(Y^{a=1} = Y^{a=0}\)` for any individual in the population.
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Measures of Causal Effect .livred[(Difference)]
+.pull-left[
+&lt;img src="images/WIACE.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+- ACE `\(E[Y^{a=1}] − E[Y^{a=0}]\)` 
+- Always equal to the average `\(E[Y^{a=1}−Y^{a=0}]\)` of the individual causal effects `\(Y^{a=1} − Y^{a=0}\)`
+- Difference of averages `\(=\)` average of the differences. 
+]
+
+--
+
+The causal risk difference (additive scale) is used to compute the absolute number of the outcome attributable to the treatment/intervention. 
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Measures of Causal Effect .livred[(Ratio)]
+.pull-left[
+&lt;img src="images/WIACE.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+- The causal risk ratio in the population .red[is not] the average of the individual causal effects `\(Y^{a=1}/Y^{a=0}\)` on the ratio scale.
+]
+
+--
+
+- The causal risk ratio (multiplicative scale) is used to **compute how many times treatment, relative to no treatment, increases the risk of the outcome**. 
+- The use of either the multiplicative or additive scale will depend on the goal of the inference.
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+.blue[Average] causal effects??
+.pull-left[
+&lt;img src="images/WItab1.2.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
+]
+--
+.pull-right[
+&lt;img src="images/WItab1.2assoc.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+]
+## .red[But we observed something else...] 🤯
+
+
+
+---
+class: middle
+
+## .blue[Causation] vs. .red[Association]
+
+.pull-left[
+&lt;img src="images/WItab1PO.png" alt="" width="55%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+.pull-right[
+&lt;img src="images/WItab1.2.png" alt="" width="55%" style="display: block; margin: auto;" /&gt;
+]
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Potential Outcomes vs .livred[Observed Outcomes]
+- When `\(Pr [Y = 1|A = 1] = Pr [Y = 1|A = 0]\)`,  `\(A\)` and `\(Y\)` are independent, `\(A\)` is not associated with `\(Y\)`, or  `\(A\)` does not predict `\(Y\)`. 
+- Independence, `\(Y\perp\perp A\)` or, equivalently, `\(A⊥⊥Y\)` or `\(A \perp Y\)`
+
+--
+.pull-left[
+
+&lt;img src="images/WIACEindep.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+
+]
+
+.pull-right[
+- Association in the population: `\(E [Y|A= 1] \neq E [Y|A= 0]\)`.
+
+- For binary `\(A\)`, `\(Y \perp A\)` if and only if they are not statistically correlated.
+
+- The associational RR, RD, OR quantify the **strength of the association when it exists**.
+]
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+
+## .blue[Causation] vs. .red[Association]
+&lt;img src="images/WIfig1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
+
+**.blue[Causation:]** contrast between the whole, all individuals treated and all individuals untreated. 
+**.red[Association:]** contrast between the treated and the untreated areas of the whole.
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+
+## .blue[Causation] vs. .red[Association]
+
+To infer **.blue[causality]**, we must ask questions such as:  .azure[What would the risk be if everyone (vs. no one) received the treatment?]
+
+&lt;img src="images/WIfig1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
+
+To study **.red[associations]**, the questions are: .livred[What is the risk among those who received the treatment and those who did not?]
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+
+### .blue[Causation] vs. .red[Association]
+- The risk `\(Pr [Y^a = 1]\)` is an .blue[unconditional, marginal probability].
+- The risk `\(Pr [Y = 1|A= a]\)` is a .red[conditional probability].  
+
+--
+.pull-left[
+
+
+**.blue[Causation]**
+&lt;img src="images/WIACE.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+Different risk in the same population under two different treatment values `\((a = 1\)` or `\(a = 0)\)`
+]
+
+.pull-right[
+**.red[Association]**
+&lt;img src="images/WIACEindep.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+Different risk in two disjoint subsets of the population determined by the individuals’ actual treatment value `\((A = 1\)` or `\(A = 0)\)`
+]
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: inverse, middle, center 
+## Randomized Experiments
+### ... What If considerations 
+
+---
+class: middle
+
+&lt;img src="images/WIlookup.gif" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+## Look up!
+
+---
+class: middle
+## Review of Concepts
+
+- Consistency
+
+- Independence
+
+- Interference
+
+- Multiple Variation of Treatment
+
+- Random Variability
+
+---
+class: middle
+## Randomization 🎲
+
+- Ensures that counterfactual/potential outcomes' missing values in research studies occur by chance.
+- Ensures that effect measures can be computed or consistently estimated, despite the fundamental problem.
+
+**Ideal randomized experiment:** no loss to follow-up, full adherence to the assigned treatment over the duration of the study, a single version of treatment, and double blind assignment.
+
+- **.oranges[In ideal randomized experiments, association is causation]**.
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Exchangeability
+
+ `\(Pr [Y^a = 1|A= 1] = Pr [Y^a = 1|A= 0]\)`, for both `\(a= 0\)` and `\(a= 1\)`. 
+ 
+- Consequently, the (conditional) risks must be equal to the (marginal) risk : `\(Pr [Y^a = 1|A= 1] = Pr [Y^a = 1|A= 0] =Pr [Y^a = 1]\)`  . 
+
+- .red[Equivalently, exchangeability means that the counterfactual outcome and the actual treatment are independent, or] `\(Y^a \perp \perp A\)`, .red[for all values] `\(a\)`.
+
+- Randomization is expected to produce exchangeability. 
+
+- When treated and untreated are exchangeable, the treatment is *exogenous*.
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Exchangeability
+
+Defined as independence between the counterfactual outcome and the observed treatment. 
+
+`$$Y^a \perp \perp A$$`
+
+The treated and the untreated **would have experienced the same risk of the outcome** if they had received the same treatment level (either `\(a= 0\)` or `\(a= 1\)`). 
+
+- Yet, `\(Y^a \perp\perp A\)` does not imply `\(Y \perp \perp A\)`;
+
+Independence between the counterfactual outcome `\(Y^a\)` and the observed treatment `\(A\)` .red[does not imply] independence between the observed outcome `\(Y\)` and the observed treatment `\(A\)`
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+
+### Full Exchangeability and Mean Exchangeability
+Randomization makes the `\(Y^a\)` jointly independent of `\(A\)` which implies, but is not implied by, exchangeability `\(Y^a \perp\perp A\)` for each `\(a\)`.
+- Randomization makes `\(Y^{\mathcal{A}} \perp\perp A\)`, called **Full exchangeability**. 
+- For a dichotomous treatment, `\(\mathcal{A} =\)` {0,1} full exchangeability is `\((Y^{a=1},Y^{a=0}) \perp\perp A\)`.
+- For a dichotomous outcome and treatment, `\(Y^a \perp\perp A\)` can be written as `\(Pr [Y^a = 1|A= 1] = Pr [Y^a = 1|A= 0]\)` 
+
+--
+
+- Equivalently, `\(E[Y^a|A = 1] = E[Y^a|A = 0]\)` for all `\(a\)`, **Mean exchangeability** `\(^1\)`.
+
+
+`\(^1\)` See extra notes at the end.
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Marginal Randomization 🎲
+
+.pull-left[
+&lt;img src="images/WImarg_random1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+--
+.pull-right[
+&lt;img src="images/WImarg_random2.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+**One coin/dice:** Randomly selecting 65% of the population and transplant them a new heart.
+
+
+---
+class: middle
+## Conditional Randomization 🎲 🎲
+
+Classifying individuals according to a third variable, `\(L\)`
+&lt;img src="images/WIcond_random.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+**Two coins/dices:** Randomly select people in each group (e.g., 65% if `\(L=1\)` and 50% if `\(L=0\)`) and transplant them a new heart.
+
+---
+class: middle
+
+## Marginal vs Conditional Randomization
+
+- .blue[Marginal] Single unconditional randomization probability that is common to all individuals 🎲
+
+- .red[Conditional] Several randomization probabilities that depend (are conditional) on the values of the variable `\(L\)` 🎲 🎲
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). Causal Inference: What If. Boca Raton: Chapman &amp; Hall/CRC.(https://miguelhernan.org/whatifbook)]
+
+---
+class: middle
+
+### Marginal Randomization 🎲
+
+- Single unconditional randomization probability that is common to all individuals.
+
+- Expected to result in exchangeability of the treated and the untreated:
+
+`$$Pr [Y^a = 1|A= 1] = Pr [Y^a = 1|A= 0]$$` or `$$Y^a\perp\perp A$$` for all `\(a\)`.
+
+
+- Produces marginal exchangeability and conditional exchangeability `\(Y^a\perp\perp A\)` for all `\(a\)`.
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+
+### Conditional Randomization 🎲 🎲
+
+- Several randomization probabilities that depend (are conditional) on the values of the variable `\(L\)`
+
+- Will not generally result in exchangeability of the treated and the untreated 
+
+- By design, each group may have a different % of individuals with a given value of `\(L\)`.
+
+- `\(A\)` predicts the counterfactual risk of the outcome under no treatment, and `\(Y^a \perp\perp A\)` does not hold.
+
+- Produces only conditional exchangeability `\(Y^a \perp\perp A|L\)` for all `\(a\)`. 
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Compute Causal Effect Measures
+
+Under .blue[marginal] randomization, marginal exchangeability 
+- .blue[Causal risk ratio, RR] `\(Pr [Y^{a=1} = 1] /Pr [Y^{a=0} = 1]\)` equals 
+- The .red[associational risk ratio, RR] `\(Pr [Y = 1|A= 1] /Pr [Y = 1|A= 0]\)` 
+
+--
+
+- Exchangeability ensures that `\(Pr [Y^a = 1]\)` equals `\(Pr [Y = 1|A= a]\)`.
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+### Compute Causal Effect Measures
+
+Under .red[conditionally] randomized experiment:
+- Combination of two (or more) separate marginally randomized experiments across `\(L = 1\)` and `\(L = 0\)`. 
+- First, compute the ACE in each subset (a.ka. Stratification). 
+- Association is causation within each subset: 
+
+ - The stratum-specific .blue[causal RR]: `\(Pr [Y^{a=1} = 1|L= 1] /Pr [Y^{a=0} = 1|L= 1]\)` equals 
+ - The stratum-specific .red[associational RR]: `\(Pr [Y = 1|L= 1,A= 1] /Pr [Y = 1|L= 1,A= 0]\)` among `\(L=1\)`, analogously for `\(L= 0\)`. 
+
+- Second, compute the ACE `\(Pr [Y^{a=1} = 1] /Pr [Y^{a=0} = 1]\)` in the entire population.
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+.pull-right[**Then what?**]
+
+
+---
+class: middle
+### Standardization
+After stratification compute the marginal counterfactual risk `\(Pr[Ya = 1]\)` 
+
+--
+
+**Standardization considers:**
+- The weighted average of the stratum-specific risks `\(Pr[Y^a = 1|L = 0]\)` and `\(Pr[Y^a = 1|L = 1]\)`
+
+- Weights equal to the proportion of individuals in the population with `\(L = 0\)` and `\(L = 1\)`
+
+- `\(Pr[Y^a = 1] = Pr[Y^a = 1|L=0] Pr [L= 0] + Pr[Y^a = 1|L = 1] Pr [L= 1]\)`. 
+
+- Equivalently `\(Pr[Y^a = 1] = \sum_l Pr[Y^a = 1|L= l] Pr [L= l]\)` 
+
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+
+---
+class: middle
+## Standardization
+
+Under conditional exchangeability: `\(Pr[Y^a = 1] = \sum_l Pr[Y = 1|L= l,A= a] Pr [L= l]\)`. 
+
+- `\(Pr[Y^a = 1]\)` is an .red[unobserved counterfactual risk] 
+
+- `\(\sum_l Pr[Y = 1|L= l,A= a] Pr [L= l]\)` .blue[observed quantities only], data on `\(L\)`, `\(A\)`, and `\(Y\)`.
+
+
+--
+
+&lt;span style="color:blue"&gt;The Standardized Mean `\(\sum_l E[Y|L= l,A= a] \times Pr[L=l]\)`&lt;/span&gt;
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Standardization
+Causal Risk Ratio using standardization:
+- Numerator `\(\sum_l Pr[Y = 1|L= l,A=1] Pr [L= l]\)`, the standardized risk in the treated using the population as the standard. 
+
+**Under conditional exchangeability:** The (counterfactual) risk that would have been observed had all the individuals in the population been treated (and viceversa for `\(A=0\)`).
+
+--
+
+The causal risk ratio `\(\frac{Pr[Y^{a=1} = 1]} {Pr[Y^{a=0} = 1]}\)` can be computed by standardization as:
+
+`$$\frac{\sum_l Pr[Y = 1|L= l,A= 1] Pr [L= l]} {\sum_l Pr[Y = 1|L= l,A= 0] Pr [L= l]}$$`
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Inverse probability weighting
+.pull-left[
+- Proposed by Horvitz and Thompson (1952) for surveys with unequal probabilities sampling.
+- Simulation of the counterfactuals. 
+- Correct under conditional exchangeability and can be pooled to create a twice as large hypothetical population (pseudo-population). 
+]
+--
+.pull-right[
+&lt;img src="images/WIipw1.png" alt="" width="110%" style="display: block; margin: auto;" /&gt;
+]
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Inverse probability weighting
+
+- Under `\(Y^a \perp\perp A|L\)` in the original population, treated and untreated are (unconditionally) exchangeable in the pseudo-population because the `\(L \perp\perp A\)`.
+
+- The associational RR in the pseudo-population is equal to the causal RR in both the pseudo-population and the original population.
+
+- The pseudo-population is created using the inverse of the conditional probability of receiving the treatment level as the weight. 
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Inverse probability weighting
+
+&lt;img src="images/WIipw2.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Standardization and IP Weighting
+- Standardization and IP weighting are mathematically equivalent.
+- Both can be viewed as procedures to build a new tree in which all individuals receive treatment a. 
+- Each method uses a different set of the probabilities to build the counterfactual tree: 
+ - IP weighting uses the conditional probability of treatment `\(A\)` given the covariate `\(L\)`
+ - Standardization uses the probability of the covariate `\(L\)` and the conditional probability of outcome `\(Y\)` given `\(A\)` and `\(L\)`.
+- Both "adjust for `\(L\)`", simulate what would have been observed if the variable (or variables in the vector) `\(L\)` had not been used to decide the probability of treatment.  
+
+- Assuming conditional exchangeability, both IP weighted and standardized means are equal to the counterfactual mean `\(E [Y^a]\)`. 
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: middle
+## Identifiability
+A counterfactual quantity that can be expressed as a function of the distribution (i.e., the probabilities) of the observed data, is identified (or identifiable).
+
+When treatment is continuous (unlikely) in conditionally randomized experiments:
+ `\(E [I(A= a) Y/f(A|L)]\)` is no longer equal to `\(\sum_l E[Y|A= a,L= l] Pr[L= l]\)` and thus is biased for `\(E[Y^a]\)` even under exchangeability. 
+
+--
+
+## Positivity
+If `\(A\)` is discrete with finite number of values and that `\(f[a|l]\)` is positive for all `\(l\)` such that `\(Pr [L= l]\)` is nonzero.
+
+Positivity condition is guaranteed to hold in conditionally randomized experiments.
+
+
+.tiny[Modified from: Hernan MA, Robins JM (2020). [Causal Inference: What If](https://miguelhernan.org/whatifbook). Boca Raton: Chapman &amp; Hall/CRC]
+
+---
+class: inverse, middle, center 
+## Randomized Experiments
+### ... General Epidemiological Considerations
+
+---
+class: middle
+&lt;img src="images/rct_meme.jpg" alt="" width="45%" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: middle
+## What’s a Clinical Trial
+- Primary way to assess whether a treatment (molecule, posology, administration, devices, or technique) is safe and effective in people.
+- To identify whether a treatment is more effective and/or has less harmful side effects than the standard treatment. 
+
+&lt;img src="images/clinicaltrial.png" alt="" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+### Why do we conduct Clinical Trials?
+&lt;img src="images/rct_pot.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+--
+
+Assuming successful randomization, no losses to follow-up, and complete adherence to treatment assignment, **RCTs provide the most credible method for constructing the counterfactual and measuring the causal effect of a particular treatment (or exposure)**; the effect estimate from a randomized experiment will approximate the true causal effect. 
+
+
+---
+class: middle
+### Always back to `\(\to\)` Research Questions!
+A research Question should  follow the FINER characteristics:
+
+**Feasible:** Adequate number of subjects &amp; Adequate technical expertise; Affordable in time and money; Manageable in scope 
+
+**Interesting:** Getting the answer intrigues the investigator and academic community
+
+**Novel:** Confirms, refutes or extends previous findings; Provides new findings 
+
+**Ethical:** Amenable to a study that institutional review board will approve 
+
+**Relevant:** To scientific knowledge;  To clinical and health policy  and To future research
+
+---
+class: middle
+
+## Trial Design, why prefer RCTs?
+.pull-left[
+&lt;img src="images/norct.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="images/rctbias.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+class: middle
+
+## Trial Design
+
+&lt;img src="images/rct_design1.png" alt="" width="60%" style="display: block; margin: auto;" /&gt;
+Description of trial design including type of trial (eg, parallel group, crossover, factorial, single group) 
+
+.small[Badve S, Kumar GL, editors. Predictive Biomarkers in Oncology (2019) https://doi.org/10.1007/978-3-319-95228-4_1 ]
+
+
+---
+class: middle
+### Type of Trial: Efficacy or Effectiveness
+**.purple[Efficacy]**
+- How well an intervention can work under ideal circumstances 
+when administered by well-trained experts and perfectly compliant recipients 
+
+--
+
+**.blue[Effectiveness]**
+- How well an intervention does work under “field conditions”. 
+ - when administered by ordinary practitioners and offered to a relatively unselected (or ‘less’ selected) target population.
+
+
+
+---
+class: middle
+### RCT: In comparison to ...?
+
+- **Absent (Nothing):** `\(\leftarrow\)` Can’t make a causal inference (not and RCT)
+- **Placebo:** `\(\leftarrow\)` Resembles the experimental intervention  and main function of placebo is to help keep subjects unaware of their assignment status (intervention vs. control) 
+ - Useful for studying the rates of side effects or adverse reactions to the treatment.
+ - Straightforward conclusion about.
+- **Active alternative:** `\(\leftarrow\)` More ethical and relevant to compare the existent or new treatments.
+ - Useful for prioritizing use of new treatment.
+ - May present ambiguity in non-inferiority trials.
+- **Usual care:** `\(\leftarrow\)` Suitable when current practice is a well-established treatment or when it’s variable and hard to standardize 
+
+---
+class: middle
+## Type of Trial – Basic RCT Design
+
+&lt;img src="images/rct_basic.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+Hulley et al. Designing Clinical Research. 2nd Edition. Lippincott Williams &amp; Wilkins, 2001 
+
+---
+class:middle
+### Some other RCT designs
+To try and overcome some of the limitations of classic **parallel-group fixed sample size RCTs**, some other designs include    
+&lt;br&gt;
+
+- **Factorial** trials (evaluate 2 or more treatments simultaneously)
+- **Cluster randomized** trials      
+- **Crossover** trials    
+- **Stepped wedge** trials    
+- **Pragmatic** trials (to overcome generalizability concerns)     
+- **Randomized registries** (overcome genralizability and cost issues)   
+
+---
+class: middle
+## Factorial Design
+
+&lt;img src="images/rct_factorial.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+Hulley SB, Cummings SR, Browner WS, Grady DG, Newman TB. Designing Clinical Research. Lippincott Williams &amp; Wilkins; 2013
+
+---
+class: middle
+## Planned  Cross-over RCT design 
+
+
+&lt;img src="images/rct_crossover.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+### Estimation: What and How?
+
+&lt;img src="images/rct_estimand.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+**Estimation vs Significance:** Suppose a trial compares the **efficacy of two interventions**. Does absence of _.red[statistically significant difference]_  means equivalence of efficacy?
+--
+&lt;img src="images/rct_magnitude.png" alt="" width="45%" style="display: block; margin: auto;" /&gt;
+We will talk about the .red[Range of Practical Equivalence] [ROPE](https://easystats.github.io/bayestestR/articles/region_of_practical_equivalence.html) during the nex lectures.
+
+
+---
+class: middle
+## Framework: Superior vs. Inferior?
+
+.pull-left[
+&lt;img src="images/rct_inf1.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+&lt;img src="images/rct_inf2.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+.small[
+- Reporting of Noninferiority and Equivalence Randomized Trials: An Extension of the CONSORT Statement.JAMA. 2006;295(10):1152–1160. doi:10.1001/jama.295.10.1152.
+- Hulley SB, Cummings SR, Browner WS, Grady DG, Newman TB. Designing Clinical Research. Lippincott Williams &amp; Wilkins; 2013]
+
+
+---
+class: middle
+## Framework: Superior vs. Inferior?
+
+
+.pull-left[
+**Null &amp; alternative hypotheses for non-inferiority **
+&lt;img src="images/rct_noninf.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-right[
+**Null &amp; alternative hypotheses for equivalence**
+&lt;img src="images/rct_equiv.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+class: middle
+## Type of Randomization.
+.pull-left[
+**Randomization with Same Probability**
+- Simple Randomization
+- Blocked Randomization
+- Stratified Randomization
+]
+
+.pull-right[
+&lt;img src="images/rct_blocking.png" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+.pull-left[
+**Randomization with Varied Probability**
+- Treatment-Adaptive Randomization
+- Adaptive Randomization
+- Response-Adaptive Randomization
+]
+
+.pull-right[
+&lt;img src="images/rct_adaptive.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+class: middle
+## Considerations for successful RCTs
+
+&lt;img src="images/rct_consider.png" alt="" width="70%" style="display: block; margin: auto;" /&gt;
+### Allocation concealment and randomization
+
+
+
+---
+class: middle
+
+### Estimation: What and How?
+
+&lt;img src="images/rct_estimand.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+class: middle
+
+## Frequentist and Bayesian Inference for RCTs
+
+&lt;img src="images/RCT_bayes_freq.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+class:middle
+### RCTs: it's still about the research question
+Without a precise description of the trial objective and the treatment effect that is targeted for testing and estimation there is a risk that:       
+- The study will not be designed appropriately to address its objective;     
+- The **statistical analyses will be misaligned** to the trial objective and the
+target of estimation;      
+- The treatment effect that is reported will be .red[incorrectly interpreted],
+which risks misleading decision makers.
+
+---
+class:middle
+## What do we want to know?
+
+We really care about the difference between `\(Y^0\)` and `\(Y^1\)`. 
+
+Let `\(\delta_i = y^1_i - y^0_i\)` (observed values)
+
+`\(E[\delta]=E[Y^1-Y^0]\)`
+
+`\(E[\delta]=E[Y^1]-E[Y^0]\)`
+
+This is the definition of a **Treatment Effect (TE)**.
+
+---
+class:middle
+## Why do experiments work?
+Since     
+
+`\(T \bot Y^0\)`
+
+`\(T \bot Y^1\)`
+
+Then     
+
+`\(E[Y^0 | T = 0] =  E[Y^0 | T = 1 ]\)`
+
+`\(E[Y^1 | T = 1 ] = E[Y^1 | T = 0]\)`
+
+.red[In other words, strong assumption that actual observations =  unobserved counterfactuals]
+
+---
+class:middle
+## Or in other words...
+
+**In a properly executed experiment, no association between potential outcome variables and treatment assignment**
+
+`\(E[Y^0 | T = 0] \simeq E[Y^0]\)`
+
+`\(E[Y^1 | T = 1] \simeq E[Y^1]\)`
+
+So...
+
+`\(E[\delta] = E[Y^1] - E[Y^0]\)`
+          `\(= E[Y|T=1]-E[Y|T=0]\)`
+
+Treatment effect = `\(\Delta\)` between **observed** treatment and control averages
+
+---
+class:middle
+## What is this treatment effect?
+
+`\(E[\delta]\)` is the expected value (mean) of the difference between each unit’s value of `\(Y^1\)` and `\(Y^0\)`, denoted the **average treatment effect (ATE)**      
+- In a sample, this is the **sample average treatment effect (SATE).**
+
+Even though the **individual differences are unobservable** (because either `\(Y^0\)` or `\(Y^1\)` will be counterfactual for each unit), we can estimate the mean difference via experiment.
+
+--
+
+`$$\text{SATE} = \frac{1}{n}\sum_{i=1}^{n}(y^1_i - y^0_i)$$`
+
+---
+class:middle
+### What's the role of randomization again?
+
+- Well performed experiments identify causal effects, **ATE**, because cases are randomly assigned to the treatment and control group and are, therefore, identical *on average*, on all pre-treatment characteristics.
+
+- Experiments of interest for causal interpretation are **randomized controlled trials** (or RCTs)    
+
+- **(S)ATE** = the average treatment effect for .red[switching] everyone's treatment.
+
+---
+
+class:middle
+### Causal estimands and RCTs 
+
+The clinical question defines the estimand and not the inverse.   
+- The statistical analysis must then align with the choice of estimand.      
+- Classically, the estimand for RCTs has been **ATE** (in reality a SATE) and the statistical approach is based on **intention to treat (ITT).**  
+
+--
+
+
+**ITT** measures the effect of randomization on the outcome of interest, in all patients, as randomized, .red[irrespective of compliance to the planned course of treatment].   
+- ITT ignores all intercurrent events  (i.e., intermediate changes from randomization to outcome).
+
+--
+
+.red[Why would one be interested in this estimand?]               
+--
+
+.blue[
+- Maximally exploits the advantages of randomization.     
+- Its preservation provides a secure foundation for statistical tests.
+]
+
+---
+class: middle
+
+# How to Analyze RCTs?
+
+**.blue[Super Easy (statistically)!]**
+
+ITT assumes that all confounding have been removed with randomization, and assuming successful allocation and adequate measurement, there should not be any selection bias or measurement error.
+
+--
+### ITT requires only 2 steps:
+1. Check balance of covariates.
+2. Contrast results (i.e., estimate the difference (Absolute or Relative) in average outcome between groups).
+
+
+---
+class:middle
+### Causal inference assumptions (for RCTs)
+
+**Identical to causal assumptions in non-experimental designs**
+1. Exchangeability, `\(Y^a \perp \perp A\)` for all `\(a\)`
+2. Consistency, `\(Y= Y^A\)` 
+3. Positivity, `\(Pr [A= a|L= l] &gt; 0\)`      
+  - .red[Requires “no unmeasured confounders and no informative censoring”   ]     
+
+--
+
+**Randomization takes care principally of the 1st element**, 
+- Could make the 2nd element easier to ensure IF there is a well defined intervention (no interference or treatment variation irrelevance), 
+- The 3rd requires good trial conduct with none or minimal lost to follow-up, or conditional randomization.  
+
+
+
+---
+
+class:middle
+### How to analyze RCTs?
+
+**.red[Randomized treatment assignment only protects against confounding at the time of randomization]**
+
+Estimation procedures involving:
+- Post-randomization confounding for treatment adherence and/or 
+- Loss to follow-up, 
+
+Needs to be very thoughtfully considered, otherwise bias may occur despite randomization.
+
+
+---
+class:middle
+### How to analyze RCTs? .red[...It depends !]
+
+If you **trust** the RCT (all assumptions are met) then follow the two steps: 
+1. Check balance, and 
+2. Contrast outcomes (no need to adjust for anything else).
+
+--
+
+.red[If you consider that there will be] **.red[deviations]** .red[to the RCT that can alter]
+
+`\(E[\delta] = E[Y^1] - E[Y^0]\)` and hence `\(= E[Y|T=1]-E[Y|T=0]\)`, then you may need to:
+
+1. Identify the type/mechanism of the variation/deviation of the RCT.
+2. Identify if/how to make valid causal inferences with the data.
+
+---
+class:middle
+### _Deviations_ from the .red[planned] RCTs: 
+### .purple[Treatment]
+
+.pull-left[
+&lt;img src="images/RCT_pp.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+Despite Randomization, **Treatment was not always received**.
+]
+
+--
+.pull-right[
+&lt;img src="images/RCT_astreat.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+
+Despite Randomization, treatment was **not always received or if received not always used**. 
+]
+
+
+---
+class:middle
+### What are the causal estimands for RCTs in presence of such deviations?
+If RCT is as planned, then ITT is used to estimate the ATE.
+
+But, depending on the **deviations** in the trial, one can also be interested in the **per-protocol (PP)** effect: The effect of **.red[adherence]** to assigned treatment strategy; .red[Average Treatment Effect among the Treated = ATT])
+
+**If perfect treatment adherence by 100% of participants, PP = ITT ; .blue[ATE] = .red[ATT])**
+
+--
+
+.small[PP effects most useful in pragmatic trials (which inform a clinical or policy decision by providing evidence for adoption of the intervention into real-world clinical practice) because patients and providers want a measure of effectiveness that is not influenced by adherence.]    
+&lt;br&gt;
+.small[PP effect is trial-specific, and more than one per-protocol effect definition is possible for a given trial (e.g. Tx adherence of 80%, 90%,... or adherent to a chosen time)].
+
+
+---
+class:middle
+## Per-Protocol Effects (PP) approaches
+Two common approaches to estimate the per-protocol effect are:
+
+i) Comparing the outcomes of those who took treatment A=1 and treatment A=0 (regardless of the treatment they were assigned to), e.g., Pr[Y=1|A=1] − Pr[Y=1|A=0], referred to the **as treated analysis**.
+
+ii) Comparing the outcomes of those who took treatment A=1 among those assigned to Z=1 and treatment A=0 among those assigned to Z=0, e.g., Pr[Y=1|A=1, Z=1] − Pr[Y=1|A=0, Z=0], referred to the **per protocol analysis**. .red[The ATT]
+
+---
+class:middle
+## Per-Protocol Effects (PP) approaches
+
+.pull-left[
+**.red[Per-Protocol]**
+&lt;img src="images/RCT_pp.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+Despite Randomization, treatment was not always received.
+]
+
+--
+.pull-right[
+**.red[As treated]**. 
+&lt;img src="images/RCT_astreat.png" alt="" width="90%" style="display: block; margin: auto;" /&gt;
+Despite Randomization, treatment was not always received or if received not always used.
+]
+
+
+---
+class:middle
+**Comparing .red[intention-to-treat], per-protocol, and as-treated analyses.**
+
+&lt;img src="images/rct_itt_sch.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+.small[Modified from: Dettori JR, Norvell DC. Intention-to-Treat: Is That Fair? Global Spine Journal. 2020;10(3):361-363. doi:10.1177/2192568220903001]
+
+---
+class:middle
+**Comparing intention-to-treat, .red[per-protocol], and as-treated analyses.**
+&lt;img src="images/rct_pp_sch.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+.small[Modified from: Dettori JR, Norvell DC. Intention-to-Treat: Is That Fair? Global Spine Journal. 2020;10(3):361-363. doi:10.1177/2192568220903001]
+
+---
+class:middle
+**Comparing intention-to-treat, per-protocol, and .red[as-treated analyses].**
+&lt;img src="images/rct_astreat_sch.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+.small[Modified from: Dettori JR, Norvell DC. Intention-to-Treat: Is That Fair? Global Spine Journal. 2020;10(3):361-363. doi:10.1177/2192568220903001]
+
+---
+class:middle
+**Schematic of an ITT and a PP analysis for RCTs.**
+&lt;img src="images/rct_itt_pp_table.jpeg" alt="" width="70%" style="display: block; margin: auto;" /&gt;
+
+.small[Modified from: Dettori JR, Norvell DC. Intention-to-Treat: Is That Fair? Global Spine Journal. 2020;10(3):361-363. doi:10.1177/2192568220903001]
+
+
+---
+class:middle
+
+## Other Types of Treatment Effects
+
+- Average treatment effect (**ATE**)
+- Average treatment effect on the treated (**ATT** or **ATET**)
+- Average treatment effect on the controls (or untreated) (**ATC** or **ATU**)
+- Average treatment effect among the evenly matchable (**ATM**), nearly equivalent to cohort formed by one-to-one pair matching
+- Average treatment effect among the overlap population (**ATO**), estimates the treatment effect among those likely to have received either treatment or control
+
+Sometimes you will see these prefixed with **P** for "population" (e.g.,
+**PATT** = population ATT) or      
+**S** for "sample" (e.g., **SATT** = sample ATT)      
+Sample estimates are interpreted conditional on the sample data           
+
+.purple[We will largely concentrate on] **.purple[ATE]** and **.purple[ATT]**
+
+---
+class:middle
+### What are the differences between these TEs?
+
+- **ATE** is `\(E(Y^1 - Y^0)\)` for *all* units (effect of *switching*) - **makes both groups look like the total sample**
+
+- **ATT** is `\(E(Y^1 - Y^0)\)` for *treated* units (effect of *taking away*
+treatment) - **makes the controls look like the treatment**
+
+- **ATC** is `\(E(Y^1 - Y^0)\)` for *untreated* units (effect of *adding*
+treatment) - **makes the treatment look like the controls**
+
+- **ATM** estimates equivalent to cohort formed by one-to-one pair matching
+
+- **ATO** estimates the treatment effect among those likely to have received either treatment or control
+
+---
+class:middle
+### Balancing weights for different TEs
+
+Weights for participant i is defined here as `\(e_i\)` and the treatment assignment is `\(T_i\)`, where T=1 indicates the participant received the treatment and T=0 indicates they received the control `\(\to\)` comparable pseudo populations for each treatment effect
+
+`$$w_{ATE} = \frac{T_i}{e_i} + \frac{1 - T_i}{1 - e_i}$$`
+`$$w_{ATT} = \frac{e_iT_i}{e_i} + \frac{e_i(1-T_i)}{1-e_i}$$`
+
+`$$w_{ATC} = \frac{(1-e_i)T_i}{e_i} + \frac{(1-e_i) (1-T_i)}{1 - e_i}$$`
+`$$w_{ATM} = \frac{\min\{e_i, 1-e_i\}}{T_ie_i + (1- T_i)(1-e_i)}$$`
+`$$w_{AT0} = (1-e_i)T_i + e_i(1-T_i)$$`
+
+---
+class:middle
+
+## ATEs and ATTs     
+
+**Recall**       
+
+**.red[ATE:]** Expected causal effect of the treatment for the whole population    
+`\({E}[\delta] = \{ \pi {E}[Y^1|D=1] + (1-\pi){E}[Y^1|D=0] \} \\\hspace{7 mm} - \{ \pi {E}[Y^0|D=1] + (1-\pi) {E}[Y^0|D=0] \}\)` 
+&lt;br&gt;
+--
+&lt;br&gt;    
+**.red[ATT:]** Expected causal effect of the treatment for treated individuals    
+`\({E}[\delta|D=1] = {E}[Y^1 - Y^0|D=1] \\\hspace{18 mm}= {E}[Y^1|D=1] - {E}[Y^0|D=1]\)` 
+
+**For a RCT, ATE = ATT** because we assume      
+`\({E}[Y^1|D=1] = {E}[Y^1|D=0]\)` and      
+`\({E}[Y^0|D=1] = {E}[Y^0|D=0]\)` 
+
+---
+class: middle
+**.blue[In summary, a good RCT is a great way to estimate an ATE and an ATT]**
+
+**RCT primary outcomes measure** should have the following attributes:     
+- Clinically meaningful, capturing the main aspects of feeling/function/survival for the outcome.     
+- Penalize a treatment causing serious adverse outcomes (net clinical benefit)       
+- Avoids ties, continuous measures improve statistical power and lower sample size (i.e. is sensitive for detecting treatment effects)        
+- Measured over the relevant clinical time course      
+- Does not have its interpretation clouded by inter-current therapies or events     
+- Is easily interpretable to clinicians, regulators and patients
+- Allows for simple and complete data capture while handling partially available data with minimal hidden assumptions
+
+---
+class: middle
+**Lessons in Uncertainty and Humility — Clinical Trials Involving Hypertension**
+
+&lt;img src="images/rct_hta.jpg" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+.red[**NOW 2024 Guidelines:** OBPM &gt;140/90 mmHg or H/ABPM &gt;135/85 mmHg]
+
+Trials Influencing Blood-Pressure Thresholds at Which Antihypertensive Medications Should Be Used. [N Engl J Med 2016;375:1756-1766](https://www.nejm.org/doi/full/10.1056/NEJMra1510067)
+
+
+
+---
+class:middle
+**.red[However, there are few common statistical pitfalls in traditional RCTs]**
+
+1. **p-value &gt; 0.05**  
+Commonly researchers will conclude that the treatment is ineffective -&gt; usually wrong    
+Remember [absence of evidence is not evidence of absence](https://www.bmj.com/content/311/7003/485) -&gt; reality is the study is inconclusive (especially if the confidence interval for the treatment difference is wide).        
+
+2. **Powering study for a miracle **     
+In that scenario a clinically important, but not miraculous, effect is unfortunately often then interpreted as a conclusion of no effect.      
+
+3. **Inflexibility**              
+Design cannot be modified after randomization begins, otherwise one would not know how to compute a p-value as this requires repeated identical sampling.
+
+---
+class:middle
+### Questions to be asked if the RCT results are .blue[positive]
+- Does a P value of &lt;0.05 provide strong enough evidence? (Lecture 1 slide 17 toss-up exp. with prior &amp; p = 0.05 -&gt; 71 % posterior)     
+- What is the magnitude of the treatment benefit?      
+- Is the primary outcome clinically important?     
+- Are subgroups &amp; secondary outcomes supportive?       
+- Is the trial large enough to be convincing?    
+- Was the trial stopped early?     
+- Do concerns about safety counterbalance positive efficacy?     
+- Are there flaws in trial design and conduct?     
+- Do the findings apply to my patients?     
+&lt;br&gt;
+**Reference:** .small[The Primary Outcome Is Positive — Is That Good Enough?- [NEJM](https://www.nejm.org/doi/full/10.1056/NEJMra1601511)]
+
+---
+class:middle
+### Questions to be asked if the RCT results are .blue[negative]
+- Is there some indication of potential benefit?     
+- Was the trial underpowered?     
+- Were the primary population, treatment, outcome appropriate      
+- Were there deficiencies in trial conduct or analyses?      
+- Is a claim of noninferiority of value?    
+- Do subgroup, `\(2^o\)` findings elicit positive signals?     
+- Does more positive external evidence or strong biologic rationale exist?    
+&lt;br&gt;
+
+**Reference:** .small[The Primary Outcome Fails — What Next?- [NEJM](https://www.nejm.org/doi/pdf/10.1056/NEJMra1510064?articleTools=true)]
+
+---
+class:middle
+### Other _Deviations_ from the .red[planned] RCTs:
+
+The modified RCT can exclude participants who:
++ Withdrew their consent
++ Failed to receive any study drug
++ Met the definition of a certain subgroup
++ Dropped out because of toxicity of the study drug
++ Were given the wrong treatment by the healthcare provider
++ Failed to receive study drug long enough to have a measurable effect
++ Violated certain aspects of the Clinical Study Protocol, e.g., taking prohibited drugs
++ Determination of not meeting inclusion or exclusion criteria, after enrollment
++ .red[Had other reasons for] **.red[differential]** .red[adherence or loss to follow-up.]
+
+---
+class: middle
+## Issues with _.red[deviations]_ of planned RCTs
+
+&lt;img src="images/rct_consider_bias.png" alt="" width="70%" style="display: block; margin: auto;" /&gt;
+### .red[We _may_ encounter bias despite the initial randomization]
+
+
+---
+class:middle
+### Other potential RCT limitations
+1. Expensive to perform.     
+2. May be ethically challenging.     
+3. Difficult to recruit (both investigators &amp; patients).      
+4. Findings are too broad (average treatment effect not representative or benefit for any given individual).    
+5. Findings may lack external generalizability (trial population and setting not representative of general practice).     
+6. Often reported and interpreted in isolation from other pertinent studies.    
+7. (Often long delays before RCT results diffuse into practice).      
+
+---
+class: middle
+### Clinical trial protocols 
+
+**SPIRIT (Standard Protocol Items: Recommendations for Interventional Trials)**
+Intended to provide sufficient details about: 
+- .small[Study rationale, intervention, trial design methods, study processes, outcomes, sample size, data collection procedures, proposed analyses and ethical considerations, with dissemination plans and administration of the trial.]
+--
+
+- **Overarching goal:** to enable the research team to conduct high-quality, reproducible studies. Allowing external appraisal of the scientific, methodological and ethical rigour of the trial by relevant stakeholders. 
+
+The SPIRIT provides a checklist with **RECOMMENDATIONS** for the report of such protocols: http://www.spirit-statement.org/
+
+---
+class: middle
+### Key messages
+
+- No study design is flawless.  
+- Elevating non feasible RCTs at the expense of other research designs can be counter productive, especially in public health      
+- Recognize the strengths and limitations in all data sources and designs  to obtain the most
+useful and valid data      
+- Health decision making often optimized by considering all data sources from well performed experimental and non-experimental sources  
+- If non-experimental designs are chosen, try to emulate `\(^1\)` a RCT to minimize bias
+
+`\(^1\)` .small[Lecture on Target Trials on Nov 24, 2026.]
+
+
+---
+
+class: middle
+
+###  QUESTIONS? 
+
+## COMMENTS?
+
+# RECOMMENDATIONS?
+
+---
+class: middle
+
+### Extra resources
+- Twisk J, et al. Different ways to estimate treatment effects in randomised controlled trials. Contemporary clinical trials communications, 10, 80–85. https://doi.org/10.1016/j.conctc.2018.03.008
+
+- Cole SR, Edwards JK, Zivich PN, Shook-Sa BE, Hudgens MG, Stringer JSA. Reducing Bias in Estimates of Per Protocol Treatment Effects: A Secondary Analysis of a Randomized Clinical Trial. JAMA Netw Open. 2023;6(7):e2325907. doi:10.1001/jamanetworkopen.2023.25907
+
+- Morris, T.P., Walker, A.S., Williamson, E.J. et al. Planning a method for covariate adjustment in individually randomised trials: a practical guide. Trials 23, 328 (2022). https://doi.org/10.1186/s13063-022-06097-z
+
+- Harrer, M., Cuijpers, P., Schuurmans, L.K.J., Kaiser, T., Buntrock, C., van Straten, A. &amp; Ebert, D. Evaluation of randomized controlled trials: a primer and tutorial for mental health researchers. Trials 24, 562 (2023). doi: 10.1186/s13063-023-07596-3.
+
+
+---
+class: middle
+### Extra notes on Full Exchangeability and Mean Exchangeability
+For a continuous outcome, `\(Y^a \perp\perp A\)` implies mean exchangeability `\(E[Y^a|A= a′] = E[Y^a]\)`, but mean exchangeability does not imply exchangeability because distributional parameters other than the mean (e.g., variance) may not be independent of treatment.
+
+Neither full exchangeability `\(Y^{\mathcal{A}} \perp\perp A\)` nor exchangeability `\(Y^a \perp\perp A\)` are required to prove that `\(E[Y^a] = E[Y|A= a]\)`. Mean exchangeability is sufficient.
+
+---
+class: middle
+### RCT very brief history
+- Hill formalized RCT methods (randomization, blinding, &amp; statistical analysis) in 1940's  
+- Initially worries centered on ethics (today maybe more on `$`)        
+- US Congress amendments to the FDA Act (1962), in response to thalidomide, new drugs must be proven efficacious in “adequate and well-controlled investigations"    
+- FDA (1970) interprets this to be RCTs      
+- Industry replaced governments and academic medicine as the primary producer of RCTs   
+
+.pull-left[
+&lt;img src="images/rct1.jpeg" alt="" width="70%" style="display: block; margin: auto;" /&gt;
+]
+    
+.pull-right[
+&lt;img src="images/rct2.jpeg" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+[Assessing the Gold Standard — Lessons from the History of RCTs (NEJM, 2016)](https://www.nejm.org/doi/10.1056/NEJMms1604593)
+
+---
+
+class: middle
+### RCT DAGs
+
+.pull-left[
+**ITT DAG**
+&lt;img src="L3_EPIB704_RCT_TE_26_files/figure-html/itt_dag-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+]
+--
+
+.pull-right[
+**ITT DAG with mechanism**
+&lt;img src="L3_EPIB704_RCT_TE_26_files/figure-html/ittA_dag-1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+```
+## $paths
+## [1] "Z -&gt; A -&gt; Y"      "Z -&gt; A &lt;- U -&gt; Y"
+## 
+## $open
+## [1]  TRUE FALSE
+```
+]
+
+---
+class:middle
+### RCT DAGs
+
+**Per-Protocol DAG conditioning on adherence**
+.code-small.scriptsize[
+&lt;img src="L3_EPIB704_RCT_TE_26_files/figure-html/PP_dag-1.png" alt="" width="50%" style="display: block; margin: auto;" /&gt;
+
+```
+## $paths
+## [1] "A -&gt; Y"      "A &lt;- U -&gt; Y"
+## 
+## $open
+## [1] TRUE TRUE
+```
+]
+
+---
+
+class:middle
+### Designed versus actual power
+
+Ensure that there is at least 80% or 90% probability or “power” (1- `\(\beta\)` ) for “detecting” an effect at the `\(\alpha = 0.05\)` level  under the assumption that the effect of the treatment is a particular size.      
+&lt;br&gt;
+
+While a trial may be designed to have 80% power to detect a particular effect of clinical relevance, that does not mean it has 80% probability of yielding p &lt; 0.05: the latter probability depends on the **true** effect of the treatment, so we refer to it as the **actual power**   
+
+---
+###Actual power
+Actual power can't be observed, but can estimate its standardized 
+distribution             
+Based on results of 23,551 RCTs of treatment efficacy that
+were extracted from the Cochrane [database](https://osf.io/xjv9g/)    
+
+&lt;img src="images/RCT1.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+
+Notice this is **not** Gaussian as have heavy tails (7% &gt; z=4), raising some concerns about possible bias in these studies with extreme results       
+
+---
+class:middle
+###Actual power 
+
+From this observed distribution can estimate the actual power in these 23,000 RCTs
+
+&lt;img src="images/RCT2.png" alt="" width="50%" style="display: block; margin: auto;" /&gt;
+
+- Around 9 out of 10 RCTs have actual power less than 80%     
+- The mean actual power is just 28% , median actual power just 13%     
+- Flip side if despite low power RCT +, .red[estimated effect size must be exaggerated] –  unlikely to
+be replicated in later studies - -&gt; winner's curse
+&lt;br&gt;
+.red[- IOW, most RCTs are radically underpowered to detect the true effect]     
+
+---
+class:middle
+### Dealing with exaggerated RCT effect sizes
+[van Zwet](https://rss.onlinelibrary.wiley.com/doi/epdf/10.1111/1740-9713.01587) proposed to counter the resulting exaggeration of effect estimates
+by using shrinkage estimators, essentially a regularizing prior using **exchangeability with RCTs in Cochrane database** 
+&lt;img src="images/exagg.png" alt="" width="80%" style="display: block; margin: auto;" /&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+Full Bayesian combines single trial with study specific “prior” capturing
+unique insights &amp; experience, rather than assuming the  RCT resembles the "average" Cochrane study 
+
+---
+class:middle
+###Standard power analysis in R
+In `R`, power analysis can use 
+- `library(pwr)` (vignettes can be found [here](https://cran.r-project.org/web/packages/pwr/vignettes/pwr-vignette.html))         
+- `library(epiDisplay)`       
+- `power.prop.test` for proportions in base `R`   
+&lt;br&gt;
+If we have any of the three parameters given below, we can calculate the fourth one       
+- Sample size      
+- Effect size     
+- Significance level    
+- Power of the test     
+
+---
+class:middle
+###Power analysis in R - example
+Suppose you have a trial with 500 patients in each group &amp; mortality proportions = 0.3 &amp; 0.4         
+What is the power for a Type 1 error `\((\alpha)\)` = 0.05?
+.pull-left[
+
+``` r
+*# method 1
+library(pwr)
+*pwr.2p.test(h=ES.h(p1 = 0.4, p2 = 0.3),sig.level=0.05,n=500,alternative="two.sided")
+```
+
+```
+## 
+##      Difference of proportion power calculation for binomial distribution (arcsine transformation) 
+## 
+##               h = 0.2101589
+##               n = 500
+##       sig.level = 0.05
+##           power = 0.9135494
+##     alternative = two.sided
+## 
+## NOTE: same sample sizes
+```
+]
+.pull-right[
+
+``` r
+*# method 2
+*epiDisplay::power.for.2p(p1=.4, p2=.3, n1=500, n2=500, alpha = 0.05)
+```
+
+```
+## 
+## Power for comparison of 2 proportions. 
+##   p1            = 0.4 
+##   p2            = 0.3 
+##   n1            = 500 
+##   n2            = 500 
+##   alpha         = 0.05 
+##   power         = 0.902
+```
+
+Yet a third way is with `?power.prop.test`
+]
+
+---
+class:middle
+###Choice of outcome and power
+&lt;br&gt;
+
+| Outcome Type                                                  | Statistical Efficiency                            |
+|---------------------------------------------------------------|---------------------------------------------------|
+| binary                                                        | Minimum (assumes time is not important            |
+| time to first binary outcome                                  | high if event is very frequent                    |
+| continuous response (e.g. blood pressure)                     | maximum power among univariate outcomes           |
+| ordinal response measured at a single time from randomization | high if at least 4 well-populated categories      |
+| longitudinal ordinal responses measured e.g. daily or weekly  | very high if at least 4 well-populated categories |
+| longitudinal continuous response                              | highest                                           |
+
+---
+class: middle
+**.red[What are those biases? Don't be lost in Translation:]** 
+
+**Translation of Cochrane bias in randomized trials domains into common epidemiologic terms.**
+
+|Cochrane bias domain      |	Epidemiologic term|	Bias in intention-to-treat effect|	Bias in per-protocol effect|
+|------------------------------------:|:-----------------------:|:------------------:|:------------------:|
+|Selection bias|	Confounding or selection bias	|Yes|	Yes|
+|Performance bias	|Biased direct effect or confounding|	No|	Yes|
+|Detection bias|	Measurement bias|	Yes|	Yes|
+|Attrition bias	|Selection bias	|Yes|	Yes|
+|Reporting bias |	Non-structural bias that cannot be represented in our causal diagrams	|Yes|	Yes|
+
+
+.small[Modfied from: Mansournia, M. A., et al. (2017). Biases in Randomized Trials: A Conversation Between Trialists and Epidemiologists. Epidemiology (Cambridge, Mass.), 28(1), 54–59. https://doi.org/10.1097/EDE.0000000000000564]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "3:2",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "navigation": {
+    "scroll": false
+  }
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
