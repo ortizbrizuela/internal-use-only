@@ -1,0 +1,36 @@
+/*      extra content      */
+.Large       , .Large .remark-code, .Large .remark-inline-code { font-size: 144%; }
+.large       , .large .remark-code, .large .remark-inline-code { font-size: 120%; }
+.small       , .small .remark-code, .small .remark-inline-code { font-size: 80%; }
+.footnotesize, .footnotesize .remark-code, .footnotesize .remark-inline-code { font-size: 60%; }
+.scriptsize  , .scriptsize .remark-code, .scriptsize .remark-inline-code { font-size: 70%; }
+.tiny        , .tiny .remark-code, .tiny .remark-inline-code { font-size: 50%; }
+
+.red { color: red; }
+.darkred { color: darkred; }
+.oranges { color: #FF4500;}
+.livred {color: #c8102E;}
+.blue { color: blue; }
+.azure { color: #007FFF; }
+.ceru { color: #2a52be; }
+.teal { color: #007791; }
+.green { color: green; }
+.yellow { color: yellow; }
+.orange { color: orange; }
+.purple { color: purple; }
+.mora {color: #5A4FCF; }
+.gray { color: gray; }
+.grey { color: grey; }
+.magenta {color: magenta; }
+.darkmagenta {color: darkmagenta; }
+.brown { color: brown; }
+
+.scrollable {
+  height: 80%;
+  overflow-y: auto;
+} 
+
+.remark-slide-scaler {
+    overflow-y: auto;
+}
+

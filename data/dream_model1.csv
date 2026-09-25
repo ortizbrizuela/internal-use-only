@@ -1,0 +1,117 @@
+﻿ID,data,outcome,likelihood,exposure,equation,vars,estimate,point,lb,ub,technique,justify_tech,causal,wishedvars,else,"Upload the R-markdown and the html knitted documenting your model here. (Please do not include your name in the RMD/HTML) It says non-anonymous since you folder name can be identifiable, but I'll ...",likehws,likethishw
+1,VL_Nigeria,Binary,logit,Binary,"• Propensity Score Model (Weight Generation): 𝑙𝑜𝑔𝑖𝑡(𝑃 (𝐸𝑥𝑝𝑜𝑠𝑢𝑟𝑒 = 1)) = 𝛽0 + 𝛽1(𝐴𝑔𝑒.𝑔𝑟𝑜𝑢𝑝) +
+𝛽2(𝑆𝐸𝑋) + 𝛽3(𝐴𝑅𝑇_𝑆𝑡𝑎𝑟𝑡) + 𝛽4(𝐶𝑙𝑖𝑛𝑖𝑐𝑎𝑙_𝑆𝑡𝑎𝑔𝑖𝑛𝑔) + 𝛽5(𝑇𝐵_𝑆𝑐𝑟𝑒𝑒𝑛𝑖𝑛𝑔_𝑂𝑢𝑡𝑐𝑜𝑚𝑒)","• Propensity Score Model (Weig𝐸𝑥𝑝𝑜𝑠𝑢𝑟𝑒 (EAC), 𝐴𝑔𝑒.𝑔𝑟𝑜𝑢𝑝, 𝑆𝐸𝑋, 𝐴𝑅𝑇_𝑆𝑡𝑎𝑟𝑡), 𝐶𝑙𝑖𝑛𝑖𝑐𝑎𝑙_𝑆𝑡𝑎𝑔𝑖𝑛𝑔, 𝑇𝐵_𝑆𝑐𝑟𝑒𝑒𝑛𝑖𝑛𝑔_𝑂𝑢𝑡𝑐𝑜𝑚𝑒",OR,0.019,0.018,0.021,IPTW (Inverse Probability of Treatment Weighting) ,"IPTW using the WeightIt package with the Covariate Balancing
+Propensity Score (CBPS) method. I assessed balance using cobalt (Love plots) and confirmed that the Standardized Mean Differences (SMDs) for all covariates were reduced to near zero (<0.01), ensuring the Exchangeability
+assumption was met.",Yes,"Baseline Viral Load (Pre-intervention)
+Socioeconomic Status / Distance to Clinic
+Genotypic Resistance Testing","In Assignment 5 (Section 2), I performed a sensitivity analysis regarding Misclassification Bias. I found that defining
+exposure as “Received EAC” included dropouts who failed to suppress. When refining the exposure to “Completed
+3 Sessions,” the OR shifted closer to the null (from 0.018 to 0.045). This suggests that exposure misclassification
+exaggerated the negative association.",https://mcgill-my.sharepoint.com/personal/mabel_carabali_mcgill_ca/Documents/Apps/Microsoft%20Forms/Final%20exercise%20EPIB%20704%20-%20Your%20dream%20model/Question/Integrative-Analysis_anonymous.pdf,5,5
+2,Covid_Bangladesh,Binary,"I will use the log-binomial in order to the RR, since my outcome is not rare.",Binary,Mental score=B0+B1xCovid-19vaccine+B2xGender+B3xage + B4xarea + B5xEducation+ B6xChronic + B7xrelation_household+ B8xOccupation + B9xHousehold_size + B10xMigration + B11xAccess_TV + B12x Acces_smartphone.,"Gender, age, area (Duaripara or Tala), Education, Chronic Conditions, relationship with household head, occupation, household size, migration, access to TV, and access to smart-phone.",RR,0.98,0.83,1.15,"I used inverse probability of treatment weighting (IPTW) based on propensity scores to estimate the average treatment effect. A weighted log-binomial regression was then fitted to obtain risk ratios, with robust variance estimation applied to derive confidence intervals.","I decided to apply inverse probability of treatment weighting (IPTW) based on the propensity score to ensure exchangeability. Then, because I have a prevalent outcome (16%), the best measure of association is the Risk Ratio, so I applied the log-binomial model. I used robust variance estimation in order to obtain a valid and realistic precision of the confidence interval under the weighting scheme. 
+",No,Other variables I wished to have included pre-existing conditions such as mental health conditions or family mental health conditions.,"To answer the research question, a cohort study would be ideal, and I am not certain whether the questionnaire used to measure the outcome is appropriate. I see it more as a screening tool to guide the next step, which would be the diagnosis of a mental illness.",https://mcgill-my.sharepoint.com/personal/mabel_carabali_mcgill_ca/Documents/Apps/Microsoft%20Forms/Final%20exercise%20EPIB%20704%20-%20Your%20dream%20model/Question/Integrative_analysis_Final_anonymous.pdf,5,5
+3,VL_Nigeria,Binary,log-binomial,Binary,"log((P(Outcome=1∣Exposure)/P(Outcome=0∣Exposure))=log(Odds)=logit(P)=β0+β1*Exposure
+log((P(binSupress=1|enhanced_adherence_counselling/P(binSupress=0|enahanced_adherence_counselling)) =log (Odds) = β0+β1*Enhanced_adherence_counselling+β2*sex +β3*age_group +β4*tb_screening_outcome + β5*clinical_staging_at_last_visit +β6*art_start 
+","sex, age group, tb screening outcome, clinical staging at last visit, art start",RR,RR: [0.65 95% CI(0.64 to 0.66),0.64,0.65,"To estimate the ATT, I used Propensity score matching.","I used matching by propensity score to balance the covariates and then applied a logistic regression to the matched sample to estimate the ATT, as the ATT provides the effect of treatment among those who actually received it. I used this model because matching reduces confounding and makes the treated and control groups comparable. Logistic regression is appropriate for a binary outcome and is stable after matching.",No,"The variables I wished to have been as follows:
+•	Sociodemographic variables (education, income)
+•	Co-morbidities (hypertension, diabetes, other sexually transmitted infections)
+•	CD4 count
+•	Adherence to ART therapy
+•	Distance to health facility
+•	Alcohol use
+•	Smoking
+","The estimates of the relationship are not causal because matching reduces confounding, making the treated and untreated groups comparable. However, there might be unmeasured confounding and selection bias. Furthermore, this is an observational study, so causality cannot be guaranteed. The estimate is associated with robust adjustment of the confounders. Hence, the estimates can be considered as a causal effect under the assumption of unmeasured confounding and correct model specification, but cannot be claimed as definitive causal.",https://mcgill-my.sharepoint.com/personal/mabel_carabali_mcgill_ca/Documents/Apps/Microsoft%20Forms/Final%20exercise%20EPIB%20704%20-%20Your%20dream%20model/Question/Assignment%20%5B6%5D_%20%5BIntegrative%20analysis%5D_anonymous.pdf,3,3
+4,VL_Nigeria,Binary,Poisson,Binary,$ViralLoadSupression = \beta_0 + \beta_{EAC}X_{EAC} + \beta_{age_2}X_{age2} + \beta_{age_3}X_{age3} + \beta_{age_4}X_{age4} + \beta_{Male}X_{Male} + \beta_{AdvancedStage}X_{AdvancedStage} +  \beta_{Clinical}X_{Clinical} +  \beta_{Year}X_{Year} + \beta_{TB}X_{TB} + \epsilon$,"I included the covariates age, sex, enrollment setting, TB status, HIV stage, year of ART start.",RR,0.81207,0.80232,0.82183,Simple Poisson regression with Poisson standard errors,"Poisson regression as I wanted to directly compute a single estimate of the risk ratio, and log binomial methods did not converge. I used robust standard errors due to the tendency of Poisson regression to misestimate standard errors. I did not use more complex methods as my DAG did not have a minimal adjustment set, so I knew I could not make causal claims.",No,"Yes, rurality and time varying viral load measurement",,https://mcgill-my.sharepoint.com/personal/mabel_carabali_mcgill_ca/Documents/Apps/Microsoft%20Forms/Final%20exercise%20EPIB%20704%20-%20Your%20dream%20model/Question/Integrative-analysis_anonymous%201.pdf,4,3
+5,Covid_Bangladesh,Binary,A log-binomial model would be used to estimate risk ratios. ,"The exposure is binary, but I would prefer to use the 0-, 1-, 2-, and 3-dose to reflect dosage levels. However, I am unsure how to appropriately address confounding when the exposure has multiple categories or a count variable.",log(pi) = beta0 + betaXi,"covariates: Gender, Marital status, Television ownership, Smart-phone ownership, Migration status, Education, Occupation, Choronic status, Relationship with household-head",RR,"1.104 (95%CI: 0.978, 1.247)",0.978,1.247,PS with weighting,"It’s binary outcome, and to get risk ratio.",No,urban/rural residence,"I am wondering whether propensity score methods can be used when the exposure is continuous/counts/multicategories? Is matching the only option, or can we also use IPW or standardization?
+Additionally, do we always need to use techniques (e.g., matching, splines, PS, IPCW, IPTW) to ensure exchangeability in the study, even if confounders are already adjusted in the regression model?",https://mcgill-my.sharepoint.com/personal/mabel_carabali_mcgill_ca/Documents/Apps/Microsoft%20Forms/Final%20exercise%20EPIB%20704%20-%20Your%20dream%20model/Question/analysis_anonymous.pdf,5,3
+6,Amazonas_HQoL,Continuous,OLS,Binary,VAS ~ any_malaria + SES_Index_scaled + Age + Sex +ZONA,"SES_Index_scaled (includes P11, P12, P13, P14, P15, P16, P17, P18, P19, P20A, P20B, P20C, P20D, P20E, P20F, P20G, P20H, P20I, P20J, P20K, P20L, P20M, P20N, P28), Age, Sex",Mean difference in VAS per unit change in independent variable,-12.03414,-15.03481,-9.11176,"Multiple Imputation using Random Forest, Principal Component Analysis for dimension reduction to create the SES Index, and Bayesian Linear Regression","I used a linear regression to preserve as much information about the outcome that could be lost by dichotomizing. Additionally used PCA to reduce the number of collinear variables that indicate SES. I tested how sensitive the model was to the definition of exposure, FILTRO ==1 and/or 2 for exposure to malaria, and found that the estimates were stable. We also explored the possibility of effect measure modification by using an interaction term on SES., The estimated CrI crossed the null, and using loo_compare, we found that the model without interactions performed better, so we ended up using the simple model without interactions.",No,"Ideally, the dataset would be longitudinal so we could track the impact of malaria infection on HrQoL. The temporal component would allow us to tease out any causal relationship with greater certainty. Additionally, the risk of infection would be different across different regions and would not be completely captured by the Urban Rural classification.","I think the data stops us from estimating any causal relationship. I would interpret the results as being descriptive measures of association at best.
+
+Note: While the question asks us to upload HTML, HTML and RmD are not allowed filetypes. uploading the PDF instead.",https://mcgill-my.sharepoint.com/personal/mabel_carabali_mcgill_ca/Documents/Apps/Microsoft%20Forms/Final%20exercise%20EPIB%20704%20-%20Your%20dream%20model/Question/IntegrativeAnalysis_anonymous.pdf,3,5
+7,Amazonas_HQoL,Binary,The likelihood link used to fit the model was logit.,Binary,"logit(P(Yi​=1))=β0​+β1​Xi, when adding in the weights 
+
+modelsesps <- glm(outcome ~ group,
+                  family = binomial,
+                  data = amazonas_clean,
+                  weights = wps$weights)","gender, age group, chronic conditions, home ownership, government aid, a new SES variable that I created (MJCA1)",OR,0.49,0.41,0.59,IPW,I chose to include IPW and a logit model as the outcome is binary and I wanted to try and further control for confounding beyond simoply adjusting in a logistic regression output. ,No,I feel like a variable that would have been nice would simply to have been to have a better measurement of malaria cases as I feel like the estimates are not robust based on that. ,Thank you for the great course!! I've learnt so much :). ,https://mcgill-my.sharepoint.com/personal/mabel_carabali_mcgill_ca/Documents/Apps/Microsoft%20Forms/Final%20exercise%20EPIB%20704%20-%20Your%20dream%20model/Question/Integrative-analysis_anonymous%202.pdf,5,4
+8,Amazonas_HQoL,Binary,"log-binomial (i.e., in R ""family = binomial(link =""log"")"")","Binary, but categorized using a cut-off of 75 instead of 50",Prob(HRQoL_VeryHigh=1∣Malaria)]=β0​+β1(Recent Malaria),"Covariates used to generate propsenty scores for matching = gender, age (categorical), chronic diseases (diabetes, hypertension, and/or rheumatoid athritis), and SES (summative score generating using running water, internet, car, mobile phone, and education) ",RR,0.62,0.53,0.73,"I used propensity score matching (i.e. propensity scores based on model Malaria_group ~ gender + age_cat + chronic + SES_sum), where ""SES_sum"" is a summative score of multiple dimensions of SES. While I initially wanted to use PS weights instead (to estimate the ATE), I could not achieve good common support and thus decided to use PS matching instead (to estimate the ATT).","From the options presented through the term, propensity scores appear to be one of the most robust and easy-to-implement means of reducing the potential for confounding when attempting to estimate a causal effect. Based on the skewed nature of the VAS score variable (e.g., median above 70), I wanted to refine the outcome to very high (VAS score >=75) versus lower (VAS score <75) outcome to determine whether there was an effect between recent malaria exposure and more extreme/rarer scores of health-related quality-of-life. However, I think keeping the outcome as dichotomous is still helpful from a clinical/health policy point of view, as understanding if recent malaria exposure causes a per-unit change on a continuous VAS scale may be less informative than understanding if it presents a barrier to experiencing high health-related quality-of-life. 
+I think it was key to account for the multidimensionality of SES, however I was unable to recreate the more sophisticated score presented by the original authors. As such, I generated a summative score of various components of SES (running water, internet, car, mobile phone, and education), with higher scores indicating higher SES. Other variables (e.g., electricity, homeownership) were considered, with the final index being selected based on the highest Cronbach alpha (i.e., internal consistency). While the highest Cronbach alpha was still fairly low (0.50), I felt that include this crude composite measure was still preferable to simply including an individual item like education or income. Additionally, log-binomial regression provides an attractive option to directly generate estimates on the RR scale (although, as we discovered, such a feat can be done with a few more steps even with logistic regression! Gone are the days of tyranny under ORs!!!).",No,"From my scans of the literature throughout the assignment, as well as the development and refinement of my DAG, there are some key variables not included in the dataset that I believe are important for estimating a causal effect, including: rurality, healthcare access/utilization, access to preventative equipment (e.g., treated mosquito nets), and proximity to water bodies.","Thank you for the opportunity to flex our 'analytical muscles' using real data this term! While I apologize that I do not have more time and brain power to fully flesh out this integrative assignment, I think that it (combined with the other assignments) is a helpful pedagogical exercise and should make a return in some format in future iterations of 704 ",https://mcgill-my.sharepoint.com/personal/mabel_carabali_mcgill_ca/Documents/Apps/Microsoft%20Forms/Final%20exercise%20EPIB%20704%20-%20Your%20dream%20model/Question/Integrative_Analysis_Amazonas_anonymous.pdf,4,3
+9,Covid_Bangladesh,Continuous,OLS,Binary,"E (Yi∣Xi) = B0
+            + B1 x Exp
+            + B2 x Sex
+            + B3 x Age
+            + B4 x Chronic Illness
+            + B5 x Occupation
+            + B6 x Income","Sex, Age, Chronic Illness, Occupation, Income",mean difference,1.28,-1.11,3.67,IPTW,"To approximate a causal effect while keeping mental well-being as a continuous outcome, I fit a marginal structural linear model using inverse probability of treatment weighting (IPTW). First, I estimated a propensity score for receiving 2+ doses versus ≤1 dose as a function of age category, gender, chronic illness, occupation, and income. I then used the resulting ATE weights in a weighted linear regression of the WHO mental well-being score on exposure only. The coefficient for exposure can be interpreted as the average treatment effect (ATE) on the mean mental well-being score, assuming no unmeasured confounding, correct specification of the propensity score model, and positivity.",Not Sure,"Several important variables that could improve confounding control and causal interpretation were not available in this dataset that would likely reduce residual confounding and allow a more nuanced understanding of the pathways linking vaccination, health status, and mental well-being. For example: 
+
+- Baseline mental health history like prior diagnosis of depression or anxiety
+
+- Time since last COVID-19 vaccine dose and detailed vaccination schedule which could help separate short-term vs long-term effects
+
+- Psychosocial stressors
+
+- Social support and isolation 
+
+- Use of mental health services or psychotropic medications
+
+- More granular socioeconomic measures ","I chose a linear model with an identity link because my outcome—mental well-being measured by the WHO-5—is continuous, and I wanted to keep the full information in the score instead of dichotomizing it. This lets me interpret the main coefficient as a simple mean difference in WHO-5 points comparing people with 2+ doses to those with 0–1 dose. To move closer to a causal contrast, I also used inverse probability of treatment weighting (IPTW) with propensity scores to balance measured confounders between exposure groups and estimate a marginal (population-average) effect. This approach aligns with my research question, limits how much I rely on parametric outcome modeling, and is reasonable as long as the usual assumptions hold (no unmeasured confounding, correct PS model, and positivity).",https://mcgill-my.sharepoint.com/personal/mabel_carabali_mcgill_ca/Documents/Apps/Microsoft%20Forms/Final%20exercise%20EPIB%20704%20-%20Your%20dream%20model/Question/Integrative-analysisRmd_anonymous.pdf,5,2
+10,Amazonas_HQoL,Binary,Logit,Binary,"Model <- glm(binQoL ~ Status2, data = Data1, family = binomial(), weights = w.out1$weights)
+", ResidentGender + ResidentAge + HouseholdSituation + GovernmentFinancialAid,OR,0.77,0.65,0.91,IPTW,"I wanted a causal estimate so I used IPTW (propensity score) and made sure to not adjust for any colliders. Through this I was able to minimize measured confounders. 
+",Yes,"I thought in order to avoid residual confounding, I would keep Age as continuous variable. Information on mental health related measures would also been helpful. 
+",No,https://mcgill-my.sharepoint.com/personal/mabel_carabali_mcgill_ca/Documents/Apps/Microsoft%20Forms/Final%20exercise%20EPIB%20704%20-%20Your%20dream%20model/Question/Integrative%20analysis_anonymous.pdf,3,3
+11,Amazonas_HQoL,Binary,"A weighted logistic regression model will be fitted:
+
+Likelihood- binomial
+
+Link function- logit
+
+Weights will be calculated using propensity score PS nearest-neighbor matching with replacement.",Binary,"Model fitted: weighted logistic regression
+
+log{(P(Y=0∣Matched Set)/P(Y=1∣Matched Set)} = B0 + Bexposure.Xexposure+ Bsex.Xsex +Bage.Xage + BSES.XSES + Bresidence.Xresidence
+Where:
+
+Y=1 = Good QoL
+exposure: 1 (current or recent malaria) vs 0 (previous malaria episode)
+
+sex = P5 (1 = Female 2 = Male)
+
+age = P4 (continuous)
+
+SES = SES_index (continuous 0–100)
+
+residence = ZONA (1 = Urban 2 = Rural)
+
+Matching technique used:
+
+PS nearest-neighbor matching (1:1) with replacement
+
+Caliper = 0.1
+
+Estimand: ATT
+Then fitted a weighted logistic regression with the matching weights.","Exposure (Recent vs previous Malaria), sex, age, Socio-economic status Index, residence (urban vs rural)",OR,0.47,0.34,0.65,"I began by using Multiple Correspondence Analysis (MCA) to construct a socioeconomic status (SES) index the way they did in the research paper. This ensured a comprehensive representation of all the socio-economic variables.
+
+I then estimated propensity scores using a logistic regression model and performed 1:1 nearest-neighbor matching with replacement, imposing a caliper of 0.1 to restrict matches to individuals with sufficiently similar propensity scores. 
+
+After matching, I calculated the ATT, by fitting a weighted logistic regression on the matched sample and additionally adjusting for covariates to address any residual imbalance/ confounding.
+","For this analysis, I first constructed a socioeconomic status (SES) index using Multiple Correspondence Analysis to reduce multidimensional household indicators into a single concise interpretable measure. 
+
+I then calculated propensity scores using logistic regression and applied 1:1 nearest-neighbor matching with replacement and a caliper of 0.1 to improve covariate balance for the ATT estimand. 
+
+After matching, I calculated the ATT, by fitting a weighted logistic regression on the matched sample and additionally adjusting for covariates to address any residual imbalance/ confounding.
+
+This strategy allowed me to reduce confounding and improve the causal conclusions.",No,"I would have liked information on:
+
+- Some more chronic comorbidities (e.g.,anemia, HIV) 
+
+- Baseline or prior QoL / health status before the malaria episodes.
+
+- Objective clinical data on malaria episodes (lab confirmation, date of diagnosis) 
+
+- Mental-health indicators (depression, anxiety).
+
+- Access to health care (distance/ travel time to the nearest health facility).
+
+- Measures of exposure and/or outcome that are not self reported.
+
+Having information on these covariates could reduce measurement error and improve confounding control.
+","There was substantial improvement in the covariate after matching, with all standardized mean differences <0.1. The matched sample retained 499 of 500 treated individuals, providing good support for ATT estimation. Results were consistent with prior analyses using alternative methods (unadjusted, conditional adjusted, ATE weighting, etc)
+",https://mcgill-my.sharepoint.com/personal/mabel_carabali_mcgill_ca/Documents/Apps/Microsoft%20Forms/Final%20exercise%20EPIB%20704%20-%20Your%20dream%20model/Question/Integrative%20Analysis_anonymous%201.pdf,3,3
